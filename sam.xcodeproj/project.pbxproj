@@ -18,6 +18,12 @@
 		42EA6B5B169B60AE005960F5 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 42EA6B5A169B60AE005960F5 /* Default-568h@2x.png */; };
 		42EA6B5E169B60AE005960F5 /* MainStoryboard.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 42EA6B5C169B60AE005960F5 /* MainStoryboard.storyboard */; };
 		42EA6B61169B60AE005960F5 /* SAMViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 42EA6B60169B60AE005960F5 /* SAMViewController.m */; };
+		42EA6B68169B6251005960F5 /* EditView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 42EA6B67169B6251005960F5 /* EditView.xib */; };
+		42EA6B75169B64A0005960F5 /* SAMEditViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 42EA6B74169B64A0005960F5 /* SAMEditViewController.m */; };
+		42EA6B77169B64B8005960F5 /* GLKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 42EA6B76169B64B8005960F5 /* GLKit.framework */; };
+		42EA6B79169B64BF005960F5 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 42EA6B78169B64BF005960F5 /* OpenGLES.framework */; };
+		42EA6B7B169B7B00005960F5 /* ToolbarView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 42EA6B7A169B7B00005960F5 /* ToolbarView.xib */; };
+		42EA6B7E169B7C21005960F5 /* SAMToolbarViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 42EA6B7D169B7C21005960F5 /* SAMToolbarViewController.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -37,6 +43,14 @@
 		42EA6B5D169B60AE005960F5 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = en; path = en.lproj/MainStoryboard.storyboard; sourceTree = "<group>"; };
 		42EA6B5F169B60AE005960F5 /* SAMViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SAMViewController.h; sourceTree = "<group>"; };
 		42EA6B60169B60AE005960F5 /* SAMViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SAMViewController.m; sourceTree = "<group>"; };
+		42EA6B67169B6251005960F5 /* EditView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = EditView.xib; sourceTree = "<group>"; };
+		42EA6B73169B64A0005960F5 /* SAMEditViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SAMEditViewController.h; sourceTree = "<group>"; };
+		42EA6B74169B64A0005960F5 /* SAMEditViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SAMEditViewController.m; sourceTree = "<group>"; };
+		42EA6B76169B64B8005960F5 /* GLKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GLKit.framework; path = System/Library/Frameworks/GLKit.framework; sourceTree = SDKROOT; };
+		42EA6B78169B64BF005960F5 /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
+		42EA6B7A169B7B00005960F5 /* ToolbarView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ToolbarView.xib; sourceTree = "<group>"; };
+		42EA6B7C169B7C20005960F5 /* SAMToolbarViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SAMToolbarViewController.h; sourceTree = "<group>"; };
+		42EA6B7D169B7C21005960F5 /* SAMToolbarViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SAMToolbarViewController.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -44,6 +58,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				42EA6B79169B64BF005960F5 /* OpenGLES.framework in Frameworks */,
+				42EA6B77169B64B8005960F5 /* GLKit.framework in Frameworks */,
 				42EA6B45169B60AE005960F5 /* UIKit.framework in Frameworks */,
 				42EA6B47169B60AE005960F5 /* Foundation.framework in Frameworks */,
 				42EA6B49169B60AE005960F5 /* CoreGraphics.framework in Frameworks */,
@@ -73,6 +89,8 @@
 		42EA6B43169B60AE005960F5 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				42EA6B78169B64BF005960F5 /* OpenGLES.framework */,
+				42EA6B76169B64B8005960F5 /* GLKit.framework */,
 				42EA6B44169B60AE005960F5 /* UIKit.framework */,
 				42EA6B46169B60AE005960F5 /* Foundation.framework */,
 				42EA6B48169B60AE005960F5 /* CoreGraphics.framework */,
@@ -83,11 +101,10 @@
 		42EA6B4A169B60AE005960F5 /* sam */ = {
 			isa = PBXGroup;
 			children = (
+				42EA6B6A169B6416005960F5 /* Views */,
+				42EA6B69169B6400005960F5 /* ViewControllers */,
 				42EA6B53169B60AE005960F5 /* SAMAppDelegate.h */,
 				42EA6B54169B60AE005960F5 /* SAMAppDelegate.m */,
-				42EA6B5C169B60AE005960F5 /* MainStoryboard.storyboard */,
-				42EA6B5F169B60AE005960F5 /* SAMViewController.h */,
-				42EA6B60169B60AE005960F5 /* SAMViewController.m */,
 				42EA6B4B169B60AE005960F5 /* Supporting Files */,
 			);
 			path = sam;
@@ -105,6 +122,29 @@
 				42EA6B5A169B60AE005960F5 /* Default-568h@2x.png */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		42EA6B69169B6400005960F5 /* ViewControllers */ = {
+			isa = PBXGroup;
+			children = (
+				42EA6B5F169B60AE005960F5 /* SAMViewController.h */,
+				42EA6B60169B60AE005960F5 /* SAMViewController.m */,
+				42EA6B73169B64A0005960F5 /* SAMEditViewController.h */,
+				42EA6B74169B64A0005960F5 /* SAMEditViewController.m */,
+				42EA6B7C169B7C20005960F5 /* SAMToolbarViewController.h */,
+				42EA6B7D169B7C21005960F5 /* SAMToolbarViewController.m */,
+			);
+			name = ViewControllers;
+			sourceTree = "<group>";
+		};
+		42EA6B6A169B6416005960F5 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				42EA6B5C169B60AE005960F5 /* MainStoryboard.storyboard */,
+				42EA6B67169B6251005960F5 /* EditView.xib */,
+				42EA6B7A169B7B00005960F5 /* ToolbarView.xib */,
+			);
+			name = Views;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -164,6 +204,8 @@
 				42EA6B59169B60AE005960F5 /* Default@2x.png in Resources */,
 				42EA6B5B169B60AE005960F5 /* Default-568h@2x.png in Resources */,
 				42EA6B5E169B60AE005960F5 /* MainStoryboard.storyboard in Resources */,
+				42EA6B68169B6251005960F5 /* EditView.xib in Resources */,
+				42EA6B7B169B7B00005960F5 /* ToolbarView.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -177,6 +219,8 @@
 				42EA6B51169B60AE005960F5 /* main.m in Sources */,
 				42EA6B55169B60AE005960F5 /* SAMAppDelegate.m in Sources */,
 				42EA6B61169B60AE005960F5 /* SAMViewController.m in Sources */,
+				42EA6B75169B64A0005960F5 /* SAMEditViewController.m in Sources */,
+				42EA6B7E169B7C21005960F5 /* SAMToolbarViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

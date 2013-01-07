@@ -8,6 +8,13 @@
 
 #import <UIKit/UIKit.h>
 
+#import "SAMEditViewController.h"
+#import "SAMToolbarViewController.h"
+
 @interface SAMViewController : UIViewController
+
+
+@property (nonatomic,strong) SAMEditViewController *editViewControl;
+@property (nonatomic,strong) SAMToolbarViewController *toolbarViewControl;
 
 @end
