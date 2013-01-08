@@ -11,8 +11,7 @@
 #import "SAMEditViewController.h"
 #import "SAMToolbarViewController.h"
 
-@interface SAMViewController : UIViewController
-
+@interface SAMViewController : UIViewController <SAMToolbarViewControllerDelegate>
 
 @property (nonatomic,strong) SAMEditViewController *editViewControl;
 @property (nonatomic,strong) SAMToolbarViewController *toolbarViewControl;

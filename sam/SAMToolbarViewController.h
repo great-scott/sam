@@ -8,6 +8,17 @@
 
 #import <UIKit/UIKit.h>
 
+
+@protocol SAMToolbarViewControllerDelegate <NSObject>
+
+@required
+- (IBAction)fileButtonPressed:(UIButton *)sender;
+
+@end
+
+
 @interface SAMToolbarViewController : UIViewController
+
+@property (nonatomic, weak) id <SAMToolbarViewControllerDelegate> delegate;
 
 @end

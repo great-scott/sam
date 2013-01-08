@@ -34,6 +34,7 @@
 {
     editViewControl = [[SAMEditViewController alloc] initWithNibName:@"EditView" bundle:[NSBundle mainBundle]];
     toolbarViewControl = [[SAMToolbarViewController alloc] initWithNibName:@"ToolbarView" bundle:[NSBundle mainBundle]];
+    toolbarViewControl.delegate = self;
     
     // Settings for Edit View
     UIView* editView = editViewControl.view;
@@ -55,6 +56,11 @@
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
 {
     return UIDeviceOrientationLandscapeLeft;
+}
+
+- (IBAction)fileButtonPressed:(UIButton *)sender
+{
+    
 }
 
 
