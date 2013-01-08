@@ -44,7 +44,7 @@
 
 - (void)glkView:(GLKView *)view drawInRect:(CGRect)rect
 {
-    glClearColor(1.0, 0.95, 0.95, 1.0);
+    glClearColor(0.95, 0.95, 0.95, 1.0);
     glClear(GL_COLOR_BUFFER_BIT);
 }
 
