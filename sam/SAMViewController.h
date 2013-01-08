@@ -13,7 +13,14 @@
 
 @interface SAMViewController : UIViewController <SAMToolbarViewControllerDelegate>
 
-@property (nonatomic,strong) SAMEditViewController *editViewControl;
-@property (nonatomic,strong) SAMToolbarViewController *toolbarViewControl;
+@property (nonatomic, strong) SAMEditViewController* editViewControl;
+@property (nonatomic, strong) SAMToolbarViewController* toolbarViewControl;
+
+@property (nonatomic, strong) UIView* fileView;
+@property (nonatomic, strong) UIView* editView;
+@property (nonatomic, strong) UIView* toolbarView;
+
+- (IBAction)openPressed:(UIButton *)sender;
+- (IBAction)cancelPressed:(UIButton *)sender;
 
 @end

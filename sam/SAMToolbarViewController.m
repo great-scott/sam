@@ -37,11 +37,11 @@
     // Dispose of any resources that can be recreated.
 }
 
-- (IBAction)fileButtonPressed:(UIButton *)sender
+- (IBAction)toolbarButtonPressed:(UIButton *)sender
 {
-    if (delegate && [delegate respondsToSelector:@selector(fileButtonPressed:)])
+    if (delegate && [delegate respondsToSelector:@selector(toolbarButtonPressed:)])
     {
-        [delegate fileButtonPressed:sender];
+        [delegate toolbarButtonPressed:sender];
     }
 }
 @end

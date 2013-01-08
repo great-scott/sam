@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		423D1F58169CD64B000074E3 /* FileView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 423D1F57169CD64B000074E3 /* FileView.xib */; };
 		42EA6B45169B60AE005960F5 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 42EA6B44169B60AE005960F5 /* UIKit.framework */; };
 		42EA6B47169B60AE005960F5 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 42EA6B46169B60AE005960F5 /* Foundation.framework */; };
 		42EA6B49169B60AE005960F5 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 42EA6B48169B60AE005960F5 /* CoreGraphics.framework */; };
@@ -27,6 +28,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		423D1F57169CD64B000074E3 /* FileView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = FileView.xib; sourceTree = "<group>"; };
 		42EA6B40169B60AE005960F5 /* sam.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = sam.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		42EA6B44169B60AE005960F5 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		42EA6B46169B60AE005960F5 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -143,6 +145,7 @@
 				42EA6B5C169B60AE005960F5 /* MainStoryboard.storyboard */,
 				42EA6B67169B6251005960F5 /* EditView.xib */,
 				42EA6B7A169B7B00005960F5 /* ToolbarView.xib */,
+				423D1F57169CD64B000074E3 /* FileView.xib */,
 			);
 			name = Views;
 			sourceTree = "<group>";
@@ -206,6 +209,7 @@
 				42EA6B5E169B60AE005960F5 /* MainStoryboard.storyboard in Resources */,
 				42EA6B68169B6251005960F5 /* EditView.xib in Resources */,
 				42EA6B7B169B7B00005960F5 /* ToolbarView.xib in Resources */,
+				423D1F58169CD64B000074E3 /* FileView.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -339,6 +343,7 @@
 				42EA6B66169B60AE005960F5 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

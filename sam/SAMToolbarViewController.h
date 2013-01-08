@@ -12,7 +12,7 @@
 @protocol SAMToolbarViewControllerDelegate <NSObject>
 
 @required
-- (IBAction)fileButtonPressed:(UIButton *)sender;
+- (IBAction)toolbarButtonPressed:(UIButton *)sender;
 
 @end
 
