@@ -11,7 +11,14 @@
 #import "SAMEditViewController.h"
 #import "SAMToolbarViewController.h"
 
-@interface SAMViewController : UIViewController <SAMToolbarViewControllerDelegate>
+@interface SAMViewController : UIViewController <SAMToolbarViewControllerDelegate, UITableViewDataSource, UITableViewDelegate>
+{
+    NSArray *tableData;
+    NSString *documentsDirectory;
+    
+    CFURLRef fileUrl;
+    BOOL fileSelected;
+}
 
 @property (nonatomic, strong) SAMEditViewController* editViewControl;
 @property (nonatomic, strong) SAMToolbarViewController* toolbarViewControl;
@@ -20,6 +27,7 @@
 @property (nonatomic, strong) UIView* editView;
 @property (nonatomic, strong) UIView* toolbarView;
 
+// File Browser Callbacks
 - (IBAction)openPressed:(UIButton *)sender;
 - (IBAction)cancelPressed:(UIButton *)sender;
 

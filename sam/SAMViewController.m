@@ -26,6 +26,7 @@
     [super viewDidLoad];
 	[self setupView];
     [self setupFileView];
+    [self setupFileDirectory];
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
@@ -120,8 +121,83 @@
         [self animateFileView:YES];
     }
     else if ([title isEqualToString:@"Save"])
+    {
         NSLog(@"Save Pressed.");
+    }
+    else if ([title isEqualToString:@"Square"])
+    {
+        // Edit View Add Square
+    }
     
+}
+
+#pragma mark - TableView Delegate Methods
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    
+    NSString *selectedFile = [tableData objectAtIndex:indexPath.row];
+    
+    if ([selectedFile.pathExtension compare:@"wav" options:NSCaseInsensitiveSearch] == NSOrderedSame)
+    {
+        NSString *fullPath = [documentsDirectory stringByAppendingPathComponent:selectedFile];
+        fileUrl = CFURLCreateWithFileSystemPath(kCFAllocatorDefault, (__bridge CFStringRef)fullPath, kCFURLPOSIXPathStyle, false);
+        fileSelected = YES;
+    }
+    else
+    {
+        fileSelected = NO;
+    }
+}
+
+- (void)setupFileDirectory
+{
+    NSError *error;
+    
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    documentsDirectory = [paths objectAtIndex:0];
+    
+    NSArray *files = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:documentsDirectory error:&error];
+    if (files == nil)
+        NSLog(@"Error reading contents of documents directory: %@", [error localizedDescription]);
+    
+    if ([files count] > 0)
+    {
+        tableData = [[NSArray alloc] initWithArray:files];
+        NSString* firstFile = [files objectAtIndex:0];
+    
+        if ([firstFile.pathExtension compare:@"wav" options:NSCaseInsensitiveSearch] == NSOrderedSame)
+        {   
+            NSString *fullPath = [documentsDirectory stringByAppendingPathComponent:firstFile];
+            fileUrl = CFURLCreateWithFileSystemPath(kCFAllocatorDefault, (__bridge CFStringRef)fullPath, kCFURLPOSIXPathStyle, false);
+            fileSelected = YES;
+        }
+    }
+}
+
+
+#pragma mark - TableView Data Source methods
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+{
+    NSUInteger num = [tableData count];
+    return num;
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    UITableViewCell *cell = nil;
+    
+    cell = [tableView dequeueReusableCellWithIdentifier:@"MyCell"];
+    
+    if (cell == nil)
+    {
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"MyCell"];
+    }
+    
+    cell.textLabel.text = [tableData objectAtIndex:indexPath.row];
+    
+    return cell;
 }
 
 @end
