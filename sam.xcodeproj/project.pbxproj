@@ -14,6 +14,7 @@
 		4253413C169D0156009E53DC /* RegionSquare.m in Sources */ = {isa = PBXBuildFile; fileRef = 42534136169D0156009E53DC /* RegionSquare.m */; };
 		4253413D169D0156009E53DC /* Shape.m in Sources */ = {isa = PBXBuildFile; fileRef = 42534138169D0156009E53DC /* Shape.m */; };
 		42534141169D1F64009E53DC /* SAMTouchTracker.m in Sources */ = {isa = PBXBuildFile; fileRef = 42534140169D1F63009E53DC /* SAMTouchTracker.m */; };
+		42534144169DDD1F009E53DC /* SAMTouchContainer.m in Sources */ = {isa = PBXBuildFile; fileRef = 42534143169DDD1F009E53DC /* SAMTouchContainer.m */; };
 		42EA6B45169B60AE005960F5 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 42EA6B44169B60AE005960F5 /* UIKit.framework */; };
 		42EA6B47169B60AE005960F5 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 42EA6B46169B60AE005960F5 /* Foundation.framework */; };
 		42EA6B49169B60AE005960F5 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 42EA6B48169B60AE005960F5 /* CoreGraphics.framework */; };
@@ -47,6 +48,8 @@
 		42534138169D0156009E53DC /* Shape.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Shape.m; sourceTree = "<group>"; };
 		4253413F169D1F63009E53DC /* SAMTouchTracker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SAMTouchTracker.h; sourceTree = "<group>"; };
 		42534140169D1F63009E53DC /* SAMTouchTracker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SAMTouchTracker.m; sourceTree = "<group>"; };
+		42534142169DDD1F009E53DC /* SAMTouchContainer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SAMTouchContainer.h; sourceTree = "<group>"; };
+		42534143169DDD1F009E53DC /* SAMTouchContainer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SAMTouchContainer.m; sourceTree = "<group>"; };
 		42EA6B40169B60AE005960F5 /* sam.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = sam.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		42EA6B44169B60AE005960F5 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		42EA6B46169B60AE005960F5 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -145,6 +148,8 @@
 				42EA6B54169B60AE005960F5 /* SAMAppDelegate.m */,
 				4253413F169D1F63009E53DC /* SAMTouchTracker.h */,
 				42534140169D1F63009E53DC /* SAMTouchTracker.m */,
+				42534142169DDD1F009E53DC /* SAMTouchContainer.h */,
+				42534143169DDD1F009E53DC /* SAMTouchContainer.m */,
 				42EA6B4B169B60AE005960F5 /* Supporting Files */,
 			);
 			path = sam;
@@ -269,6 +274,7 @@
 				4253413C169D0156009E53DC /* RegionSquare.m in Sources */,
 				4253413D169D0156009E53DC /* Shape.m in Sources */,
 				42534141169D1F64009E53DC /* SAMTouchTracker.m in Sources */,
+				42534144169DDD1F009E53DC /* SAMTouchContainer.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

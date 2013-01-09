@@ -9,11 +9,5 @@
 #import <Foundation/Foundation.h>
 
 @interface SAMTouchTracker : NSObject
-{
-    CFMutableDictionaryRef touchDict;
-}
-
-- (void)addTouch:(UITouch *)touch with:(id)object;
-- (id)getTouch:(UITouch *)touch;
 
 @end
