@@ -29,7 +29,12 @@
 
 - (void)startTouches:(NSSet *)touches withEvent:(UIEvent *)event withShapes:(NSMutableArray *)shapes
 {
-    
+    NSSet* beginTouches = [event allTouches];
+    for (UITouch* touch in beginTouches)
+    {
+        if (![touchContainer isInContainer:touch])
+            [touchContainer addTouch:touch with:shapes];
+    }
 }
 
 - (void)moveTouches:(NSSet *)touches withEvent:(UIEvent *)event withShapes:(NSMutableArray *)shapes
@@ -39,6 +44,12 @@
 
 - (void)endTouches:(NSSet *)touches withEvent:(UIEvent *)event withShapes:(NSMutableArray *)shapes
 {
+    NSSet* endTouches = [event allTouches];
+    for (UITouch* touch in endTouches)
+    {
+        if ([touchContainer isInContainer:touch])
+            [touchContainer removeTouch:touch];
+    }
     
 }
 

@@ -19,6 +19,9 @@
 }
 
 - (void)addTouch:(UITouch *)touch with:(id)object;
+- (void)removeTouch:(UITouch *)touch;
+
 - (const void *)getTouchClassArray:(UITouch *)touch;
+- (BOOL)isInContainer:(UITouch *)touch;
 
 @end

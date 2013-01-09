@@ -39,7 +39,17 @@
     }
 }
 
-- (const void *)getTouchClasArray:(UITouch *)touch
+- (void)removeTouch:(UITouch *)touch
+{
+    if (CFDictionaryContainsKey(touchDict, (__bridge const void *)touch))
+    {
+        void* cfArray = [self getTouchClassArray:touch];
+        free(cfArray);
+        CFDictionaryRemoveValue(touchDict, (__bridge const void *)touch);
+    }
+}
+
+- (const void *)getTouchClassArray:(UITouch *)touch
 {
     const void* cfTouch = (__bridge const void *)touch;
     if (CFDictionaryContainsKey(touchDict, cfTouch))
@@ -49,6 +59,14 @@
     }
     else
         return nil;
+}
+
+- (BOOL)isInContainer:(UITouch *)touch
+{
+    if (CFDictionaryContainsKey(touchDict, (__bridge const void *)(touch)))
+        return YES;
+    else
+        return NO;
 }
 
 @end
