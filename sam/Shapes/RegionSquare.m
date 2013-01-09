@@ -22,8 +22,8 @@
     self = [super init];
     if (self)
     {
-        CGFloat screenWidth = bounds.size.height;// - 20.0;
-        CGFloat screenHeight = bounds.size.width;// + wholeScreen.size.height - bounds.size.height;
+        CGFloat screenWidth = bounds.size.width;
+        CGFloat screenHeight = bounds.size.height;
         
         //[TREAudioModel sharedAudioModel].screenWidth = screenWidth;
         //[TREAudioModel sharedAudioModel].screenHeight = screenHeight;
