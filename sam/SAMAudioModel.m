@@ -23,7 +23,7 @@
 
 #pragma mark __STATIC_RENDER_CALLBACK__
 static OSStatus renderCallback(void *inRefCon, 
-                               AudioUniSAMnderActionFlags *ioActionFlags,
+                               AudioUnitRenderActionFlags *ioActionFlags,
                                const AudioTimeStamp *inTimeStamp,
                                UInt32 inBusNumber,
                                UInt32 inNumberFrames,
@@ -151,7 +151,7 @@ static OSStatus renderCallback(void *inRefCon,
         
         // Setup/initialize an audio unit
         [self setupAudioUnit];
-        OSErr err = AudioUnitInitialize(SAMUnit);
+        OSErr err = AudioUnitInitialize(samUnit);
         NSAssert1(err == noErr, @"Error initializing unit: %ld", err);
         
         circleBuffer[0] = (float *)malloc(windowSize * sizeof(float));
@@ -171,12 +171,12 @@ static OSStatus renderCallback(void *inRefCon,
 
 - (void)dealloc
 {
-    if (SAMUnit)
+    if (samUnit)
     {
-        AudioOutputUnitStop(SAMUnit);
-        AudioUnitUninitialize(SAMUnit);
-        AudioComponentInstanceDispose(SAMUnit);
-        SAMUnit = nil;
+        AudioOutputUnitStop(samUnit);
+        AudioUnitUninitialize(samUnit);
+        AudioComponentInstanceDispose(samUnit);
+        samUnit = nil;
     }
     
     free(audioBuffer);
@@ -249,19 +249,19 @@ static OSStatus renderCallback(void *inRefCon,
     NSAssert(defaultOutput, @"-- Can't find a default output. --");
     
     // Create new audio unit that we'll use for output
-    OSErr err = AudioComponentInstanceNew(defaultOutput, &SAMUnit);
-    NSAssert1(SAMUnit, @"Error creating unit: %ld", err);
+    OSErr err = AudioComponentInstanceNew(defaultOutput, &samUnit);
+    NSAssert1(samUnit, @"Error creating unit: %ld", err);
     
     //    UInt32 numFrames = 1024;
     //    
     //    // try setting number of frames
-    //    err = AudioUnitSetProperty(SAMUnit, kAudioUnitProperty_MaximumFramesPerSlice, kAudioUnitScope_Input, 0, &numFrames, sizeof(numFrames));
+    //    err = AudioUnitSetProperty(treUnit, kAudioUnitProperty_MaximumFramesPerSlice, kAudioUnitScope_Input, 0, &numFrames, sizeof(numFrames));
     //    NSAssert1(err == noErr, @"Error setting the maximum frame number: %ld", err);
     
     
     // Enable IO for playback
     UInt32 flag = 1;
-    err = AudioUnitSetProperty(SAMUnit, kAudioOutputUnitProperty_EnableIO, kAudioUnitScope_Output, 0, &flag, sizeof(flag));
+    err = AudioUnitSetProperty(samUnit, kAudioOutputUnitProperty_EnableIO, kAudioUnitScope_Output, 0, &flag, sizeof(flag));
     NSAssert1(err == noErr, @"Error setting output IO", err);
     
     
@@ -271,18 +271,18 @@ static OSStatus renderCallback(void *inRefCon,
     const int fourBytesPerFloat = 4;
     const int eightBitsPerByte = 8;
     
-    AudioSSAMamBasicDescription sSAMamFormat;
-    sSAMamFormat.mSampleRate =       44100;
-    sSAMamFormat.mFormatID =         kAudioFormatLinearPCM;
-    sSAMamFormat.mFormatFlags =      kAudioFormatFlagsNativeFloatPacked | kAudioFormatFlagIsNonInterleaved;
-    sSAMamFormat.mBytesPerPacket =   fourBytesPerFloat;
-    sSAMamFormat.mFramesPerPacket =  1;
-    sSAMamFormat.mBytesPerFrame =    fourBytesPerFloat;
-    sSAMamFormat.mChannelsPerFrame = 1;
-    sSAMamFormat.mBitsPerChannel =   fourBytesPerFloat * eightBitsPerByte;
+    AudioStreamBasicDescription streamFormat;
+    streamFormat.mSampleRate =       44100;
+    streamFormat.mFormatID =         kAudioFormatLinearPCM;
+    streamFormat.mFormatFlags =      kAudioFormatFlagsNativeFloatPacked | kAudioFormatFlagIsNonInterleaved;
+    streamFormat.mBytesPerPacket =   fourBytesPerFloat;
+    streamFormat.mFramesPerPacket =  1;
+    streamFormat.mBytesPerFrame =    fourBytesPerFloat;
+    streamFormat.mChannelsPerFrame = 1;
+    streamFormat.mBitsPerChannel =   fourBytesPerFloat * eightBitsPerByte;
     
-    err = AudioUnitSetProperty(SAMUnit, kAudioUnitProperty_SSAMamFormat, kAudioUnitScope_Input, 0, &sSAMamFormat, sizeof(AudioSSAMamBasicDescription));
-    NSAssert1(err == noErr, @"Error setting sSAMam format: %ld", err);
+    err = AudioUnitSetProperty(samUnit, kAudioUnitProperty_StreamFormat, kAudioUnitScope_Input, 0, &streamFormat, sizeof(AudioStreamBasicDescription));
+    NSAssert1(err == noErr, @"Error setting stream format: %ld", err);
     
     
     // Output 
@@ -292,7 +292,7 @@ static OSStatus renderCallback(void *inRefCon,
     input.inputProcRefCon = (__bridge void *)self;
     
     //
-    err = AudioUnitSetProperty(SAMUnit, kAudioUnitProperty_SeSAMnderCallback, kAudioUnitScope_Global, 0, &input, sizeof(input));
+    err = AudioUnitSetProperty(samUnit, kAudioUnitProperty_SetRenderCallback, kAudioUnitScope_Global, 0, &input, sizeof(input));
     NSAssert1(err == noErr, @"Error setting callback: %ld", err);
     
     
@@ -301,7 +301,7 @@ static OSStatus renderCallback(void *inRefCon,
     //UInt32 numFramesPerBuffer;
     //UInt32 size = sizeof(numFramesPerBuffer);
     
-    //err = AudioUnitGetProperty(SAMUnit, kAudioUnitProperty_MaximumFramesPerSlice, kAudioUnitScope_Input, 0, &numFramesPerBuffer, &size);
+    //err = AudioUnitGetProperty(treUnit, kAudioUnitProperty_MaximumFramesPerSlice, kAudioUnitScope_Input, 0, &numFramesPerBuffer, &size);
     //NSAssert1(err == noErr, @"Error getting some properties", err);
     
 }
@@ -331,7 +331,7 @@ static OSStatus renderCallback(void *inRefCon,
     
     
     // Get the audio file's number of channels.
-    AudioSSAMamBasicDescription fileAudioFormat = {0};
+    AudioStreamBasicDescription fileAudioFormat = {0};
     UInt32 formatPropertySize = sizeof (fileAudioFormat);
     
     result = ExtAudioFileGetProperty(audioFileObject, kExtAudioFileProperty_FileDataFormat, &formatPropertySize, &fileAudioFormat);
@@ -355,14 +355,14 @@ static OSStatus renderCallback(void *inRefCon,
         stftBuffer = newSTFTBuffer(windowSize, overlap, &numFFTFrames, numFramesInAudioFile);
     }
     
-    AudioSSAMamBasicDescription importFormat = {0};
+    AudioStreamBasicDescription importFormat = {0};
     
     if (channelCount == 2)
     {
         size_t bytesPerSample = sizeof (AudioUnitSampleType);
         
         // Fill the application audio format struct's fields to define a linear PCM, 
-        //        stereo, noninterleaved sSAMam at the hardware sample rate.
+        //        stereo, noninterleaved stream at the hardware sample rate.
         importFormat.mFormatID          = kAudioFormatLinearPCM;
         importFormat.mFormatFlags       = kAudioFormatFlagsAudioUnitCanonical;
         importFormat.mBytesPerPacket    = bytesPerSample;
@@ -377,7 +377,7 @@ static OSStatus renderCallback(void *inRefCon,
         size_t bytesPerSample = sizeof (AudioUnitSampleType);
         
         // Fill the application audio format struct's fields to define a linear PCM, 
-        //        stereo, noninterleaved sSAMam at the hardware sample rate.
+        //        stereo, noninterleaved stream at the hardware sample rate.
         importFormat.mFormatID          = kAudioFormatLinearPCM;
         importFormat.mFormatFlags       = kAudioFormatFlagsAudioUnitCanonical;
         importFormat.mBytesPerPacket    = bytesPerSample;
@@ -389,10 +389,10 @@ static OSStatus renderCallback(void *inRefCon,
     }
     
     
-    // Assign the appropriate mixer input bus sSAMam data format to the extended audio 
+    // Assign the appropriate mixer input bus stream data format to the extended audio 
     //        file object. This is the format used for the audio data placed into the audio 
     //        buffer in the SoundStruct data structure, which is in turn used in the 
-    //        inpuSAMnderCallback callback function.
+    //        inputRenderCallback callback function.
     result = ExtAudioFileSetProperty (audioFileObject, kExtAudioFileProperty_ClientDataFormat, sizeof(importFormat), &importFormat);
     assert(result == noErr);
     
@@ -464,7 +464,7 @@ static OSStatus renderCallback(void *inRefCon,
     AudioSessionSetActive(true);
     
     // Start playback
-    OSErr err = AudioOutputUnitStart(SAMUnit);
+    OSErr err = AudioOutputUnitStart(samUnit);
     NSAssert1(err == noErr, @"Error starting unit: %hd", err);
 }
 

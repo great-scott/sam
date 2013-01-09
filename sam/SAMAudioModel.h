@@ -11,7 +11,6 @@
 #import <Accelerate/Accelerate.h>
 #import <GLKit/GLKit.h>
 #include "FFTManager.h"
-#include "BufferManager.h"
 #include "Pvoc.h"
 
 @interface SAMAudioModel : NSObject
@@ -34,7 +33,7 @@
     Float32 blockSize;
     Float32 sampleRate;
     
-    AudioUnit SAMUnit;
+    AudioUnit samUnit;
     
     FFT* fftManager;
     STFT_BUFFER* stftBuffer;
@@ -48,8 +47,8 @@
     
     
     // Circular Buffer thingy
-    BUFFER_MANAGER* overlapBuffer;
-    BUFFER* currentBuffer;
+    //BUFFER_MANAGER* overlapBuffer;
+    //BUFFER* currentBuffer;
     
     // Polar window buffers
     POLAR_WINDOW* polarWindows[2];
