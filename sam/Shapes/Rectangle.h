@@ -1,5 +1,5 @@
 //
-//  TRERectangle.h
+//  Rectangle.h
 //  TRE
 //
 //  Created by Scott McCoid on 10/17/12.
@@ -8,7 +8,7 @@
 
 #import "Shape.h"
 
-@interface TRERectangle : TREShape
+@interface Rectangle : Shape
 
 
 - (void)setVertexPosition:(int)index forPosition:(GLKVector2)_newPosition;

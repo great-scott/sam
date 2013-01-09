@@ -1,5 +1,5 @@
 //
-//  TRERectangle.m
+//  Rectangle.m
 //  TRE
 //
 //  Created by Scott McCoid on 10/17/12.
@@ -10,7 +10,7 @@
 #define WIDTH 100.0
 #define HEIGHT 100.0
 
-@implementation TRERectangle
+@implementation Rectangle
 
 - (int)numVertices
 {

@@ -1,5 +1,5 @@
 //
-//  TRERegionSquare.m
+//  RegionSquare.m
 //  TRE
 //
 //  Created by Scott McCoid on 10/16/12.
@@ -10,7 +10,7 @@
 #define WIDTH 100.0
 #define HEIGHT 100.0
 
-@implementation TRERegionSquare
+@implementation RegionSquare
 @synthesize vertexCircles;
 @synthesize stillInside;
 @synthesize shapeColor;
@@ -41,7 +41,7 @@
         lines = [[NSMutableArray alloc] init];
         circles = [[NSMutableArray alloc] init];
         
-        fillRect = [[TRERectangle alloc] init];
+        fillRect = [[Rectangle alloc] init];
         fillRect.left = 0.0;
         fillRect.top = 0.0;
         fillRect.right = screenWidth;
@@ -60,7 +60,7 @@
         // Create all lines first
         for (int i = 0; i < self.numVertices; i++)
         {
-            TRELine *line = [[TRELine alloc] init];
+            Line *line = [[Line alloc] init];
             line.number = i;
             line.startPoint = vertices[i].position;
             if (lineWrap == self.numVertices)
@@ -83,7 +83,7 @@
         // Now create circles
         for (int i = 0; i < self.numVertices; i++)
         {
-            TREEllipse *circle = [[TREEllipse alloc] init];
+            Ellipse *circle = [[Ellipse alloc] init];
             circle.radiusX = 5.0;
             circle.radiusY = 5.0;
             circle.number = i;
@@ -113,7 +113,7 @@
     
     for (int i = 0; i < self.numVertices; i++)
     {
-        TRELine *l = [lines objectAtIndex:i];
+        Line *l = [lines objectAtIndex:i];
         l.startPoint = vertices[i].position;
         if (lineWrap == self.numVertices)
         {
@@ -122,7 +122,7 @@
         l.endPoint = vertices[lineWrap].position;
         lineWrap += 1;
         
-        TREEllipse *c = [circles objectAtIndex:i];
+        Ellipse *c = [circles objectAtIndex:i];
         c.position = vertices[i].position;
     }
     
@@ -199,7 +199,7 @@
         
     for (int i = 0; i < numLines; i++)
     {
-        TRELine* l = [lines objectAtIndex:i];
+        Line* l = [lines objectAtIndex:i];
         
         float e_y = l.endPoint.y;
         float s_y = l.startPoint.y;
@@ -260,7 +260,7 @@
     BOOL insideLine = NO;
     
     // Check if it's inside a circle first, then return if it is (want larger area for a vertex selection
-    for (TREEllipse *c in self.vertexCircles)
+    for (Ellipse *c in self.vertexCircles)
     {
         if ([c isInside:press])
         {
@@ -339,7 +339,7 @@
 
     if (index < [lines count])
     {
-        //TRELine* l = [lines objectAtIndex:index];
+        //Line* l = [lines objectAtIndex:index];
         
         switch (index) 
         {

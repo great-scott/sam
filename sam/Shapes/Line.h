@@ -1,5 +1,5 @@
 //
-//  TRELine.h
+//  Line.h
 //  TRE
 //
 //  Created by Scott McCoid on 10/16/12.
@@ -8,7 +8,7 @@
 
 #import "Shape.h"
 
-@interface TRELine : TREShape
+@interface Line : Shape
 {
     GLKVector2 startPoint, endPoint;
 }

@@ -130,6 +130,7 @@
     else if ([title isEqualToString:@"Square"])
     {
         // Edit View Add Square
+        [editViewControl addSquare];
     }
     
 }

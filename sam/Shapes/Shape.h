@@ -1,5 +1,5 @@
 //
-//  TREShape.h
+//  Shape.h
 //  TRE
 //
 //  Created by Scott McCoid on 10/11/12.
@@ -9,7 +9,7 @@
 #import <Foundation/Foundation.h>
 #import <GLKit/GLKit.h>
 
-@interface TREShape : NSObject
+@interface Shape : NSObject
 {
     NSMutableData *vertexData;
     NSMutableData *vertexColorData;

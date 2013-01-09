@@ -1,5 +1,5 @@
 //
-//  TRERegionSquare.h
+//  RegionSquare.h
 //  TRE
 //
 //  Created by Scott McCoid on 10/16/12.
@@ -19,7 +19,7 @@ typedef struct
 } Vertex;
 
 
-@interface TRERegionSquare : TREShape
+@interface RegionSquare : Shape
 {
     NSMutableArray *lines;
     NSMutableArray *circles;
@@ -27,7 +27,7 @@ typedef struct
     BOOL stillInside;
     GLKVector2 centroid;
     GLKVector2 grabPoint;
-    TRERectangle *fillRect;
+    Rectangle *fillRect;
     
     Vertex vertices[4];
     int touchLine;

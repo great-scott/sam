@@ -1,5 +1,5 @@
 //
-//  TRELine.m
+//  Line.m
 //  TRE
 //
 //  Created by Scott McCoid on 10/16/12.
@@ -8,7 +8,7 @@
 
 #import "Line.h"
 
-@implementation TRELine
+@implementation Line
 
 
 -(id)init 

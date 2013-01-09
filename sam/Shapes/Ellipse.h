@@ -1,5 +1,5 @@
 //
-//  TREEllipse.h
+//  Ellipse.h
 //  TRE
 //
 //  Created by Scott McCoid on 10/11/12.
@@ -9,7 +9,7 @@
 #import "Shape.h"
 #import <GLKit/GLKit.h>
 
-@interface TREEllipse : TREShape
+@interface Ellipse : Shape
 {
     float radiusX, radiusY;
     BOOL stillInside;

@@ -1,5 +1,5 @@
 //
-//  TREEllipse.m
+//  Ellipse.m
 //  TRE
 //
 //  Created by Scott McCoid on 10/11/12.
@@ -11,7 +11,7 @@
 #define EE_ELLIPSE_RESOLUTION 64
 #define M_TAU (2*M_PI)
 
-@implementation TREEllipse
+@implementation Ellipse
 @synthesize stillInside;
 
 -(int)numVertices 

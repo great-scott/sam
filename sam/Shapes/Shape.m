@@ -1,5 +1,5 @@
 //
-//  TREShape.m
+//  Shape.m
 //  TRE
 //
 //  Created by Scott McCoid on 10/11/12.
@@ -12,7 +12,7 @@
 static BOOL initialized = NO;
 static GLKBaseEffect *effect;
 
-@implementation TREShape
+@implementation Shape
 
 @synthesize scale;
 @synthesize position;
