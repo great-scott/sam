@@ -23,8 +23,9 @@
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
-    if (self) {
-        
+    if (self)
+    {
+        touchTracker = [[SAMTouchTracker alloc] init];
     }
     return self;
 }
@@ -80,23 +81,18 @@
 
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
 {
- 
-    
+    [touchTracker startTouches:touches withEvent:event withShapes:squares];
 }
-
 
 - (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event
 {
-
-    
+    [touchTracker moveTouches:touches withEvent:event withShapes:squares];
 }
 
 - (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
 {
-
-    
+    [touchTracker endTouches:touches withEvent:event withShapes:squares];
 }
-
 
 
 @end

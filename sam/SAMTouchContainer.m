@@ -35,18 +35,16 @@
     
     if (!CFDictionaryContainsKey(touchDict, cfTouch))       // If the dictionary doesn't have this touch
     {
-        CFDictionarySetValue(touchDict, cfTouch, cfObject);
+        CFDictionarySetValue(touchDict, cfTouch, cfArray);
     }
 }
 
-- (const void *)getTouch:(UITouch *)touch
+- (const void *)getTouchClasArray:(UITouch *)touch
 {
     const void* cfTouch = (__bridge const void *)touch;
     if (CFDictionaryContainsKey(touchDict, cfTouch))
     {
-        //BOOL test = [self isKindOfClass:[SomeClass class]];
         const void* cfArray = CFDictionaryGetValue(touchDict, cfTouch);
-        
         return cfArray;
     }
     else

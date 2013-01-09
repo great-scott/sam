@@ -9,10 +9,12 @@
 #import <UIKit/UIKit.h>
 #import <GLKit/GLKit.h>
 #import "RegionSquare.h"
+#import "SAMTouchTracker.h"
 
 @interface SAMEditViewController : GLKViewController
 {
     NSMutableArray* squares;
+    SAMTouchTracker* touchTracker;
 }
 
 - (void)addSquare;
