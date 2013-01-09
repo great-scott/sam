@@ -15,6 +15,9 @@
 		4253413D169D0156009E53DC /* Shape.m in Sources */ = {isa = PBXBuildFile; fileRef = 42534138169D0156009E53DC /* Shape.m */; };
 		42534141169D1F64009E53DC /* SAMTouchTracker.m in Sources */ = {isa = PBXBuildFile; fileRef = 42534140169D1F63009E53DC /* SAMTouchTracker.m */; };
 		42534144169DDD1F009E53DC /* SAMTouchContainer.m in Sources */ = {isa = PBXBuildFile; fileRef = 42534143169DDD1F009E53DC /* SAMTouchContainer.m */; };
+		4253415A169E285A009E53DC /* FFTManager.c in Sources */ = {isa = PBXBuildFile; fileRef = 42534156169E2859009E53DC /* FFTManager.c */; };
+		4253415B169E285A009E53DC /* Pvoc.c in Sources */ = {isa = PBXBuildFile; fileRef = 42534158169E2859009E53DC /* Pvoc.c */; };
+		42534162169E289D009E53DC /* SAMAudioModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 42534161169E289D009E53DC /* SAMAudioModel.m */; };
 		42EA6B45169B60AE005960F5 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 42EA6B44169B60AE005960F5 /* UIKit.framework */; };
 		42EA6B47169B60AE005960F5 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 42EA6B46169B60AE005960F5 /* Foundation.framework */; };
 		42EA6B49169B60AE005960F5 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 42EA6B48169B60AE005960F5 /* CoreGraphics.framework */; };
@@ -50,6 +53,12 @@
 		42534140169D1F63009E53DC /* SAMTouchTracker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SAMTouchTracker.m; sourceTree = "<group>"; };
 		42534142169DDD1F009E53DC /* SAMTouchContainer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SAMTouchContainer.h; sourceTree = "<group>"; };
 		42534143169DDD1F009E53DC /* SAMTouchContainer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SAMTouchContainer.m; sourceTree = "<group>"; };
+		42534156169E2859009E53DC /* FFTManager.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = FFTManager.c; path = DSP/FFTManager.c; sourceTree = "<group>"; };
+		42534157169E2859009E53DC /* FFTManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FFTManager.h; path = DSP/FFTManager.h; sourceTree = "<group>"; };
+		42534158169E2859009E53DC /* Pvoc.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = Pvoc.c; path = DSP/Pvoc.c; sourceTree = "<group>"; };
+		42534159169E285A009E53DC /* Pvoc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Pvoc.h; path = DSP/Pvoc.h; sourceTree = "<group>"; };
+		42534160169E289C009E53DC /* SAMAudioModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SAMAudioModel.h; sourceTree = "<group>"; };
+		42534161169E289D009E53DC /* SAMAudioModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SAMAudioModel.m; sourceTree = "<group>"; };
 		42EA6B40169B60AE005960F5 /* sam.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = sam.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		42EA6B44169B60AE005960F5 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		42EA6B46169B60AE005960F5 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -109,6 +118,17 @@
 			path = Shapes;
 			sourceTree = "<group>";
 		};
+		4253415C169E2860009E53DC /* DSP */ = {
+			isa = PBXGroup;
+			children = (
+				42534156169E2859009E53DC /* FFTManager.c */,
+				42534157169E2859009E53DC /* FFTManager.h */,
+				42534158169E2859009E53DC /* Pvoc.c */,
+				42534159169E285A009E53DC /* Pvoc.h */,
+			);
+			name = DSP;
+			sourceTree = "<group>";
+		};
 		42EA6B35169B60AE005960F5 = {
 			isa = PBXGroup;
 			children = (
@@ -141,6 +161,9 @@
 		42EA6B4A169B60AE005960F5 /* sam */ = {
 			isa = PBXGroup;
 			children = (
+				42534160169E289C009E53DC /* SAMAudioModel.h */,
+				42534161169E289D009E53DC /* SAMAudioModel.m */,
+				4253415C169E2860009E53DC /* DSP */,
 				4253412E169D0156009E53DC /* Shapes */,
 				42EA6B6A169B6416005960F5 /* Views */,
 				42EA6B69169B6400005960F5 /* ViewControllers */,
@@ -275,6 +298,9 @@
 				4253413D169D0156009E53DC /* Shape.m in Sources */,
 				42534141169D1F64009E53DC /* SAMTouchTracker.m in Sources */,
 				42534144169DDD1F009E53DC /* SAMTouchContainer.m in Sources */,
+				4253415A169E285A009E53DC /* FFTManager.c in Sources */,
+				4253415B169E285A009E53DC /* Pvoc.c in Sources */,
+				42534162169E289D009E53DC /* SAMAudioModel.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

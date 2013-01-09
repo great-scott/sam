@@ -40,7 +40,7 @@ typedef struct
 @property int touchLine;
 @property Vertex* vertexArray;
 
-- (void)setVertexPosition:(int)index forPosition:(GLKVector2)_newPosition;
+- (void)setVertexPosition:(int)index forPosition:(GLKVector2)position;
 - (BOOL)isInside:(GLKVector2)_position;
 - (id)initWithRect:(CGRect)bounds;
 - (BOOL)isInside:(UITouch *)_touch givenCorners:(CFMutableDictionaryRef)_touchDict andArea:(CFMutableDictionaryRef)_squareDict andLines:(CFMutableDictionaryRef)_lineDict andView:(UIView *)_view;
