@@ -14,9 +14,11 @@
 
 @end
 
-
 @implementation SAMEditViewController
 @synthesize context = _context;
+
+
+#pragma mark - View Initialization -
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -42,15 +44,26 @@
     
 }
 
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
+{
+    return UIDeviceOrientationLandscapeLeft;
+}
+
+
+#pragma mark - View Drawing Callback -
+
 - (void)glkView:(GLKView *)view drawInRect:(CGRect)rect
 {
     glClearColor(0.95, 0.95, 0.95, 1.0);
     glClear(GL_COLOR_BUFFER_BIT);
 }
 
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
+
+#pragma mark - View Methods -
+
+- (void)addSquare
 {
-    return UIDeviceOrientationLandscapeLeft;
+    
 }
 
 

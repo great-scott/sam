@@ -10,5 +10,10 @@
 #import <GLKit/GLKit.h>
 
 @interface SAMEditViewController : GLKViewController
+{
+    NSMutableArray* squares;
+}
+
+- (void)addSquare;
 
 @end

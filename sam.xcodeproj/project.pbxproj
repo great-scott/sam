@@ -8,6 +8,11 @@
 
 /* Begin PBXBuildFile section */
 		423D1F58169CD64B000074E3 /* FileView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 423D1F57169CD64B000074E3 /* FileView.xib */; };
+		42534139169D0156009E53DC /* Ellipse.m in Sources */ = {isa = PBXBuildFile; fileRef = 42534130169D0156009E53DC /* Ellipse.m */; };
+		4253413A169D0156009E53DC /* Line.m in Sources */ = {isa = PBXBuildFile; fileRef = 42534132169D0156009E53DC /* Line.m */; };
+		4253413B169D0156009E53DC /* Rectangle.m in Sources */ = {isa = PBXBuildFile; fileRef = 42534134169D0156009E53DC /* Rectangle.m */; };
+		4253413C169D0156009E53DC /* RegionSquare.m in Sources */ = {isa = PBXBuildFile; fileRef = 42534136169D0156009E53DC /* RegionSquare.m */; };
+		4253413D169D0156009E53DC /* Shape.m in Sources */ = {isa = PBXBuildFile; fileRef = 42534138169D0156009E53DC /* Shape.m */; };
 		42EA6B45169B60AE005960F5 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 42EA6B44169B60AE005960F5 /* UIKit.framework */; };
 		42EA6B47169B60AE005960F5 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 42EA6B46169B60AE005960F5 /* Foundation.framework */; };
 		42EA6B49169B60AE005960F5 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 42EA6B48169B60AE005960F5 /* CoreGraphics.framework */; };
@@ -29,6 +34,16 @@
 
 /* Begin PBXFileReference section */
 		423D1F57169CD64B000074E3 /* FileView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = FileView.xib; sourceTree = "<group>"; };
+		4253412F169D0156009E53DC /* Ellipse.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Ellipse.h; sourceTree = "<group>"; };
+		42534130169D0156009E53DC /* Ellipse.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Ellipse.m; sourceTree = "<group>"; };
+		42534131169D0156009E53DC /* Line.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Line.h; sourceTree = "<group>"; };
+		42534132169D0156009E53DC /* Line.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Line.m; sourceTree = "<group>"; };
+		42534133169D0156009E53DC /* Rectangle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Rectangle.h; sourceTree = "<group>"; };
+		42534134169D0156009E53DC /* Rectangle.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Rectangle.m; sourceTree = "<group>"; };
+		42534135169D0156009E53DC /* RegionSquare.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RegionSquare.h; sourceTree = "<group>"; };
+		42534136169D0156009E53DC /* RegionSquare.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RegionSquare.m; sourceTree = "<group>"; };
+		42534137169D0156009E53DC /* Shape.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Shape.h; sourceTree = "<group>"; };
+		42534138169D0156009E53DC /* Shape.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Shape.m; sourceTree = "<group>"; };
 		42EA6B40169B60AE005960F5 /* sam.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = sam.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		42EA6B44169B60AE005960F5 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		42EA6B46169B60AE005960F5 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -71,6 +86,23 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		4253412E169D0156009E53DC /* Shapes */ = {
+			isa = PBXGroup;
+			children = (
+				4253412F169D0156009E53DC /* Ellipse.h */,
+				42534130169D0156009E53DC /* Ellipse.m */,
+				42534131169D0156009E53DC /* Line.h */,
+				42534132169D0156009E53DC /* Line.m */,
+				42534133169D0156009E53DC /* Rectangle.h */,
+				42534134169D0156009E53DC /* Rectangle.m */,
+				42534135169D0156009E53DC /* RegionSquare.h */,
+				42534136169D0156009E53DC /* RegionSquare.m */,
+				42534137169D0156009E53DC /* Shape.h */,
+				42534138169D0156009E53DC /* Shape.m */,
+			);
+			path = Shapes;
+			sourceTree = "<group>";
+		};
 		42EA6B35169B60AE005960F5 = {
 			isa = PBXGroup;
 			children = (
@@ -103,6 +135,7 @@
 		42EA6B4A169B60AE005960F5 /* sam */ = {
 			isa = PBXGroup;
 			children = (
+				4253412E169D0156009E53DC /* Shapes */,
 				42EA6B6A169B6416005960F5 /* Views */,
 				42EA6B69169B6400005960F5 /* ViewControllers */,
 				42EA6B53169B60AE005960F5 /* SAMAppDelegate.h */,
@@ -225,6 +258,11 @@
 				42EA6B61169B60AE005960F5 /* SAMViewController.m in Sources */,
 				42EA6B75169B64A0005960F5 /* SAMEditViewController.m in Sources */,
 				42EA6B7E169B7C21005960F5 /* SAMToolbarViewController.m in Sources */,
+				42534139169D0156009E53DC /* Ellipse.m in Sources */,
+				4253413A169D0156009E53DC /* Line.m in Sources */,
+				4253413B169D0156009E53DC /* Rectangle.m in Sources */,
+				4253413C169D0156009E53DC /* RegionSquare.m in Sources */,
+				4253413D169D0156009E53DC /* Shape.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

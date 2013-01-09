@@ -34,6 +34,7 @@
     return UIDeviceOrientationLandscapeLeft;
 }
 
+
 #pragma mark - Main View Initialization - 
 
 - (void)setupView
@@ -58,6 +59,7 @@
     
     [self.view addSubview:toolbarView];
 }
+
 
 #pragma mark - File View Methods - 
 
@@ -109,6 +111,7 @@
     [self animateFileView:NO];
 }
 
+
 # pragma mark - Toolbar Button Callback - 
 
 - (IBAction)toolbarButtonPressed:(UIButton *)sender
@@ -130,6 +133,7 @@
     }
     
 }
+
 
 #pragma mark - TableView Delegate Methods
 
