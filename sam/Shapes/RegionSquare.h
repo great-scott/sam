@@ -6,11 +6,10 @@
 //  Copyright (c) 2012 Georgia Institute of Technology. All rights reserved.
 //
 
-#import "TREShape.h"
-#import "TRELine.h"
-#import "TREEllipse.h"
-#import "TRERectangle.h"
-#import "TREAudioModel.h"
+#import "Shape.h"
+#import "Line.h"
+#import "Ellipse.h"
+#import "Rectangle.h"
 
 
 typedef struct 

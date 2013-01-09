@@ -6,7 +6,7 @@
 //  Copyright (c) 2012 Georgia Institute of Technology. All rights reserved.
 //
 
-#import "TRERegionSquare.h"
+#import "RegionSquare.h"
 #define WIDTH 100.0
 #define HEIGHT 100.0
 
@@ -25,8 +25,8 @@
         CGFloat screenWidth = bounds.size.height;// - 20.0;
         CGFloat screenHeight = bounds.size.width;// + wholeScreen.size.height - bounds.size.height;
         
-        [TREAudioModel sharedAudioModel].screenWidth = screenWidth;
-        [TREAudioModel sharedAudioModel].screenHeight = screenHeight;
+        //[TREAudioModel sharedAudioModel].screenWidth = screenWidth;
+        //[TREAudioModel sharedAudioModel].screenHeight = screenHeight;
         
         // Set initial vertices 
         vertices[0].position = GLKVector2Make(0, HEIGHT);
@@ -126,7 +126,7 @@
         c.position = vertices[i].position;
     }
     
-    [[TREAudioModel sharedAudioModel] setBounds:[self getSideBounds] andRight:[self getVerticalBounds]];
+    //[[TREAudioModel sharedAudioModel] setBounds:[self getSideBounds] andRight:[self getVerticalBounds]];
 
 }
 

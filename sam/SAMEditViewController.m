@@ -42,6 +42,8 @@
     view.drawableMultisample = GLKViewDrawableMultisample4X;
     view.multipleTouchEnabled = YES;
     
+    squares = [[NSMutableArray alloc] init];
+    
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
@@ -56,6 +58,9 @@
 {
     glClearColor(0.95, 0.95, 0.95, 1.0);
     glClear(GL_COLOR_BUFFER_BIT);
+    
+    if ([squares count] > 0)
+        [squares makeObjectsPerformSelector:@selector(render)];
 }
 
 
@@ -63,7 +68,11 @@
 
 - (void)addSquare
 {
+    CGRect bounds = self.view.bounds;
+    RegionSquare *square = [[RegionSquare alloc] initWithRect:bounds];
+    square.position = GLKVector2Make(150.0, 200.0);
     
+    [squares addObject:square];
 }
 
 

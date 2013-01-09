@@ -6,7 +6,7 @@
 //  Copyright (c) 2012 Georgia Institute of Technology. All rights reserved.
 //
 
-#import "TREShape.h"
+#import "Shape.h"
 #define M_TAU (2 * M_PI)
 
 static BOOL initialized = NO;

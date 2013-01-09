@@ -6,8 +6,7 @@
 //  Copyright (c) 2012 Georgia Institute of Technology. All rights reserved.
 //
 
-#import "TREShape.h"
-#import "TREEllipseView.h"
+#import "Shape.h"
 #import <GLKit/GLKit.h>
 
 @interface TREEllipse : TREShape

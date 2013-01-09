@@ -6,7 +6,7 @@
 //  Copyright (c) 2012 Georgia Institute of Technology. All rights reserved.
 //
 
-#import "TRELine.h"
+#import "Line.h"
 
 @implementation TRELine
 

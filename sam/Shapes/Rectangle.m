@@ -6,7 +6,7 @@
 //  Copyright (c) 2012 Georgia Institute of Technology. All rights reserved.
 //
 
-#import "TRERectangle.h"
+#import "Rectangle.h"
 #define WIDTH 100.0
 #define HEIGHT 100.0
 

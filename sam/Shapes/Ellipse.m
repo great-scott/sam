@@ -6,7 +6,7 @@
 //  Copyright (c) 2012 Georgia Institute of Technology. All rights reserved.
 //
 
-#import "TREEllipse.h"
+#import "Ellipse.h"
 
 #define EE_ELLIPSE_RESOLUTION 64
 #define M_TAU (2*M_PI)
