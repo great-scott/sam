@@ -28,14 +28,14 @@
 {
     const void* cfTouch = (__bridge const void *)touch;
     const void* cfObject = (__bridge const void *)object;
-    const void** cfArray = malloc(sizeof(void *) * 2);
-    
-    cfArray[0] = (__bridge const void *)[object class];
-    cfArray[1] = cfObject;
+//    const void** cfArray = malloc(sizeof(void *) * 2);
+//    
+//    cfArray[0] = (__bridge const void *)[object class];
+//    cfArray[1] = cfObject;
     
     if (!CFDictionaryContainsKey(touchDict, cfTouch))       // If the dictionary doesn't have this touch
     {
-        CFDictionarySetValue(touchDict, cfTouch, cfArray);
+        CFDictionarySetValue(touchDict, cfTouch, cfObject);
     }
 }
 
@@ -43,8 +43,8 @@
 {
     if (CFDictionaryContainsKey(touchDict, (__bridge const void *)touch))
     {
-        void* cfArray = [self getTouchClassArray:touch];
-        free(cfArray);
+        //void* cfArray = [self getTouchClassArray:touch];
+        //free(cfArray);
         CFDictionaryRemoveValue(touchDict, (__bridge const void *)touch);
     }
 }
@@ -54,8 +54,8 @@
     const void* cfTouch = (__bridge const void *)touch;
     if (CFDictionaryContainsKey(touchDict, cfTouch))
     {
-        const void* cfArray = CFDictionaryGetValue(touchDict, cfTouch);
-        return cfArray;
+        const void* cfObject = CFDictionaryGetValue(touchDict, cfTouch);
+        return cfObject;
     }
     else
         return nil;

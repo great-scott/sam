@@ -26,6 +26,7 @@
     if (self)
     {
         touchTracker = [[SAMTouchTracker alloc] init];
+        touchTracker.view = self.view;                      // set the touch tracker's view to this view for easy reference
     }
     return self;
 }

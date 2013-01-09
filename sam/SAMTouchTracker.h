@@ -9,10 +9,12 @@
 
 #import <Foundation/Foundation.h>
 #import "SAMTouchContainer.h"
+#import "RegionSquare.h"
 
 @interface SAMTouchTracker : NSObject
 
 @property (nonatomic, strong) SAMTouchContainer* touchContainer;
+@property (nonatomic, strong) UIView* view;
 
 - (void)startTouches:(NSSet *)touches withEvent:(UIEvent *)event withShapes:(NSMutableArray *)shapes;
 - (void)moveTouches:(NSSet *)touches withEvent:(UIEvent *)event withShapes:(NSMutableArray *)shapes;

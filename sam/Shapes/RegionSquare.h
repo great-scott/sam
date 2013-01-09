@@ -38,6 +38,7 @@ typedef struct
 @property GLKVector4 shapeColor;
 @property GLKVector2 grabPoint;
 @property int touchLine;
+@property Vertex* vertexArray;
 
 - (void)setVertexPosition:(int)index forPosition:(GLKVector2)_newPosition;
 - (BOOL)isInside:(GLKVector2)_position;

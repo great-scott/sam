@@ -58,7 +58,7 @@
     GLKVector2 difference = GLKVector2Subtract(self.position, _coordinates);
     float distance = sqrt(GLKVector2DotProduct(difference, difference));
     
-    if (distance < self.radiusX + 25.0)
+    if (distance < self.radiusX + 15.0)
     {
         return YES;
     }

@@ -16,6 +16,7 @@
 @synthesize shapeColor;
 @synthesize grabPoint;
 @synthesize touchLine;
+@synthesize vertexArray;
 
 - (id)initWithRect:(CGRect)bounds
 {
@@ -25,14 +26,14 @@
         CGFloat screenWidth = bounds.size.width;
         CGFloat screenHeight = bounds.size.height;
         
-        //[TREAudioModel sharedAudioModel].screenWidth = screenWidth;
-        //[TREAudioModel sharedAudioModel].screenHeight = screenHeight;
-        
         // Set initial vertices 
         vertices[0].position = GLKVector2Make(0, HEIGHT);
         vertices[1].position = GLKVector2Make(WIDTH, HEIGHT);
         vertices[2].position = GLKVector2Make(WIDTH, 0);
         vertices[3].position = GLKVector2Make(0, 0);
+        
+        // Setup pointer for first point in array;
+        vertexArray = &vertices[0];
         
         // set initial centroid value
         centroid = GLKVector2Make(WIDTH / 2.0, HEIGHT / 2.0);
@@ -371,6 +372,7 @@
     
     grabPoint = GLKVector2Add(differenceOfPositions, grabPoint);
 }
+
 
 - (int)numVertices
 {
