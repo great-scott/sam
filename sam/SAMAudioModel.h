@@ -1,6 +1,6 @@
 //
-//  TREAudioModel.h
-//  TRE
+//  SAMAudioModel.h
+//  SAM
 //
 //  Created by Scott McCoid on 10/22/12.
 //  Copyright (c) 2012 Georgia Institute of Technology. All rights reserved.
@@ -14,7 +14,7 @@
 #include "BufferManager.h"
 #include "Pvoc.h"
 
-@interface TREAudioModel : NSObject
+@interface SAMAudioModel : NSObject
 {
     float *audioBuffer;
     float normalizationFactor;
@@ -34,7 +34,7 @@
     Float32 blockSize;
     Float32 sampleRate;
     
-    AudioUnit treUnit;
+    AudioUnit SAMUnit;
     
     FFT* fftManager;
     STFT_BUFFER* stftBuffer;
@@ -78,7 +78,7 @@
 @property int screenWidth;
 @property int screenHeight;
 
-+ (TREAudioModel *)sharedAudioModel;
++ (SAMAudioModel *)sharedAudioModel;
 - (void)openAudioFile:(CFURLRef)fileToOpen;
 - (void)calculateSTFT;
 - (void)startAudioSession;
