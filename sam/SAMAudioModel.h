@@ -80,7 +80,10 @@
 + (SAMAudioModel *)sharedAudioModel;
 - (void)openAudioFile:(CFURLRef)fileToOpen;
 - (void)calculateSTFT;
-- (void)startAudioSession;
 - (void)setBounds:(GLKVector2)_leftBound andRight:(GLKVector2)_rightBound;
+
+// Audio Playback (aka DAC) On/Off
+- (void)startAudioPlayback;
+- (void)stopAudioPlayback;
 
 @end

@@ -27,6 +27,8 @@
 	[self setupView];
     [self setupFileView];
     [self setupFileDirectory];
+    
+    audioStatus = NO;
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
@@ -132,7 +134,20 @@
         // Edit View Add Square
         [editViewControl addSquare];
     }
-    
+    else if ([title isEqualToString:@"DAC"])
+    {
+        // Turn On/Off Audio Unit / Session
+        if (audioStatus == NO)
+        {
+            sender.backgroundColor = [[UIColor alloc] initWithRed:0.0 green:0.8 blue:0.2 alpha:1.0];
+            audioStatus = YES;
+        }
+        else
+        {
+            sender.backgroundColor = [UIColor lightGrayColor];
+            audioStatus = NO;
+        }
+    }
 }
 
 

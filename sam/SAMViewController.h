@@ -18,6 +18,7 @@
     
     CFURLRef fileUrl;
     BOOL fileSelected;
+    BOOL audioStatus;   // whether the audio is on or off (YES = on, NO = off);
 }
 
 @property (nonatomic, strong) SAMEditViewController* editViewControl;

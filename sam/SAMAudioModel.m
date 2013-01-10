@@ -151,14 +151,12 @@ static OSStatus renderCallback(void *inRefCon,
         
         // Setup/initialize an audio unit
         [self setupAudioUnit];
-        OSErr err = AudioUnitInitialize(samUnit);
-        NSAssert1(err == noErr, @"Error initializing unit: %ld", err);
         
         circleBuffer[0] = (float *)malloc(windowSize * sizeof(float));
         circleBuffer[1] = (float *)malloc(windowSize * sizeof(float));
         
         // Circular Buffer thingy
-        overlapBuffer = createBufferManager(overlap, windowSize);
+        //overlapBuffer = createBufferManager(overlap, windowSize);
         
         // Polar window buffers
         polarWindows[0] = newPolarWindow(windowSize / 2);
@@ -191,14 +189,14 @@ static OSStatus renderCallback(void *inRefCon,
     freeSTFTBuffer(stftBuffer);
     
     // Free buffer manager / overlap buffer
-    freeBufferManager(overlapBuffer);
+    //freeBufferManager(overlapBuffer);
     
     freePolarWindow(polarWindows[0]);
     freePolarWindow(polarWindows[1]);
 }
 
 
-#pragma mark __AU_INIT__
+#pragma mark - Audio Unit Init -
 
 - (void)setupAudioSession
 {
@@ -308,7 +306,7 @@ static OSStatus renderCallback(void *inRefCon,
 
 
 
-#pragma mark __PUBLIC_API__
+#pragma mark - Public Methods -
 
 - (void)openAudioFile:(CFURLRef)fileToOpen
 {
@@ -459,13 +457,18 @@ static OSStatus renderCallback(void *inRefCon,
     computeSTFT(fftManager, stftBuffer, audioBuffer);
 }
 
-- (void)startAudioSession
+- (void)startAudioPlayback
 {
     AudioSessionSetActive(true);
     
     // Start playback
     OSErr err = AudioOutputUnitStart(samUnit);
     NSAssert1(err == noErr, @"Error starting unit: %hd", err);
+}
+
+- (void)stopAudioPlayback
+{
+    AudioSessionSetActive(false);
 }
 
 - (void)setBounds:(GLKVector2)sideBounds andRight:(GLKVector2)verticalBounds

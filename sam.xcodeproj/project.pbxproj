@@ -16,8 +16,9 @@
 		42534141169D1F64009E53DC /* SAMTouchTracker.m in Sources */ = {isa = PBXBuildFile; fileRef = 42534140169D1F63009E53DC /* SAMTouchTracker.m */; };
 		42534144169DDD1F009E53DC /* SAMTouchContainer.m in Sources */ = {isa = PBXBuildFile; fileRef = 42534143169DDD1F009E53DC /* SAMTouchContainer.m */; };
 		4253415A169E285A009E53DC /* FFTManager.c in Sources */ = {isa = PBXBuildFile; fileRef = 42534156169E2859009E53DC /* FFTManager.c */; };
-		4253415B169E285A009E53DC /* Pvoc.c in Sources */ = {isa = PBXBuildFile; fileRef = 42534158169E2859009E53DC /* Pvoc.c */; };
 		42534162169E289D009E53DC /* SAMAudioModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 42534161169E289D009E53DC /* SAMAudioModel.m */; };
+		42534164169E2E0D009E53DC /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 42534163169E2E0D009E53DC /* Accelerate.framework */; };
+		42534166169E2E2E009E53DC /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 42534165169E2E2E009E53DC /* AudioToolbox.framework */; };
 		42EA6B45169B60AE005960F5 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 42EA6B44169B60AE005960F5 /* UIKit.framework */; };
 		42EA6B47169B60AE005960F5 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 42EA6B46169B60AE005960F5 /* Foundation.framework */; };
 		42EA6B49169B60AE005960F5 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 42EA6B48169B60AE005960F5 /* CoreGraphics.framework */; };
@@ -55,10 +56,10 @@
 		42534143169DDD1F009E53DC /* SAMTouchContainer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SAMTouchContainer.m; sourceTree = "<group>"; };
 		42534156169E2859009E53DC /* FFTManager.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = FFTManager.c; path = DSP/FFTManager.c; sourceTree = "<group>"; };
 		42534157169E2859009E53DC /* FFTManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FFTManager.h; path = DSP/FFTManager.h; sourceTree = "<group>"; };
-		42534158169E2859009E53DC /* Pvoc.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = Pvoc.c; path = DSP/Pvoc.c; sourceTree = "<group>"; };
-		42534159169E285A009E53DC /* Pvoc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Pvoc.h; path = DSP/Pvoc.h; sourceTree = "<group>"; };
 		42534160169E289C009E53DC /* SAMAudioModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SAMAudioModel.h; sourceTree = "<group>"; };
 		42534161169E289D009E53DC /* SAMAudioModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SAMAudioModel.m; sourceTree = "<group>"; };
+		42534163169E2E0D009E53DC /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
+		42534165169E2E2E009E53DC /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 		42EA6B40169B60AE005960F5 /* sam.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = sam.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		42EA6B44169B60AE005960F5 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		42EA6B46169B60AE005960F5 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -90,6 +91,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				42534166169E2E2E009E53DC /* AudioToolbox.framework in Frameworks */,
+				42534164169E2E0D009E53DC /* Accelerate.framework in Frameworks */,
 				42EA6B79169B64BF005960F5 /* OpenGLES.framework in Frameworks */,
 				42EA6B77169B64B8005960F5 /* GLKit.framework in Frameworks */,
 				42EA6B45169B60AE005960F5 /* UIKit.framework in Frameworks */,
@@ -123,8 +126,6 @@
 			children = (
 				42534156169E2859009E53DC /* FFTManager.c */,
 				42534157169E2859009E53DC /* FFTManager.h */,
-				42534158169E2859009E53DC /* Pvoc.c */,
-				42534159169E285A009E53DC /* Pvoc.h */,
 			);
 			name = DSP;
 			sourceTree = "<group>";
@@ -149,6 +150,8 @@
 		42EA6B43169B60AE005960F5 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				42534165169E2E2E009E53DC /* AudioToolbox.framework */,
+				42534163169E2E0D009E53DC /* Accelerate.framework */,
 				42EA6B78169B64BF005960F5 /* OpenGLES.framework */,
 				42EA6B76169B64B8005960F5 /* GLKit.framework */,
 				42EA6B44169B60AE005960F5 /* UIKit.framework */,
@@ -299,7 +302,6 @@
 				42534141169D1F64009E53DC /* SAMTouchTracker.m in Sources */,
 				42534144169DDD1F009E53DC /* SAMTouchContainer.m in Sources */,
 				4253415A169E285A009E53DC /* FFTManager.c in Sources */,
-				4253415B169E285A009E53DC /* Pvoc.c in Sources */,
 				42534162169E289D009E53DC /* SAMAudioModel.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
