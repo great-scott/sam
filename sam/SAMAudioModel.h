@@ -11,7 +11,6 @@
 #import <Accelerate/Accelerate.h>
 #import <GLKit/GLKit.h>
 #include "FFTManager.h"
-#include "Pvoc.h"
 
 @interface SAMAudioModel : NSObject
 {
@@ -67,6 +66,9 @@
     int playbackRight;
     int playbackTop;
     int playbackBottom;
+    
+    //-------------------------------
+    BOOL fileLoaded;
 }
 
 @property int windowSize;

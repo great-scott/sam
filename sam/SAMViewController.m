@@ -29,6 +29,7 @@
     [self setupFileDirectory];
     
     audioStatus = NO;
+    audioModel = [[SAMAudioModel alloc] init];
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
@@ -139,11 +140,13 @@
         // Turn On/Off Audio Unit / Session
         if (audioStatus == NO)
         {
+            [audioModel startAudioPlayback];
             sender.backgroundColor = [[UIColor alloc] initWithRed:0.0 green:0.8 blue:0.2 alpha:1.0];
             audioStatus = YES;
         }
         else
         {
+            [audioModel stopAudioPlayback];
             sender.backgroundColor = [UIColor lightGrayColor];
             audioStatus = NO;
         }

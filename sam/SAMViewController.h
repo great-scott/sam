@@ -10,6 +10,7 @@
 
 #import "SAMEditViewController.h"
 #import "SAMToolbarViewController.h"
+#import "SAMAudioModel.h"
 
 @interface SAMViewController : UIViewController <SAMToolbarViewControllerDelegate, UITableViewDataSource, UITableViewDelegate>
 {
@@ -19,6 +20,8 @@
     CFURLRef fileUrl;
     BOOL fileSelected;
     BOOL audioStatus;   // whether the audio is on or off (YES = on, NO = off);
+    
+    SAMAudioModel* audioModel;
 }
 
 @property (nonatomic, strong) SAMEditViewController* editViewControl;

@@ -21,7 +21,7 @@
 @synthesize screenHeight;
 
 
-#pragma mark __STATIC_RENDER_CALLBACK__
+#pragma mark - Render Callback -
 static OSStatus renderCallback(void *inRefCon, 
                                AudioUnitRenderActionFlags *ioActionFlags,
                                const AudioTimeStamp *inTimeStamp,
@@ -40,67 +40,70 @@ static OSStatus renderCallback(void *inRefCon,
 //    fac = (float) (this->hopSize * TWO_PI / this->sampleRate);
 //    scale = this->sampleRate / this->windowSize;
     
-    // ------------------------------------------------------------------------------------
-    if (this->dspTick == 0)
+    if (this->fileLoaded == YES)
     {
-        FFT_FRAME* frame = thisSTFTBuffer->buffer[this->counter];
-        memcpy(frame->polarWindowMod, frame->polarWindow, sizeof(POLAR_WINDOW));
-        this->polarWindows[this->currentPolar] = frame->polarWindowMod;
-        
-        // try zeroing out stuff
-        for (int w = 0; w < this->windowSize / 2; w++)
+        // ------------------------------------------------------------------------------------
+        if (this->dspTick == 0)
         {
-            if (w > this->playbackBottom || w < this->playbackTop)              
+            FFT_FRAME* frame = thisSTFTBuffer->buffer[this->counter];
+            memcpy(frame->polarWindowMod, frame->polarWindow, sizeof(POLAR_WINDOW));
+            this->polarWindows[this->currentPolar] = frame->polarWindowMod;
+        
+            // try zeroing out stuff
+            for (int w = 0; w < this->windowSize / 2; w++)
             {
-                this->polarWindows[this->currentPolar]->buffer[w].mag = 0.0;
-                this->polarWindows[this->currentPolar]->buffer[w].phase = 0.0;
+                if (w > this->playbackBottom || w < this->playbackTop)              
+                {
+                    this->polarWindows[this->currentPolar]->buffer[w].mag = 0.0;
+                    this->polarWindows[this->currentPolar]->buffer[w].phase = 0.0;
+                }
             }
-        }
         
-        pvUnwrapPhase(this->polarWindows[this->currentPolar]);
-        pvFixPhase(this->polarWindows[!this->currentPolar], this->polarWindows[this->currentPolar], 0.5);
-        inverseFFT(this->fftManager, frame, this->circleBuffer[0]);
+            pvUnwrapPhase(this->polarWindows[this->currentPolar]);
+            pvFixPhase(this->polarWindows[!this->currentPolar], this->polarWindows[this->currentPolar], 0.5);
+            inverseFFT(this->fftManager, frame, this->circleBuffer[0]);
                 
-        // shift and overlap add new buffer
-        int diff = this->windowSize - this->hopSize;
-        for (int i = 0; i < diff; i++)
-            this->circleBuffer[1][i] = this->circleBuffer[1][diff + i] + this->circleBuffer[0][i];
-            //this->circleBuffer[1][i] = this->circleBuffer[1][diff + i] + this->circleBuffer[0][(i + this->modAmount) % this->windowSize];
+            // shift and overlap add new buffer
+            int diff = this->windowSize - this->hopSize;
+            for (int i = 0; i < diff; i++)
+                this->circleBuffer[1][i] = this->circleBuffer[1][diff + i] + this->circleBuffer[0][i];
+                //this->circleBuffer[1][i] = this->circleBuffer[1][diff + i] + this->circleBuffer[0][(i + this->modAmount) % this->windowSize];
         
-        // assign remaining values to playback buffer
-        for (int i = 0; i < this->hopSize; i++)
-            this->circleBuffer[1][diff + i] = this->circleBuffer[0][diff + i];
+            // assign remaining values to playback buffer
+            for (int i = 0; i < this->hopSize; i++)
+                this->circleBuffer[1][diff + i] = this->circleBuffer[0][diff + i];
         
-        this->currentPolar = !this->currentPolar;
-    }
+            this->currentPolar = !this->currentPolar;
+        }
     
-    for (int frameCounter = 0; frameCounter < inNumberFrames; frameCounter++)
-    {   
-        buffer[frameCounter] = this->circleBuffer[1][frameCounter + this->dspTick];
-        //printf("%f\n", buffer[frameCounter]);
-    }
+        for (int frameCounter = 0; frameCounter < inNumberFrames; frameCounter++)
+        {   
+            buffer[frameCounter] = this->circleBuffer[1][frameCounter + this->dspTick];
+            //printf("%f\n", buffer[frameCounter]);
+        }
     
-    // ------------------------------------------------------------------------------------
-    // Deal with progressing time / dsp ticks
-    this->dspTick += inNumberFrames; 
-    this->modAmount = (this->modAmount + inNumberFrames) % this->windowSize;
+        // ------------------------------------------------------------------------------------
+        // Deal with progressing time / dsp ticks
+        this->dspTick += inNumberFrames; 
+        this->modAmount = (this->modAmount + inNumberFrames) % this->windowSize;
     
-    if (this->dspTick >= this->hopSize)
-    {
-        this->dspTick = 0;
+        if (this->dspTick >= this->hopSize)
+        {
+            this->dspTick = 0;
         
-        if (this->rateCounter % this->rate == 0)
-            this->counter++;
+            if (this->rateCounter % this->rate == 0)
+                this->counter++;
         
-        this->rateCounter++;
+            this->rateCounter++;
+        }
+        if (this->counter >= this->playbackRight)
+            this->counter = this->playbackLeft;
     }
-    if (this->counter >= this->playbackRight)
-        this->counter = this->playbackLeft;
    
     return noErr;
 }
 
-#pragma mark __STATIC_MODEL_INSTANCE__
+#pragma mark - Static Model Method -
 
 + (SAMAudioModel *)sharedAudioModel
 {
@@ -114,7 +117,7 @@ static OSStatus renderCallback(void *inRefCon,
     return sharedAudioModel;
 }
 
-#pragma mark __INIT_DEALLOC__
+#pragma mark - Initialization -
 
 - (id)init
 {
@@ -162,10 +165,17 @@ static OSStatus renderCallback(void *inRefCon,
         polarWindows[0] = newPolarWindow(windowSize / 2);
         polarWindows[1] = newPolarWindow(windowSize / 2);
         currentPolar = 0;
+        
+        
+        //-----------------------------------------------
+        fileLoaded = NO;
     }
     
     return self;
 }
+
+
+#pragma mark - Dealloc -
 
 - (void)dealloc
 {
@@ -201,19 +211,14 @@ static OSStatus renderCallback(void *inRefCon,
 - (void)setupAudioSession
 {
     OSStatus status;
-//    Float64 sampleRate = 44100;
-//    Float32 bufferSize = 512;
     Float32 bufferDuration = (blockSize + 0.5) / sampleRate;           // TODO: add 0.5 to blockSize?
     UInt32 category = kAudioSessionCategory_MediaPlayback;
     
     status = AudioSessionInitialize(NULL, NULL, NULL, (__bridge void *)self);
     status = AudioSessionSetProperty(kAudioSessionProperty_AudioCategory, sizeof(category), &category);
     status = AudioSessionSetProperty(kAudioSessionProperty_PreferredHardwareSampleRate, sizeof(sampleRate), &sampleRate);
-    
     status = AudioSessionSetProperty(kAudioSessionProperty_PreferredHardwareIOBufferDuration, sizeof(bufferDuration), &bufferDuration);
-    
     status = AudioSessionSetActive(true);
-    
     
     //--------- Check everything
     Float64 audioSessionProperty64 = 0;
@@ -248,22 +253,12 @@ static OSStatus renderCallback(void *inRefCon,
     
     // Create new audio unit that we'll use for output
     OSErr err = AudioComponentInstanceNew(defaultOutput, &samUnit);
-    NSAssert1(samUnit, @"Error creating unit: %ld", err);
-    
-    //    UInt32 numFrames = 1024;
-    //    
-    //    // try setting number of frames
-    //    err = AudioUnitSetProperty(treUnit, kAudioUnitProperty_MaximumFramesPerSlice, kAudioUnitScope_Input, 0, &numFrames, sizeof(numFrames));
-    //    NSAssert1(err == noErr, @"Error setting the maximum frame number: %ld", err);
-    
+    NSAssert1(samUnit, @"Error creating unit: %hd", err);
     
     // Enable IO for playback
     UInt32 flag = 1;
     err = AudioUnitSetProperty(samUnit, kAudioOutputUnitProperty_EnableIO, kAudioUnitScope_Output, 0, &flag, sizeof(flag));
     NSAssert1(err == noErr, @"Error setting output IO", err);
-    
-    
-    
     
     // set format to 32 bit, single channel, floating point, linear PCM
     const int fourBytesPerFloat = 4;
@@ -280,27 +275,15 @@ static OSStatus renderCallback(void *inRefCon,
     streamFormat.mBitsPerChannel =   fourBytesPerFloat * eightBitsPerByte;
     
     err = AudioUnitSetProperty(samUnit, kAudioUnitProperty_StreamFormat, kAudioUnitScope_Input, 0, &streamFormat, sizeof(AudioStreamBasicDescription));
-    NSAssert1(err == noErr, @"Error setting stream format: %ld", err);
-    
+    NSAssert1(err == noErr, @"Error setting stream format: %hd", err);
     
     // Output 
     // Setup rendering function on the unit
     AURenderCallbackStruct input;
     input.inputProc = renderCallback;
     input.inputProcRefCon = (__bridge void *)self;
-    
-    //
     err = AudioUnitSetProperty(samUnit, kAudioUnitProperty_SetRenderCallback, kAudioUnitScope_Global, 0, &input, sizeof(input));
-    NSAssert1(err == noErr, @"Error setting callback: %ld", err);
-    
-    
-    
-    // check some stuff
-    //UInt32 numFramesPerBuffer;
-    //UInt32 size = sizeof(numFramesPerBuffer);
-    
-    //err = AudioUnitGetProperty(treUnit, kAudioUnitProperty_MaximumFramesPerSlice, kAudioUnitScope_Input, 0, &numFramesPerBuffer, &size);
-    //NSAssert1(err == noErr, @"Error getting some properties", err);
+    NSAssert1(err == noErr, @"Error setting callback: %hd", err);
     
 }
 
