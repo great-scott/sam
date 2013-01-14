@@ -19,6 +19,8 @@
 		42534162169E289D009E53DC /* SAMAudioModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 42534161169E289D009E53DC /* SAMAudioModel.m */; };
 		42534164169E2E0D009E53DC /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 42534163169E2E0D009E53DC /* Accelerate.framework */; };
 		42534166169E2E2E009E53DC /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 42534165169E2E2E009E53DC /* AudioToolbox.framework */; };
+		42D4489F16A4BCFF00B7B195 /* RegionPolygon.m in Sources */ = {isa = PBXBuildFile; fileRef = 42D4489E16A4BCFF00B7B195 /* RegionPolygon.m */; };
+		42D448A216A4BFAF00B7B195 /* Vertex.m in Sources */ = {isa = PBXBuildFile; fileRef = 42D448A116A4BFAF00B7B195 /* Vertex.m */; };
 		42EA6B45169B60AE005960F5 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 42EA6B44169B60AE005960F5 /* UIKit.framework */; };
 		42EA6B47169B60AE005960F5 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 42EA6B46169B60AE005960F5 /* Foundation.framework */; };
 		42EA6B49169B60AE005960F5 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 42EA6B48169B60AE005960F5 /* CoreGraphics.framework */; };
@@ -60,6 +62,10 @@
 		42534161169E289D009E53DC /* SAMAudioModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SAMAudioModel.m; sourceTree = "<group>"; };
 		42534163169E2E0D009E53DC /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
 		42534165169E2E2E009E53DC /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
+		42D4489D16A4BCFF00B7B195 /* RegionPolygon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RegionPolygon.h; sourceTree = "<group>"; };
+		42D4489E16A4BCFF00B7B195 /* RegionPolygon.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RegionPolygon.m; sourceTree = "<group>"; };
+		42D448A016A4BFAF00B7B195 /* Vertex.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Vertex.h; sourceTree = "<group>"; };
+		42D448A116A4BFAF00B7B195 /* Vertex.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Vertex.m; sourceTree = "<group>"; };
 		42EA6B40169B60AE005960F5 /* sam.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = sam.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		42EA6B44169B60AE005960F5 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		42EA6B46169B60AE005960F5 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -107,16 +113,20 @@
 		4253412E169D0156009E53DC /* Shapes */ = {
 			isa = PBXGroup;
 			children = (
+				42534137169D0156009E53DC /* Shape.h */,
+				42534138169D0156009E53DC /* Shape.m */,
+				42D4489D16A4BCFF00B7B195 /* RegionPolygon.h */,
+				42D4489E16A4BCFF00B7B195 /* RegionPolygon.m */,
+				42534135169D0156009E53DC /* RegionSquare.h */,
+				42534136169D0156009E53DC /* RegionSquare.m */,
 				4253412F169D0156009E53DC /* Ellipse.h */,
 				42534130169D0156009E53DC /* Ellipse.m */,
 				42534131169D0156009E53DC /* Line.h */,
 				42534132169D0156009E53DC /* Line.m */,
 				42534133169D0156009E53DC /* Rectangle.h */,
 				42534134169D0156009E53DC /* Rectangle.m */,
-				42534135169D0156009E53DC /* RegionSquare.h */,
-				42534136169D0156009E53DC /* RegionSquare.m */,
-				42534137169D0156009E53DC /* Shape.h */,
-				42534138169D0156009E53DC /* Shape.m */,
+				42D448A016A4BFAF00B7B195 /* Vertex.h */,
+				42D448A116A4BFAF00B7B195 /* Vertex.m */,
 			);
 			path = Shapes;
 			sourceTree = "<group>";
@@ -303,6 +313,8 @@
 				42534144169DDD1F009E53DC /* SAMTouchContainer.m in Sources */,
 				4253415A169E285A009E53DC /* FFTManager.c in Sources */,
 				42534162169E289D009E53DC /* SAMAudioModel.m in Sources */,
+				42D4489F16A4BCFF00B7B195 /* RegionPolygon.m in Sources */,
+				42D448A216A4BFAF00B7B195 /* Vertex.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

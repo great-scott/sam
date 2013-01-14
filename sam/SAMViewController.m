@@ -85,7 +85,8 @@
 
 - (void)animateFileView:(BOOL)inTrueOutFalse
 {
-    switch ([[NSNumber numberWithBool:inTrueOutFalse] integerValue]) {
+    switch ([[NSNumber numberWithBool:inTrueOutFalse] integerValue])
+    {
         case TRUE: //Fade In
         {
             [fileView setHidden:NO];
@@ -106,7 +107,11 @@
 
 - (IBAction)openPressed:(UIButton *)sender
 {
-    [self animateFileView:NO];
+    if (fileSelected)
+    {
+        [audioModel openAudioFile:fileUrl];
+        [self animateFileView:NO];
+    }
 }
 
 - (IBAction)cancelPressed:(UIButton *)sender
@@ -123,7 +128,6 @@
     
     if ([title isEqualToString:@"File"])
     {
-        NSLog(@"File Pressed.");
         [self animateFileView:YES];
     }
     else if ([title isEqualToString:@"Save"])
@@ -154,7 +158,7 @@
 }
 
 
-#pragma mark - TableView Delegate Methods
+#pragma mark - TableView Delegate Methods - 
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
@@ -199,7 +203,7 @@
 }
 
 
-#pragma mark - TableView Data Source methods
+#pragma mark - TableView Data Source methods - 
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
