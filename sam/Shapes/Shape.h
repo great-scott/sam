@@ -20,9 +20,10 @@
     GLKVector2 scale;
     float depth;
     int number;
+    int numVertices;
 }
 
-@property (readonly) int numVertices;
+@property int numVertices;
 @property (readonly) GLKVector2 *vertices;
 @property (readonly) GLKVector4 *vertexColors;
 @property (readonly) GLKMatrix4 projectionMatrix;
@@ -32,6 +33,7 @@
 @property GLKVector2 scale;
 @property float depth;
 @property float left, right, bottom, top;
+@property CGRect bounds;
 @property GLfloat lineWidth;
 @property GLubyte drawingStyle;
 @property int number;

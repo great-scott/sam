@@ -22,6 +22,7 @@ static GLKBaseEffect *effect;
 @synthesize lineWidth;
 @synthesize drawingStyle;
 @synthesize number;
+@synthesize bounds;
 
 + (void)initialize
 {
@@ -64,14 +65,24 @@ static GLKBaseEffect *effect;
 
 - (int)numVertices
 {
-    return 0;
+    return numVertices;
+}
+
+- (void)setNumVertices:(int)vertices
+{
+    numVertices = vertices;
+    if (vertexData == nil)
+        vertexData = [NSMutableData dataWithLength:sizeof(GLKVector2) * self.numVertices];
+    else
+        [vertexData setLength:sizeof(GLKVector2) * self.numVertices];
+        
 }
 
 - (GLKVector2 *)vertices
 {
     if (vertexData == nil)
         vertexData = [NSMutableData dataWithLength:sizeof(GLKVector2) * self.numVertices];
-    
+
     return [vertexData mutableBytes];
 }
 
@@ -112,8 +123,14 @@ static GLKBaseEffect *effect;
     glDisable(GL_BLEND);
 }
 
--(GLKMatrix4)projectionMatrix {
-    return GLKMatrix4MakeOrtho(left, right, bottom, top, 1, -1);
+//-(GLKMatrix4)projectionMatrix {
+//    return GLKMatrix4MakeOrtho(left, right, bottom, top, 1, -1);
+//}
+
+-(GLKMatrix4)projectionMatrix
+{
+    return GLKMatrix4MakeOrtho(bounds.origin.x, bounds.size.width, bounds.size.height, bounds.origin.y, 1, -1);
 }
+
 
 @end

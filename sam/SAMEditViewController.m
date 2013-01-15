@@ -71,10 +71,14 @@
 - (void)addSquare
 {
     CGRect bounds = self.view.bounds;
-    RegionSquare* square = [[RegionSquare alloc] initWithRect:bounds];
-    square.position = GLKVector2Make(150.0, 200.0);
+//    RegionSquare* square = [[RegionSquare alloc] initWithRect:bounds];
+//    square.position = GLKVector2Make(150.0, 200.0);
+//    
+//    [squares addObject:square];
     
-    [squares addObject:square];
+    RegionPolygon* poly = [[RegionPolygon alloc] initWithRect:bounds];
+    [squares addObject:poly];
+    
 }
 
 

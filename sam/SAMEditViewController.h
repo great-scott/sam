@@ -10,6 +10,7 @@
 #import <GLKit/GLKit.h>
 #import "RegionSquare.h"
 #import "SAMTouchTracker.h"
+#import "RegionPolygon.h"
 
 @interface SAMEditViewController : GLKViewController
 {
