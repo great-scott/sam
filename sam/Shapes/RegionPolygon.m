@@ -55,6 +55,7 @@
     for (int i = 0; i < numberVertices; i++)
     {
         polygon.vertices[i] = initPositions[i];
+        self.vertices[i] = initPositions[i];
     }
     
     // Setup Circles
