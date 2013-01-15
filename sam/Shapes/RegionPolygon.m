@@ -11,6 +11,8 @@
 
 @implementation RegionPolygon
 @synthesize bounds;
+@synthesize grabPoint;
+@synthesize circles;
 
 - (id)initWithRect:(CGRect)boundsRect
 {
@@ -22,7 +24,6 @@
         initPositions[2] = GLKVector2Make(150, 150);
         initPositions[3] = GLKVector2Make(50, 150);
         
-        vertices = [[NSMutableArray alloc] init];
         lines = [[NSMutableArray alloc] init];
         circles = [[NSMutableArray alloc] init];
         polygon = nil;
@@ -92,11 +93,68 @@
 }
 
 
+# pragma mark - Shape Object Checking -
+
+- (BOOL)setPositionIfInside:(GLKVector2)press
+{
+    // Check if it's inside a circle first, then return if it is
+    for (Ellipse *circle in self.circles)
+    {
+        if ([circle isInside:press])
+        {
+            [circle setPosition:press];
+            // update vertices
+            
+            return YES;
+        }
+    }
+    if ([self isInside:press shape:polygon])
+    {
+        [polygon setPosition:press];
+        // update vertices
+        
+        return YES;
+    }
+    else
+        return NO;
+}
+
+- (BOOL)isInside:(GLKVector2)newPosition shape:(Shape *)shape
+{
+    int i = 0;
+    int j = shape.numVertices - 1;
+    int inside = 0;
+    
+    for (i = 0, j = shape.numVertices - 1; i < shape.numVertices; j = i++)
+    {
+        if ((((shape.vertices[i].y <= newPosition.y) &&
+              (newPosition.y < shape.vertices[j].y)) ||
+             ((shape.vertices[j].y <= newPosition.y) &&
+              (newPosition.y < shape.vertices[i].y))) &&
+            (newPosition.x < (shape.vertices[j].x - shape.vertices[i].x)
+             * (newPosition.y - shape.vertices[i].y) / (shape.vertices[j].y - shape.vertices[i].y) + shape.vertices[i].x))
+            
+            inside = !inside;
+    };
+    
+    if (inside == 1)
+    {
+        grabPoint = newPosition;
+        return YES;
+    }
+    else
+    {
+        return NO;
+    }
+}
+
+
 # pragma mark - Overidden Methods -
 
-- (void)setPosition:(GLKVector2)position
+- (void)setPosition:(GLKVector2)newPosition
 {
-    
+    // Position being set = know it's inside, but which?
+    [self setPositionIfInside:newPosition];
 }
 
 - (GLKVector2)getPosition

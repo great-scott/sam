@@ -9,7 +9,7 @@
 
 #import <Foundation/Foundation.h>
 #import "SAMTouchContainer.h"
-#import "RegionSquare.h"
+#import "RegionPolygon.h"
 
 @interface SAMTouchTracker : NSObject
 

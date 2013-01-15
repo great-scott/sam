@@ -33,13 +33,12 @@
     NSSet* beginTouches = [event allTouches];
     for (UITouch* touch in beginTouches)
     {
-        for (RegionSquare* square in shapes)
+        for (RegionPolygon* shape in shapes)
         {
             if (![touchContainer isInContainer:touch])
             {
-                Shape* s = [self isTouch:touch inside:square];
-                if (s != nil)
-                    [touchContainer addTouch:touch with:s];
+                if ([self isTouch:touch inside:shape])
+                    [touchContainer addTouch:touch with:shape];
             }
         }
     }
@@ -55,7 +54,7 @@
         if ([touchContainer isInContainer:touch])
         {
             const void* cfObject = [touchContainer getTouchClassArray:touch];
-            Shape* storedShape = (__bridge Shape *)cfObject;            
+            RegionPolygon* storedShape = (__bridge RegionPolygon *)cfObject;
             storedShape.position = press;
         }
     }
@@ -74,28 +73,28 @@
 
 # pragma mark - Shape Object Checking -
 
-- (Shape *)isTouch:(UITouch *)touch inside:(RegionSquare *)square
+- (BOOL)isTouch:(UITouch *)touch inside:(RegionPolygon *)shape
 {
     CGPoint touchLocation = [touch locationInView:view];
     GLKVector2 press = GLKVector2Make(touchLocation.x, touchLocation.y);
     
     // Check if it's inside a circle first, then return if it is
-    for (Ellipse *circle in square.vertexCircles)
+    for (Ellipse *circle in shape.circles)
     {
         if ([circle isInside:press])
         {
             NSLog(@"Touched Circle");
-            return circle;
+            return YES;
         }
     }
     
-    if ([self isInside:press shape:square])
+    if ([self isInside:press shape:shape])
     {
         NSLog(@"Touched Inside Square");
-        return square;
+        return YES;
     }
 
-    return nil;
+    return NO;
     
     //    int touchingLine = [self isTouchingLine:press];
     //    if (touchingLine >= 0)
@@ -111,27 +110,27 @@
     
 }
 
-- (BOOL)isInside:(GLKVector2)position shape:(RegionSquare *)square
+- (BOOL)isInside:(GLKVector2)newPosition shape:(RegionPolygon *)shape
 {
     int i = 0;
-    int j = square.numVertices - 1;
+    int j = shape.numVertices - 1;
     int inside = 0;
 
-    for (i = 0, j = square.numVertices - 1; i < square.numVertices; j = i++)
+    for (i = 0, j = shape.numVertices - 1; i < shape.numVertices; j = i++)
     {
-        if ((((square.vertexArray[i].position.y <= position.y) &&
-              (position.y < square.vertexArray[j].position.y)) ||
-             ((square.vertexArray[j].position.y <= position.y) &&
-              (position.y < square.vertexArray[i].position.y))) &&
-            (position.x < (square.vertexArray[j].position.x - square.vertexArray[i].position.x)
-             * (position.y - square.vertexArray[i].position.y) / (square.vertexArray[j].position.y - square.vertexArray[i].position.y) + square.vertexArray[i].position.x))
+        if ((((shape.vertices[i].y <= newPosition.y) &&
+              (newPosition.y < shape.vertices[j].y)) ||
+             ((shape.vertices[j].y <= newPosition.y) &&
+              (newPosition.y < shape.vertices[i].y))) &&
+            (newPosition.x < (shape.vertices[j].x - shape.vertices[i].x)
+             * (newPosition.y - shape.vertices[i].y) / (shape.vertices[j].y - shape.vertices[i].y) + shape.vertices[i].x))
 
             inside = !inside;
     };
 
     if (inside == 1)
     {
-        square.grabPoint = position;
+        shape.grabPoint = newPosition;
         return YES;
     }
     else
