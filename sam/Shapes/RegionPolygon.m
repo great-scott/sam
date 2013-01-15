@@ -25,30 +25,39 @@
         vertices = [[NSMutableArray alloc] init];
         lines = [[NSMutableArray alloc] init];
         circles = [[NSMutableArray alloc] init];
+        polygon = nil;
         
         bounds = boundsRect;
         numVertices = MIN_VERTICES;
-        [self setupShapes];
+        [self setupShapes:numVertices];
     }
     
     return self;
 }
 
-- (void)setupShapes
+- (void)setupShapes:(int)numberVertices;
 {
+    if ([lines count] != numberVertices)
+    {
+        [lines removeAllObjects];
+        [circles removeAllObjects];
+    }
+    
     // Setup fill polygon
-    polygon = [[Shape alloc] init];
+    if (polygon == nil)
+        polygon = [[Shape alloc] init];
+    
     polygon.bounds = bounds;
     polygon.color = GLKVector4Make(0.6, 0.6, 0.6, 0.4);     //TODO: make this dynamic
-    polygon.numVertices = numVertices;
+    polygon.numVertices = numberVertices;
     // Setup polygon vertex positions
-    for (int i = 0; i < numVertices; i++)
+    for (int i = 0; i < numberVertices; i++)
     {
         polygon.vertices[i] = initPositions[i];
     }
     
     // Setup Circles
-    for (int i = 0; i < numVertices; i++)
+    for (int i = 0; i < numberVertices; i++)
     {
         Ellipse* circle = [[Ellipse alloc] init];
         circle.radiusX = CIRCLE_RADIUS;
@@ -64,15 +73,14 @@
     int lineWrap = 1;
     
     // Create all lines first
-    for (int i = 0; i < numVertices; i++)
+    for (int i = 0; i < numberVertices; i++)
     {
         Line *line = [[Line alloc] init];
         line.number = i;
         line.startPoint = initPositions[i];
-        if (lineWrap == numVertices)
-        {
+        if (lineWrap == numberVertices)
             lineWrap = 0;
-        }
+        
         line.endPoint = initPositions[lineWrap];
         lineWrap += 1;
         
@@ -96,12 +104,31 @@
 
 }
 
+- (void)setNumVertices:(int)numberVertices
+{
+    [self setupShapes:numberVertices];
+}
+
 
 #pragma mark - Methods -
 
-- (void)addVertex:(GLKVector2)position
+- (void)addVertex:(GLKVector2)newPosition
 {
     // Need to find which index the new position is between
+    
+    // Increment number of vertices
+    numVertices += 1;
+    polygon.numVertices += 1;
+    polygon.vertices[numVertices - 1] = newPosition;
+    
+    Ellipse* circle = [[Ellipse alloc] init];
+    circle.radiusX = CIRCLE_RADIUS;
+    circle.radiusY = CIRCLE_RADIUS;
+    circle.position = newPosition;
+    circle.color = GLKVector4Make(0.4, 0.4, 0.4, 1.0);
+    circle.bounds = bounds;
+    [circles addObject:circle];
+    
     
 }
 

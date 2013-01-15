@@ -139,6 +139,10 @@
         // Edit View Add Square
         [editViewControl addSquare];
     }
+    else if ([title isEqualToString:@"Tri"])
+    {
+        [editViewControl addTriangle];
+    }
     else if ([title isEqualToString:@"DAC"])
     {
         // Turn On/Off Audio Unit / Session

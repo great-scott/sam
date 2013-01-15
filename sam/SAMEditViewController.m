@@ -45,6 +45,7 @@
     view.multipleTouchEnabled = YES;
     
     squares = [[NSMutableArray alloc] init];
+    triangles = [[NSMutableArray alloc] init];
     
 }
 
@@ -63,6 +64,9 @@
     
     if ([squares count] > 0)
         [squares makeObjectsPerformSelector:@selector(render)];
+    
+    if ([triangles count] > 0)
+        [triangles makeObjectsPerformSelector:@selector(render)];
 }
 
 
@@ -70,17 +74,17 @@
 
 - (void)addSquare
 {
-    CGRect bounds = self.view.bounds;
-//    RegionSquare* square = [[RegionSquare alloc] initWithRect:bounds];
-//    square.position = GLKVector2Make(150.0, 200.0);
-//    
-//    [squares addObject:square];
-    
-    RegionPolygon* poly = [[RegionPolygon alloc] initWithRect:bounds];
+    RegionPolygon* poly = [[RegionPolygon alloc] initWithRect:self.view.bounds];
+    poly.numVertices = 4;
     [squares addObject:poly];
-    
 }
 
+- (void)addTriangle
+{
+    RegionPolygon* triangle = [[RegionPolygon alloc] initWithRect:self.view.bounds];
+    triangle.numVertices = 3;
+    [triangles addObject:triangle];
+}
 
 #pragma mark - Touch Callbacks -
 

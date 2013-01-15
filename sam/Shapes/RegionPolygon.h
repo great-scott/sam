@@ -30,5 +30,6 @@
 @property GLKVector4 color;         // Different parts have a different color relationship and will change on their own
 
 - (id)initWithRect:(CGRect)bounds;
+- (void)addVertex:(GLKVector2)newPosition;
 
 @end

@@ -15,9 +15,11 @@
 @interface SAMEditViewController : GLKViewController
 {
     NSMutableArray* squares;
+    NSMutableArray* triangles;
     SAMTouchTracker* touchTracker;
 }
 
 - (void)addSquare;
+- (void)addTriangle;
 
 @end
