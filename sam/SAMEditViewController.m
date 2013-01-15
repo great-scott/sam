@@ -44,9 +44,7 @@
     view.drawableMultisample = GLKViewDrawableMultisample4X;
     view.multipleTouchEnabled = YES;
     
-    squares = [[NSMutableArray alloc] init];
-    triangles = [[NSMutableArray alloc] init];
-    
+    shapes = [[NSMutableArray alloc] init];
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
@@ -62,11 +60,8 @@
     glClearColor(0.95, 0.95, 0.95, 1.0);
     glClear(GL_COLOR_BUFFER_BIT);
     
-    if ([squares count] > 0)
-        [squares makeObjectsPerformSelector:@selector(render)];
-    
-    if ([triangles count] > 0)
-        [triangles makeObjectsPerformSelector:@selector(render)];
+    if ([shapes count] > 0)
+        [shapes makeObjectsPerformSelector:@selector(render)];
 }
 
 
@@ -76,31 +71,31 @@
 {
     RegionPolygon* poly = [[RegionPolygon alloc] initWithRect:self.view.bounds];
     poly.numVertices = 4;
-    [squares addObject:poly];
+    [shapes addObject:poly];
 }
 
 - (void)addTriangle
 {
     RegionPolygon* triangle = [[RegionPolygon alloc] initWithRect:self.view.bounds];
     triangle.numVertices = 3;
-    [triangles addObject:triangle];
+    [shapes addObject:triangle];
 }
 
 #pragma mark - Touch Callbacks -
 
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
 {
-    [touchTracker startTouches:touches withEvent:event withShapes:squares];
+    [touchTracker startTouches:touches withEvent:event withShapes:shapes];
 }
 
 - (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event
 {
-    [touchTracker moveTouches:touches withEvent:event withShapes:squares];
+    [touchTracker moveTouches:touches withEvent:event withShapes:shapes];
 }
 
 - (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
 {
-    [touchTracker endTouches:touches withEvent:event withShapes:squares];
+    [touchTracker endTouches:touches withEvent:event withShapes:shapes];
 }
 
 
