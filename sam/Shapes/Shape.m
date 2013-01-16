@@ -15,7 +15,6 @@ static GLKBaseEffect *effect;
 @implementation Shape
 
 @synthesize scale;
-@synthesize position;
 @synthesize color;
 @synthesize depth;
 @synthesize left, right, top, bottom;
@@ -23,6 +22,9 @@ static GLKBaseEffect *effect;
 @synthesize drawingStyle;
 @synthesize number;
 @synthesize bounds;
+@synthesize grabPoint;
+
+@synthesize position;
 
 + (void)initialize
 {
@@ -91,6 +93,22 @@ static GLKBaseEffect *effect;
         vertexColorData = [NSMutableData dataWithLength:sizeof(GLKVector4) * self.numVertices];
     return [vertexColorData mutableBytes];
 }
+
+//- (void)setPosition:(GLKVector2)newPosition
+//{
+//    GLKVector2 differenceOfPositions = GLKVector2Subtract(newPosition, grabPoint);
+//
+//    for (int i = 0; i < self.numVertices; i++)
+//        self.vertices[i] = GLKVector2Add(self.vertices[i], differenceOfPositions);
+//    
+//    position = GLKVector2Add(differenceOfPositions, position);
+//    grabPoint = GLKVector2Add(differenceOfPositions, grabPoint);
+//}
+//
+//- (GLKVector2)getPosition
+//{
+//    return position;
+//}
 
 - (void)update
 {

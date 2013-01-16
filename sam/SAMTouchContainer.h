@@ -18,10 +18,11 @@
     CFMutableDictionaryRef touchDict;
 }
 
-- (void)addTouch:(UITouch *)touch with:(id)object;
+//- (void)addTouch:(UITouch *)touch with:(id)object;
+- (void)addTouch:(UITouch *)touch forParent:(id)polygon with:(id)object;
 - (void)removeTouch:(UITouch *)touch;
 
-- (const void *)getTouchClassArray:(UITouch *)touch;
+- (NSArray *)getTouchClassArray:(UITouch *)touch;
 - (BOOL)isInContainer:(UITouch *)touch;
 
 @end

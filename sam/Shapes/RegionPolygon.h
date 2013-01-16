@@ -22,16 +22,16 @@
     NSMutableArray* circles;        // all the circles on the vertices
     Shape*          polygon;        // general polygon
     
-    GLKVector2 grabpoint;
     GLKVector2 initPositions[4];
 }
 
 @property int numVertices;
 @property GLKVector4 color;         // Different parts have a different color relationship and will change on their own
 @property (nonatomic, strong) NSMutableArray* circles;
-@property GLKVector2 grabPoint;
 
 - (id)initWithRect:(CGRect)bounds;
 - (void)addVertex:(GLKVector2)newPosition;
+- (id)isTouchInside:(GLKVector2)press;
+
 
 @end

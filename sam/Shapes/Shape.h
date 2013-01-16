@@ -37,6 +37,7 @@
 @property GLfloat lineWidth;
 @property GLubyte drawingStyle;
 @property int number;
+@property GLKVector2 grabPoint;
 
 - (void)update;
 - (void)render;

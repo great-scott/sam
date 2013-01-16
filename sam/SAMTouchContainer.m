@@ -24,19 +24,14 @@
     return self;
 }
 
-- (void)addTouch:(UITouch *)touch with:(id)object
+- (void)addTouch:(UITouch *)touch forParent:(id)polygon with:(id)subShape
 {
     const void* cfTouch = (__bridge const void *)touch;
-    const void* cfObject = (__bridge const void *)object;
-//    const void** cfArray = malloc(sizeof(void *) * 2);
-//    
-//    cfArray[0] = (__bridge const void *)[object class];
-//    cfArray[1] = cfObject;
+    NSArray* shapes = [[NSArray alloc] initWithObjects:polygon, subShape, nil];
+    const void* cfShape = (__bridge const void *)shapes;
     
     if (!CFDictionaryContainsKey(touchDict, cfTouch))       // If the dictionary doesn't have this touch
-    {
-        CFDictionarySetValue(touchDict, cfTouch, cfObject);
-    }
+        CFDictionarySetValue(touchDict, cfTouch, cfShape);
 }
 
 - (void)removeTouch:(UITouch *)touch
@@ -49,13 +44,13 @@
     }
 }
 
-- (const void *)getTouchClassArray:(UITouch *)touch
+- (NSArray *)getTouchClassArray:(UITouch *)touch
 {
     const void* cfTouch = (__bridge const void *)touch;
     if (CFDictionaryContainsKey(touchDict, cfTouch))
     {
-        const void* cfObject = CFDictionaryGetValue(touchDict, cfTouch);
-        return cfObject;
+        NSArray* shapeArray = (__bridge NSArray *)CFDictionaryGetValue(touchDict, cfTouch);
+        return shapeArray;
     }
     else
         return nil;

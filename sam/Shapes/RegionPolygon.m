@@ -93,6 +93,16 @@
     }
 }
 
+- (void)updateVertices
+{
+    for (int i = 0; i < numVertices; i++)
+    {
+        self.vertices[i] = polygon.vertices[i];
+        Ellipse* circle = [circles objectAtIndex:i];
+        circle.position = self.vertices[i];
+    }
+}
+
 
 # pragma mark - Shape Object Checking -
 
@@ -109,10 +119,15 @@
             return YES;
         }
     }
-    if ([self isInside:press shape:polygon])
+    if ([self isInsidePolygon:press])
     {
+        GLKVector2 differenceOfPositions = GLKVector2Subtract(press, grabPoint);
         [polygon setPosition:press];
+        
         // update vertices
+        [self updateVertices];
+        position = GLKVector2Add(differenceOfPositions, position);
+        grabPoint = GLKVector2Add(differenceOfPositions, grabPoint);
         
         return YES;
     }
@@ -120,20 +135,20 @@
         return NO;
 }
 
-- (BOOL)isInside:(GLKVector2)newPosition shape:(Shape *)shape
+- (BOOL)isInsidePolygon:(GLKVector2)newPosition
 {
     int i = 0;
-    int j = shape.numVertices - 1;
+    int j = numVertices - 1;
     int inside = 0;
     
-    for (i = 0, j = shape.numVertices - 1; i < shape.numVertices; j = i++)
+    for (i = 0, j = numVertices - 1; i < numVertices; j = i++)
     {
-        if ((((shape.vertices[i].y <= newPosition.y) &&
-              (newPosition.y < shape.vertices[j].y)) ||
-             ((shape.vertices[j].y <= newPosition.y) &&
-              (newPosition.y < shape.vertices[i].y))) &&
-            (newPosition.x < (shape.vertices[j].x - shape.vertices[i].x)
-             * (newPosition.y - shape.vertices[i].y) / (shape.vertices[j].y - shape.vertices[i].y) + shape.vertices[i].x))
+        if ((((self.vertices[i].y <= newPosition.y) &&
+              (newPosition.y < self.vertices[j].y)) ||
+             ((self.vertices[j].y <= newPosition.y) &&
+              (newPosition.y < self.vertices[i].y))) &&
+            (newPosition.x < (self.vertices[j].x - self.vertices[i].x)
+             * (newPosition.y - self.vertices[i].y) / (self.vertices[j].y - self.vertices[i].y) + self.vertices[i].x))
             
             inside = !inside;
     };
@@ -147,6 +162,22 @@
     {
         return NO;
     }
+}
+
+//- (BOOL)isTouch:(GLKVector2)press inside:(RegionPolygon *)shape
+- (id)isTouchInside:(GLKVector2)press
+{    
+    // Check if it's inside a circle first, then return if it is
+    for (Ellipse *circle in self.circles)
+    {
+        if ([circle isInside:press])
+            return circle;
+    }
+    
+    if ([self isInsidePolygon:press])
+        return polygon;
+    else
+        return nil;
 }
 
 
@@ -166,6 +197,7 @@
 - (void)setNumVertices:(int)numberVertices
 {
     [self setupShapes:numberVertices];
+    numVertices = numberVertices;
 }
 
 

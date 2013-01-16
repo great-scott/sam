@@ -30,17 +30,20 @@
 
 - (void)startTouches:(NSSet *)touches withEvent:(UIEvent *)event withShapes:(NSMutableArray *)shapes
 {
-    NSSet* beginTouches = [event allTouches];
+    NSSet* beginTouches = [event allTouches];    
     for (UITouch* touch in beginTouches)
     {
+        CGPoint touchLocation = [touch locationInView:view];
+        GLKVector2 press = GLKVector2Make(touchLocation.x, touchLocation.y);
         for (RegionPolygon* shape in shapes)
         {
             if (![touchContainer isInContainer:touch])
             {
-                if ([self isTouch:touch inside:shape])
-                    [touchContainer addTouch:touch with:shape];
+                id obj = [shape isTouchInside:press];               // returns the object (aka part of regionPolygon that we touch
+                if (obj != nil)
+                    [touchContainer addTouch:touch forParent:shape with:obj];
             }
-        }
+        }   
     }
 }
 
@@ -53,9 +56,22 @@
         GLKVector2 press = GLKVector2Make(touchLocation.x, touchLocation.y);
         if ([touchContainer isInContainer:touch])
         {
-            const void* cfObject = [touchContainer getTouchClassArray:touch];
-            RegionPolygon* storedShape = (__bridge RegionPolygon *)cfObject;
-            storedShape.position = press;
+            NSArray* shapeArray = [touchContainer getTouchClassArray:touch];
+            RegionPolygon* polygon = [shapeArray objectAtIndex:0];
+            // [polygon setSubShapePosition:press]
+            
+            
+            id subShape = [shapeArray objectAtIndex:1];
+            
+            if ([subShape isMemberOfClass:[Ellipse class]])
+            {
+                Ellipse* circle = (Ellipse *)subShape;
+                circle.position = press;
+            }
+                
+            
+            polygon.position = press;
+            
         }
     }
 }
