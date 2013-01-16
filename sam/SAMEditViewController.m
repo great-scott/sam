@@ -76,8 +76,8 @@
 
 - (void)addTriangle
 {
+    // The default is 3 vertices for a region polygon, so we don't need to specify the number of them
     RegionPolygon* triangle = [[RegionPolygon alloc] initWithRect:self.view.bounds];
-    triangle.numVertices = 3;
     [shapes addObject:triangle];
 }
 

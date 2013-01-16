@@ -19,6 +19,7 @@
 		42534162169E289D009E53DC /* SAMAudioModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 42534161169E289D009E53DC /* SAMAudioModel.m */; };
 		42534164169E2E0D009E53DC /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 42534163169E2E0D009E53DC /* Accelerate.framework */; };
 		42534166169E2E2E009E53DC /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 42534165169E2E2E009E53DC /* AudioToolbox.framework */; };
+		4264B7BB16A6E31C00ACCC18 /* SAMTouchTrack.m in Sources */ = {isa = PBXBuildFile; fileRef = 4264B7BA16A6E31C00ACCC18 /* SAMTouchTrack.m */; };
 		42D4489F16A4BCFF00B7B195 /* RegionPolygon.m in Sources */ = {isa = PBXBuildFile; fileRef = 42D4489E16A4BCFF00B7B195 /* RegionPolygon.m */; };
 		42D448A216A4BFAF00B7B195 /* Vertex.m in Sources */ = {isa = PBXBuildFile; fileRef = 42D448A116A4BFAF00B7B195 /* Vertex.m */; };
 		42EA6B45169B60AE005960F5 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 42EA6B44169B60AE005960F5 /* UIKit.framework */; };
@@ -62,6 +63,8 @@
 		42534161169E289D009E53DC /* SAMAudioModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SAMAudioModel.m; sourceTree = "<group>"; };
 		42534163169E2E0D009E53DC /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
 		42534165169E2E2E009E53DC /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
+		4264B7B916A6E31C00ACCC18 /* SAMTouchTrack.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SAMTouchTrack.h; sourceTree = "<group>"; };
+		4264B7BA16A6E31C00ACCC18 /* SAMTouchTrack.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SAMTouchTrack.m; sourceTree = "<group>"; };
 		42D4489D16A4BCFF00B7B195 /* RegionPolygon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RegionPolygon.h; sourceTree = "<group>"; };
 		42D4489E16A4BCFF00B7B195 /* RegionPolygon.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RegionPolygon.m; sourceTree = "<group>"; };
 		42D448A016A4BFAF00B7B195 /* Vertex.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Vertex.h; sourceTree = "<group>"; };
@@ -186,6 +189,8 @@
 				42534140169D1F63009E53DC /* SAMTouchTracker.m */,
 				42534142169DDD1F009E53DC /* SAMTouchContainer.h */,
 				42534143169DDD1F009E53DC /* SAMTouchContainer.m */,
+				4264B7B916A6E31C00ACCC18 /* SAMTouchTrack.h */,
+				4264B7BA16A6E31C00ACCC18 /* SAMTouchTrack.m */,
 				42EA6B4B169B60AE005960F5 /* Supporting Files */,
 			);
 			path = sam;
@@ -315,6 +320,7 @@
 				42534162169E289D009E53DC /* SAMAudioModel.m in Sources */,
 				42D4489F16A4BCFF00B7B195 /* RegionPolygon.m in Sources */,
 				42D448A216A4BFAF00B7B195 /* Vertex.m in Sources */,
+				4264B7BB16A6E31C00ACCC18 /* SAMTouchTrack.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

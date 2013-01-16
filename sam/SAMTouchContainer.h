@@ -12,17 +12,21 @@
 //  touch - touches.
 
 #import <Foundation/Foundation.h>
+#import "SAMTouchTrack.h"
+
+#define MAX_TOUCHES 5
 
 @interface SAMTouchContainer : NSObject
 {
     CFMutableDictionaryRef touchDict;
+    SAMTouchTrack* touchArray[MAX_TOUCHES];
 }
 
 //- (void)addTouch:(UITouch *)touch with:(id)object;
 - (void)addTouch:(UITouch *)touch forParent:(id)polygon with:(id)object;
 - (void)removeTouch:(UITouch *)touch;
 
-- (NSArray *)getTouchClassArray:(UITouch *)touch;
+- (SAMTouchTrack *)getTouchClassArray:(UITouch *)touch;
 - (BOOL)isInContainer:(UITouch *)touch;
 
 @end

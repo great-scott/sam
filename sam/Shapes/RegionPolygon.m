@@ -93,46 +93,64 @@
     }
 }
 
-- (void)updateVertices
+- (void)updateLines
 {
+    // Setup Lines
+    int lineWrap = 1;
+    
+    // update the line positions
     for (int i = 0; i < numVertices; i++)
     {
-        self.vertices[i] = polygon.vertices[i];
-        Ellipse* circle = [circles objectAtIndex:i];
-        circle.position = self.vertices[i];
+        Line *line = [lines objectAtIndex:i];
+        line.startPoint = self.vertices[i];
+        if (lineWrap == numVertices)
+            lineWrap = 0;
+        
+        line.endPoint = self.vertices[lineWrap];
+        lineWrap += 1;
     }
 }
 
 
 # pragma mark - Shape Object Checking -
 
-- (BOOL)setPositionIfInside:(GLKVector2)press
+- (void)setPosition:(GLKVector2)newPosition withSubShape:(id)shape
 {
-    // Check if it's inside a circle first, then return if it is
-    for (Ellipse *circle in self.circles)
+    GLKVector2 differenceOfPositions = GLKVector2Subtract(newPosition, grabPoint);
+    
+    // Check if sub shape is a circle or not
+    if ([shape isMemberOfClass:[Ellipse class]])
     {
-        if ([circle isInside:press])
-        {
-            [circle setPosition:press];
-            // update vertices
-            
-            return YES;
-        }
-    }
-    if ([self isInsidePolygon:press])
-    {
-        GLKVector2 differenceOfPositions = GLKVector2Subtract(press, grabPoint);
-        [polygon setPosition:press];
+        Ellipse* newShape = (Ellipse *)shape;
+        newShape.position = newPosition;
         
-        // update vertices
-        [self updateVertices];
+        for (int i = 0; i < numVertices; i++)
+        {
+            Ellipse* circle = [circles objectAtIndex:i];
+            self.vertices[i] = circle.position;
+            polygon.vertices[i] = self.vertices[i];
+        }
+        
+        [self updateLines];
+        
+    }
+    else if ([shape isKindOfClass:[Shape class]]) // if we touched inside
+    {
+        // update the circle positions
+        for (int i = 0; i < numVertices; i++)
+        {
+            Ellipse* circle = [circles objectAtIndex:i];
+            self.vertices[i] = GLKVector2Add(self.vertices[i], differenceOfPositions);
+            circle.position = self.vertices[i];
+            polygon.vertices[i] = self.vertices[i];
+        }
+        
+        [self updateLines];
+        
         position = GLKVector2Add(differenceOfPositions, position);
         grabPoint = GLKVector2Add(differenceOfPositions, grabPoint);
         
-        return YES;
     }
-    else
-        return NO;
 }
 
 - (BOOL)isInsidePolygon:(GLKVector2)newPosition
@@ -182,17 +200,6 @@
 
 
 # pragma mark - Overidden Methods -
-
-- (void)setPosition:(GLKVector2)newPosition
-{
-    // Position being set = know it's inside, but which?
-    [self setPositionIfInside:newPosition];
-}
-
-- (GLKVector2)getPosition
-{
-
-}
 
 - (void)setNumVertices:(int)numberVertices
 {

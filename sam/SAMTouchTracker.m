@@ -56,22 +56,10 @@
         GLKVector2 press = GLKVector2Make(touchLocation.x, touchLocation.y);
         if ([touchContainer isInContainer:touch])
         {
-            NSArray* shapeArray = [touchContainer getTouchClassArray:touch];
-            RegionPolygon* polygon = [shapeArray objectAtIndex:0];
-            // [polygon setSubShapePosition:press]
+            SAMTouchTrack* shapeTrack = [touchContainer getTouchClassArray:touch];
+            RegionPolygon* polygon = shapeTrack.parent;
             
-            
-            id subShape = [shapeArray objectAtIndex:1];
-            
-            if ([subShape isMemberOfClass:[Ellipse class]])
-            {
-                Ellipse* circle = (Ellipse *)subShape;
-                circle.position = press;
-            }
-                
-            
-            polygon.position = press;
-            
+            [polygon setPosition:press withSubShape:shapeTrack.child];
         }
     }
 }
