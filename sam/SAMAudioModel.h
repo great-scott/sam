@@ -10,18 +10,21 @@
 #import <AudioToolbox/AudioToolbox.h>
 #import <Accelerate/Accelerate.h>
 #import <GLKit/GLKit.h>
+#import "SAMEditViewController.h"
+
 #include "FFTManager.h"
 
 @interface SAMAudioModel : NSObject
-{
-    float *audioBuffer;
-    float normalizationFactor;
-    
+{    
+    // FFT Properties
     int windowSize;
     int overlap;
+    int hopSize;
+    
+    float normalizationFactor;
     int numFramesInAudioFile;
     int numFFTFrames;
-    int hopSize;
+    float *audioBuffer;
     
     // DSP tick
     int numberOfDSPTicks;       // This is the number of DSP Ticks
@@ -53,36 +56,23 @@
     POLAR_WINDOW* polarWindows[2];
     int currentPolar;
     
-    
-    int leftBound;
-    int rightBound;
-    int topBound;
-    int bottomBound;
-    
-    int screenWidth;
-    int screenHeight;
-    
-    int playbackLeft;
-    int playbackRight;
-    int playbackTop;
-    int playbackBottom;
-    
     //-------------------------------
     BOOL fileLoaded;
 }
 
 @property int windowSize;
 @property int overlap;
-//@property (readonly) float *frequencyBuffer;
-@property (readonly) STFT_BUFFER* stftBuffer;
 @property int numFFTFrames;
 @property int screenWidth;
 @property int screenHeight;
 
+@property (readonly) STFT_BUFFER* stftBuffer;
+@property (nonatomic, weak) NSMutableArray* shapeReferences;
+
+
 + (SAMAudioModel *)sharedAudioModel;
 - (void)openAudioFile:(CFURLRef)fileToOpen;
 - (void)calculateSTFT;
-- (void)setBounds:(GLKVector2)_leftBound andRight:(GLKVector2)_rightBound;
 
 // Audio Playback (aka DAC) On/Off
 - (void)startAudioPlayback;

@@ -13,6 +13,7 @@
 @synthesize bounds;
 @synthesize grabPoint;
 @synthesize circles;
+@synthesize boundPoints;
 
 - (id)initWithRect:(CGRect)boundsRect
 {
@@ -151,6 +152,8 @@
         grabPoint = GLKVector2Add(differenceOfPositions, grabPoint);
         
     }
+    
+    [self findBoundPoints];
 }
 
 - (BOOL)isInsidePolygon:(GLKVector2)newPosition
@@ -182,7 +185,6 @@
     }
 }
 
-//- (BOOL)isTouch:(GLKVector2)press inside:(RegionPolygon *)shape
 - (id)isTouchInside:(GLKVector2)press
 {    
     // Check if it's inside a circle first, then return if it is
@@ -198,6 +200,20 @@
         return nil;
 }
 
+- (void)findBoundPoints
+{
+    float leftMost = -1;
+    float rightMost = -1;
+    for (int i = 0; i < numVertices; i++)
+    {
+        if (leftMost == -1 || self.vertices[i].x < leftMost)
+            leftMost = self.vertices[i].x;
+        if (rightMost == -1 || self.vertices[i].x > rightMost)
+            rightMost = self.vertices[i].x;
+    }
+    
+    boundPoints = GLKVector2Make(leftMost, rightMost);
+}
 
 # pragma mark - Overidden Methods -
 
@@ -226,8 +242,6 @@
     circle.color = GLKVector4Make(0.4, 0.4, 0.4, 1.0);
     circle.bounds = bounds;
     [circles addObject:circle];
-    
-    
 }
 
 #pragma mark - Render -

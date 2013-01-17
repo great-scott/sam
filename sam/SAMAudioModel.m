@@ -17,8 +17,7 @@
 //@synthesize frequencyBuffer;
 @synthesize stftBuffer;
 @synthesize numFFTFrames;
-@synthesize screenWidth;
-@synthesize screenHeight;
+@synthesize shapeReferences;
 
 
 #pragma mark - Render Callback -
@@ -40,7 +39,7 @@ static OSStatus renderCallback(void *inRefCon,
 //    fac = (float) (this->hopSize * TWO_PI / this->sampleRate);
 //    scale = this->sampleRate / this->windowSize;
     
-    if (this->fileLoaded == YES)
+    if (NO)
     {
         // ------------------------------------------------------------------------------------
         if (this->dspTick == 0)
@@ -52,11 +51,11 @@ static OSStatus renderCallback(void *inRefCon,
             // try zeroing out stuff
             for (int w = 0; w < this->windowSize / 2; w++)
             {
-                if (w > this->playbackBottom || w < this->playbackTop)              
-                {
-                    this->polarWindows[this->currentPolar]->buffer[w].mag = 0.0;
-                    this->polarWindows[this->currentPolar]->buffer[w].phase = 0.0;
-                }
+//                if (w > this->playbackBottom || w < this->playbackTop)              
+//                {
+//                    this->polarWindows[this->currentPolar]->buffer[w].mag = 0.0;
+//                    this->polarWindows[this->currentPolar]->buffer[w].phase = 0.0;
+//                }
             }
         
             pvUnwrapPhase(this->polarWindows[this->currentPolar]);
@@ -96,8 +95,8 @@ static OSStatus renderCallback(void *inRefCon,
         
             this->rateCounter++;
         }
-        if (this->counter >= this->playbackRight)
-            this->counter = this->playbackLeft;
+//        if (this->counter >= this->playbackRight)
+//            this->counter = this->playbackLeft;
     }
    
     return noErr;
@@ -305,11 +304,11 @@ static OSStatus renderCallback(void *inRefCon,
     
     // Get the audio file's length in frames.
     UInt64 totalFramesInFile = 0;
-    UInt32 frameLengthPropertySize = sizeof (totalFramesInFile);
+    UInt32 frameLengthPropertySize = sizeof(totalFramesInFile);
     
     result = ExtAudioFileGetProperty (audioFileObject, kExtAudioFileProperty_FileLengthFrames, &frameLengthPropertySize, &totalFramesInFile);
     assert(result == noErr);
-    
+    numFramesInAudioFile = totalFramesInFile;
     
     // Get the audio file's number of channels.
     AudioStreamBasicDescription fileAudioFormat = {0};
@@ -321,20 +320,14 @@ static OSStatus renderCallback(void *inRefCon,
     //    UInt32 channelsPerFrame = fileAudioFormat.mChannelsPerFrame;
     UInt32 channelCount = fileAudioFormat.mChannelsPerFrame;
     
-    AudioUnitSampleType *leftBuffer = calloc(totalFramesInFile, sizeof(AudioUnitSampleType));
-    AudioUnitSampleType *rightBuffer = calloc(totalFramesInFile, sizeof(AudioUnitSampleType));
-    
-    if (audioBuffer == nil)
-    {
-        audioBuffer = (float *)malloc(totalFramesInFile * sizeof(float));
-        outputBuffer = (float *)malloc(totalFramesInFile * sizeof(float));
-        numFramesInAudioFile = totalFramesInFile;
-        
-        if (stftBuffer != nil)
-            free(stftBuffer);
-        
-        stftBuffer = newSTFTBuffer(windowSize, overlap, &numFFTFrames, numFramesInAudioFile);
-    }
+    // allocate temporary channel buffers
+    AudioUnitSampleType* leftBuffer = calloc(numFramesInAudioFile, sizeof(AudioUnitSampleType));
+    AudioUnitSampleType* rightBuffer = NULL;
+    if (channelCount == 2)
+        rightBuffer = calloc(numFramesInAudioFile, sizeof(AudioUnitSampleType));
+
+    // create / reallocate reused variables
+    [self createBuffers];
     
     AudioStreamBasicDescription importFormat = {0};
     
@@ -416,24 +409,67 @@ static OSStatus renderCallback(void *inRefCon,
     
     UInt32 numberOfPacketsToRead = (UInt32)totalFramesInFile;
     result = ExtAudioFileRead (audioFileObject, &numberOfPacketsToRead, bufferList);
-    
     free (bufferList);
     
     // Dispose of the extended audio file object, which also
     //    closes the associated file.
     ExtAudioFileDispose (audioFileObject);
     
-    //memcpy(audioBuffer, leftBuffer, sizeof(*leftBuffer));
+    // Convert to floating point format
+    [self convert:leftBuffer withSize:totalFramesInFile];
     
-    // copy some samples to other buffer    
-    for (int i = 0; i < totalFramesInFile; i++)
+    // If stereo convert right channel to float then convert to mono
+    if (channelCount == 2)
     {
-        audioBuffer[i] = (float)((SInt16)(leftBuffer[i] >> 9) / 32768.0);
+        [self convert:rightBuffer withSize:totalFramesInFile];
+        [self convertToMonoWith:(float *)leftBuffer andRightChannel:(float *)rightBuffer withSize:totalFramesInFile];
     }
     
+    // Copy over samples from leftbuffer to main audio buffer
+    memcpy(audioBuffer, leftBuffer, numFramesInAudioFile * sizeof(float));
+    
     free(leftBuffer);
-    free(rightBuffer);
+    if (rightBuffer != NULL)
+        free(rightBuffer);
 }
+
+
+#pragma mark - Utility Methods -
+// This method creates a mono track and stuffs it into the left channel
+- (void)convertToMonoWith:(float *)left andRightChannel:(float *)right withSize:(int)size
+{
+    for (int i = 0; i < size; i++)
+        left[i] = (left[i] + right[i]) / 2.0;
+}
+
+// Converts from AudioUnit sample type to float
+//- (void)convert:(AudioUnitSampleType *)input to:(float *)output withSize:(int)size
+- (void)convert:(AudioUnitSampleType *)input withSize:(int)size
+{
+    for (int i = 0; i < size; i++)
+        input[i] = (float)((SInt16)(input[i] >> 9) / 32768.0);
+}
+
+- (void)createBuffers
+{
+    if (audioBuffer == nil)
+    {
+        audioBuffer = (float *)malloc(numFramesInAudioFile * sizeof(float));
+        outputBuffer = (float *)malloc(numFramesInAudioFile * sizeof(float));
+    }
+    else
+    {
+        realloc(audioBuffer, numFramesInAudioFile * sizeof(float));
+        realloc(outputBuffer, numFramesInAudioFile * sizeof(float));
+    }
+    
+    if (stftBuffer != nil)
+        free(stftBuffer);
+    
+    stftBuffer = newSTFTBuffer(windowSize, overlap, &numFFTFrames, numFramesInAudioFile);
+}
+
+#pragma mark - Public Methods -
 
 - (void)calculateSTFT
 {
@@ -454,41 +490,6 @@ static OSStatus renderCallback(void *inRefCon,
     AudioSessionSetActive(false);
 }
 
-- (void)setBounds:(GLKVector2)sideBounds andRight:(GLKVector2)verticalBounds
-{
-    leftBound = sideBounds.x;
-    rightBound = sideBounds.y;
-    topBound = verticalBounds.x;
-    bottomBound = verticalBounds.y;
-    
-    playbackLeft = leftBound / (float)(screenWidth / (numFFTFrames / overlap));
-    if (playbackLeft <= 0)
-        playbackLeft = 0;
-    if (playbackLeft >= screenWidth)
-        playbackLeft = screenWidth;
-    playbackRight = rightBound / (float)(screenWidth / (numFFTFrames / overlap));
-    if (playbackRight <= 0)
-        playbackRight = 0;
-    if (playbackRight >= screenWidth)
-        playbackRight = screenWidth;
-    
-    
-    //playbackTop = (screenHeight - topBound) / (float)(screenHeight / (float)(windowSize / 16));
-    playbackTop = topBound / (float)(screenHeight / (float)(windowSize / 16));
-    if (playbackTop <= 0)
-        playbackTop = 0;
-    if (playbackTop >= windowSize / 2)
-        playbackTop = windowSize / 2;
-    
-    //playbackBottom = (screenHeight - bottomBound) / (float)(screenHeight / (float)(windowSize / 16));
-    playbackBottom = bottomBound / (float)(screenHeight / (float)(windowSize / 16));
-    if (playbackBottom <= 0)
-        playbackBottom = 0;
-    if (playbackBottom >= windowSize / 2)
-        playbackBottom = windowSize / 2;
-    
-    counter = playbackLeft;
-}
 
 
 
