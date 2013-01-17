@@ -18,11 +18,13 @@
 @synthesize editViewControl;
 @synthesize toolbarViewControl;
 @synthesize spectroViewControl;
+@synthesize gestureViewControl;
 
 @synthesize fileView;
 @synthesize toolbarView;
 @synthesize editView;
 @synthesize spectroView;
+@synthesize gestureView;
 
 - (void)viewDidLoad
 {
@@ -49,7 +51,7 @@
     toolbarViewControl = [[SAMToolbarViewController alloc] initWithNibName:@"ToolbarView" bundle:[NSBundle mainBundle]];
     toolbarViewControl.delegate = self;
     
-    [self addSpectrogram];
+    //[self addSpectrogramView];
     
     // Settings for Edit View
     editView = editViewControl.view;
@@ -57,6 +59,8 @@
     [editView setHidden:NO];
     [editView setFrame:editRect];
     [self.view addSubview:editView];
+    
+    //[self addGestureView];          // sandwiching views
     
     // Settings for Toolbar View
     toolbarView = toolbarViewControl.view;
@@ -66,7 +70,7 @@
     [self.view addSubview:toolbarView];
 }
 
-- (void)addSpectrogram
+- (void)addSpectrogramView
 {
     spectroViewControl = [[SAMSpectrogramViewController alloc] initWithNibName:@"SpectrogramView" bundle:[NSBundle mainBundle]];
     spectroView = spectroViewControl.view;
@@ -74,6 +78,16 @@
     [spectroView setHidden:YES];
     [spectroView setFrame:spectroRect];
     [self.view addSubview:spectroView];
+}
+
+- (void)addGestureView
+{
+    gestureViewControl = [[SAMGestureViewController alloc] initWithNibName:@"GestureView" bundle:[NSBundle mainBundle]];
+    gestureView = gestureViewControl.view;
+    CGRect gestureRect = CGRectMake(0, 0, gestureView.bounds.size.width, gestureView.bounds.size.height);
+    [gestureView setHidden:NO];
+    [gestureView setFrame:gestureRect];
+    [self.view addSubview:gestureView];
 }
 
 

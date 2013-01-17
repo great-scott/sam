@@ -10,4 +10,12 @@
 
 @interface SAMSpectrogramViewController : GLKViewController
 
+@property BOOL editMode;
+@property float redAmt;
+
+//- (IBAction)handlePress:(UILongPressGestureRecognizer *)sender;
+//- (IBAction)handlePan:(UIPanGestureRecognizer *)sender;
+//- (IBAction)handlePinch:(UIPinchGestureRecognizer *)sender;
+
+
 @end

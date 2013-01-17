@@ -21,6 +21,8 @@
 		42534166169E2E2E009E53DC /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 42534165169E2E2E009E53DC /* AudioToolbox.framework */; };
 		4254A0F516A796C100C35BE2 /* SpectrogramView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4254A0F416A796C100C35BE2 /* SpectrogramView.xib */; };
 		4254A0F916A7977E00C35BE2 /* SAMSpectrogramViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4254A0F816A7977E00C35BE2 /* SAMSpectrogramViewController.m */; };
+		4254A0FF16A7AB6A00C35BE2 /* GestureView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4254A0FE16A7AB6A00C35BE2 /* GestureView.xib */; };
+		4254A10216A7ABCA00C35BE2 /* SAMGestureViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4254A10116A7ABCA00C35BE2 /* SAMGestureViewController.m */; };
 		4264B7BB16A6E31C00ACCC18 /* SAMTouchTrack.m in Sources */ = {isa = PBXBuildFile; fileRef = 4264B7BA16A6E31C00ACCC18 /* SAMTouchTrack.m */; };
 		42D4489F16A4BCFF00B7B195 /* RegionPolygon.m in Sources */ = {isa = PBXBuildFile; fileRef = 42D4489E16A4BCFF00B7B195 /* RegionPolygon.m */; };
 		42D448A216A4BFAF00B7B195 /* Vertex.m in Sources */ = {isa = PBXBuildFile; fileRef = 42D448A116A4BFAF00B7B195 /* Vertex.m */; };
@@ -68,6 +70,9 @@
 		4254A0F416A796C100C35BE2 /* SpectrogramView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SpectrogramView.xib; sourceTree = "<group>"; };
 		4254A0F716A7977E00C35BE2 /* SAMSpectrogramViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SAMSpectrogramViewController.h; sourceTree = "<group>"; };
 		4254A0F816A7977E00C35BE2 /* SAMSpectrogramViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SAMSpectrogramViewController.m; sourceTree = "<group>"; };
+		4254A0FE16A7AB6A00C35BE2 /* GestureView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = GestureView.xib; sourceTree = "<group>"; };
+		4254A10016A7ABCA00C35BE2 /* SAMGestureViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SAMGestureViewController.h; sourceTree = "<group>"; };
+		4254A10116A7ABCA00C35BE2 /* SAMGestureViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SAMGestureViewController.m; sourceTree = "<group>"; };
 		4264B7B916A6E31C00ACCC18 /* SAMTouchTrack.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SAMTouchTrack.h; sourceTree = "<group>"; };
 		4264B7BA16A6E31C00ACCC18 /* SAMTouchTrack.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SAMTouchTrack.m; sourceTree = "<group>"; };
 		42D4489D16A4BCFF00B7B195 /* RegionPolygon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RegionPolygon.h; sourceTree = "<group>"; };
@@ -226,6 +231,8 @@
 				42EA6B7D169B7C21005960F5 /* SAMToolbarViewController.m */,
 				4254A0F716A7977E00C35BE2 /* SAMSpectrogramViewController.h */,
 				4254A0F816A7977E00C35BE2 /* SAMSpectrogramViewController.m */,
+				4254A10016A7ABCA00C35BE2 /* SAMGestureViewController.h */,
+				4254A10116A7ABCA00C35BE2 /* SAMGestureViewController.m */,
 			);
 			name = ViewControllers;
 			sourceTree = "<group>";
@@ -238,6 +245,7 @@
 				42EA6B7A169B7B00005960F5 /* ToolbarView.xib */,
 				423D1F57169CD64B000074E3 /* FileView.xib */,
 				4254A0F416A796C100C35BE2 /* SpectrogramView.xib */,
+				4254A0FE16A7AB6A00C35BE2 /* GestureView.xib */,
 			);
 			name = Views;
 			sourceTree = "<group>";
@@ -303,6 +311,7 @@
 				42EA6B7B169B7B00005960F5 /* ToolbarView.xib in Resources */,
 				423D1F58169CD64B000074E3 /* FileView.xib in Resources */,
 				4254A0F516A796C100C35BE2 /* SpectrogramView.xib in Resources */,
+				4254A0FF16A7AB6A00C35BE2 /* GestureView.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -331,6 +340,7 @@
 				42D448A216A4BFAF00B7B195 /* Vertex.m in Sources */,
 				4264B7BB16A6E31C00ACCC18 /* SAMTouchTrack.m in Sources */,
 				4254A0F916A7977E00C35BE2 /* SAMSpectrogramViewController.m in Sources */,
+				4254A10216A7ABCA00C35BE2 /* SAMGestureViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

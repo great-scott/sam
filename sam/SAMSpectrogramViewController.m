@@ -16,6 +16,8 @@
 
 @implementation SAMSpectrogramViewController
 @synthesize context = _context;
+@synthesize editMode;
+@synthesize redAmt;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -38,6 +40,9 @@
     view.context = self.context;
     view.drawableMultisample = GLKViewDrawableMultisample4X;
     view.multipleTouchEnabled = YES;
+    
+    redAmt = 0.9;
+    editMode = NO;
 }
 
 - (void)didReceiveMemoryWarning
@@ -48,8 +53,26 @@
 
 - (void)glkView:(GLKView *)view drawInRect:(CGRect)rect
 {
-    glClearColor(1.0, 0, 0, 1.0);
+    glClearColor(redAmt, 0.9, 0.9, 1.0);
     glClear(GL_COLOR_BUFFER_BIT);
 }
+
+//- (IBAction)handlePress:(UILongPressGestureRecognizer *)sender
+//{
+//    if (sender.state == UIGestureRecognizerStateEnded)
+//    {
+//        editMode = !editMode;
+//        if (editMode == YES)
+//            redAmt = 0.5;
+//        else
+//            redAmt = 0.9;
+//    }
+//}
+//
+//- (IBAction)handlePan:(UIPanGestureRecognizer *)sender {
+//}
+//
+//- (IBAction)handlePinch:(UIPinchGestureRecognizer *)sender {
+//}
 
 @end

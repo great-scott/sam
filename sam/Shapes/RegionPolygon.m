@@ -50,7 +50,7 @@
         polygon = [[Shape alloc] init];
     
     polygon.bounds = bounds;
-    polygon.color = GLKVector4Make(0.6, 0.6, 0.6, 0.4);     //TODO: make this dynamic
+    polygon.color = GLKVector4Make(0.5, 0.5, 0.5, 0.7);     //TODO: make this dynamic
     polygon.numVertices = numberVertices;
     // Setup polygon vertex positions
     for (int i = 0; i < numberVertices; i++)

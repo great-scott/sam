@@ -12,6 +12,7 @@
 #import "SAMToolbarViewController.h"
 #import "SAMAudioModel.h"
 #import "SAMSpectrogramViewController.h"
+#import "SAMGestureViewController.h"
 
 @interface SAMViewController : UIViewController <SAMToolbarViewControllerDelegate, UITableViewDataSource, UITableViewDelegate>
 {
@@ -28,11 +29,13 @@
 @property (nonatomic, strong) SAMEditViewController* editViewControl;
 @property (nonatomic, strong) SAMToolbarViewController* toolbarViewControl;
 @property (nonatomic, strong) SAMSpectrogramViewController* spectroViewControl;
+@property (nonatomic, strong) SAMGestureViewController* gestureViewControl;
 
 @property (nonatomic, strong) UIView* fileView;
 @property (nonatomic, strong) UIView* editView;
 @property (nonatomic, strong) UIView* toolbarView;
 @property (nonatomic, strong) UIView* spectroView;
+@property (nonatomic, strong) UIView* gestureView;
 
 // File Browser Callbacks
 - (IBAction)openPressed:(UIButton *)sender;

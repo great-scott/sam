@@ -23,7 +23,7 @@
 }
 
 //- (void)addTouch:(UITouch *)touch with:(id)object;
-- (void)addTouch:(UITouch *)touch forParent:(id)polygon with:(id)object;
+- (BOOL)addTouch:(UITouch *)touch forParent:(id)polygon with:(id)object;
 - (void)removeTouch:(UITouch *)touch;
 
 - (SAMTouchTrack *)getTouchClassArray:(UITouch *)touch;
