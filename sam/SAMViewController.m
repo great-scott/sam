@@ -17,9 +17,12 @@
 @implementation SAMViewController
 @synthesize editViewControl;
 @synthesize toolbarViewControl;
+@synthesize spectroViewControl;
+
 @synthesize fileView;
 @synthesize toolbarView;
 @synthesize editView;
+@synthesize spectroView;
 
 - (void)viewDidLoad
 {
@@ -46,12 +49,13 @@
     toolbarViewControl = [[SAMToolbarViewController alloc] initWithNibName:@"ToolbarView" bundle:[NSBundle mainBundle]];
     toolbarViewControl.delegate = self;
     
+    [self addSpectrogram];
+    
     // Settings for Edit View
     editView = editViewControl.view;
     CGRect editRect = CGRectMake(0, 0, editView.bounds.size.width, editView.bounds.size.height);
     [editView setHidden:NO];
     [editView setFrame:editRect];
-    
     [self.view addSubview:editView];
     
     // Settings for Toolbar View
@@ -59,8 +63,17 @@
     CGRect toolRect = CGRectMake(TOOLBAR_X_LOC, 0, toolbarView.bounds.size.width, toolbarView.bounds.size.height);
     [toolbarView setHidden:NO];
     [toolbarView setFrame:toolRect];
-    
     [self.view addSubview:toolbarView];
+}
+
+- (void)addSpectrogram
+{
+    spectroViewControl = [[SAMSpectrogramViewController alloc] initWithNibName:@"SpectrogramView" bundle:[NSBundle mainBundle]];
+    spectroView = spectroViewControl.view;
+    CGRect spectroRect = CGRectMake(0, 0, spectroView.bounds.size.width, spectroView.bounds.size.height);
+    [spectroView setHidden:YES];
+    [spectroView setFrame:spectroRect];
+    [self.view addSubview:spectroView];
 }
 
 
@@ -110,6 +123,8 @@
     if (fileSelected)
     {
         [audioModel openAudioFile:fileUrl];
+        [audioModel calculateSTFT];
+        [spectroView setHidden:NO];
         [self animateFileView:NO];
     }
 }

@@ -17,7 +17,6 @@
 //@synthesize frequencyBuffer;
 @synthesize stftBuffer;
 @synthesize numFFTFrames;
-@synthesize shapeReferences;
 
 
 #pragma mark - Render Callback -
@@ -124,7 +123,7 @@ static OSStatus renderCallback(void *inRefCon,
     
     if (self)
     {
-        windowSize = 4096;
+        windowSize = 1024;
         overlap = 2;
         hopSize = windowSize / overlap;
         audioBuffer = nil;        
@@ -168,6 +167,7 @@ static OSStatus renderCallback(void *inRefCon,
         
         //-----------------------------------------------
         fileLoaded = NO;
+        shapeReferences = nil;
     }
     
     return self;
@@ -474,6 +474,11 @@ static OSStatus renderCallback(void *inRefCon,
 - (void)calculateSTFT
 {
     computeSTFT(fftManager, stftBuffer, audioBuffer);
+}
+
+- (void)setShapeReference:(NSMutableArray *)shapeRef
+{
+    shapeReferences = shapeRef;
 }
 
 - (void)startAudioPlayback

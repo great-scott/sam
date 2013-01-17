@@ -11,6 +11,8 @@
 #import "RegionSquare.h"
 #import "SAMTouchTracker.h"
 #import "RegionPolygon.h"
+#import "SAMAudioModel.h"
+#import "SAMSpectrogramViewController.h"
 
 @interface SAMEditViewController : GLKViewController
 {
@@ -18,7 +20,12 @@
     SAMTouchTracker* touchTracker;
 }
 
+@property (nonatomic, strong) SAMSpectrogramViewController* spectroViewControl;
+
+@property (nonatomic, strong) UIView* spectroView;
+
 - (void)addSquare;
 - (void)addTriangle;
+- (void)addSpectrogram;
 
 @end

@@ -16,7 +16,8 @@
 
 @implementation SAMEditViewController
 @synthesize context = _context;
-
+@synthesize spectroViewControl;
+@synthesize spectroView;
 
 #pragma mark - View Initialization -
 
@@ -43,8 +44,11 @@
     view.context = self.context;
     view.drawableMultisample = GLKViewDrawableMultisample4X;
     view.multipleTouchEnabled = YES;
+    self.view.opaque = NO; // NB: Apple DELETES THIS VALUE FROM NIB
+    self.view.backgroundColor = [UIColor clearColor];
     
     shapes = [[NSMutableArray alloc] init];
+    [[SAMAudioModel sharedAudioModel] setShapeReference:shapes];
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
@@ -57,7 +61,8 @@
 
 - (void)glkView:(GLKView *)view drawInRect:(CGRect)rect
 {
-    glClearColor(0.95, 0.95, 0.95, 1.0);
+//    glClearColor(0.95, 0.95, 0.95, 0.0);
+    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
     glClear(GL_COLOR_BUFFER_BIT);
     
     if ([shapes count] > 0)
@@ -79,6 +84,16 @@
     // The default is 3 vertices for a region polygon, so we don't need to specify the number of them
     RegionPolygon* triangle = [[RegionPolygon alloc] initWithRect:self.view.bounds];
     [shapes addObject:triangle];
+}
+
+- (void)addSpectrogram
+{
+    spectroViewControl = [[SAMSpectrogramViewController alloc] initWithNibName:@"SpectrogramView" bundle:[NSBundle mainBundle]];
+    spectroView = spectroViewControl.view;
+    CGRect spectroRect = CGRectMake(0, 0, spectroView.bounds.size.width, spectroView.bounds.size.height);
+    [spectroView setHidden:YES];
+    [spectroView setFrame:spectroRect];
+    [self.view addSubview:spectroView];
 }
 
 #pragma mark - Touch Callbacks -

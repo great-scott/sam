@@ -47,6 +47,7 @@
     int rate;
     int rateCounter;
     
+    NSMutableArray* shapeReferences;
     
     // Circular Buffer thingy
     //BUFFER_MANAGER* overlapBuffer;
@@ -67,12 +68,13 @@
 @property int screenHeight;
 
 @property (readonly) STFT_BUFFER* stftBuffer;
-@property (nonatomic, weak) NSMutableArray* shapeReferences;
-
 
 + (SAMAudioModel *)sharedAudioModel;
 - (void)openAudioFile:(CFURLRef)fileToOpen;
 - (void)calculateSTFT;
+
+//
+- (void)setShapeReference:(NSMutableArray *)shapeRef;
 
 // Audio Playback (aka DAC) On/Off
 - (void)startAudioPlayback;
