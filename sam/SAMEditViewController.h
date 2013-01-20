@@ -13,16 +13,21 @@
 #import "RegionPolygon.h"
 #import "SAMAudioModel.h"
 #import "SAMSpectrogramViewController.h"
+#import "SAMGestureViewController.h"
 
 @interface SAMEditViewController : GLKViewController
 {
     NSMutableArray* shapes;
     SAMTouchTracker* touchTracker;
+    SAMSpectrogramViewController* spectroViewControl;
 }
 
 @property (nonatomic, strong) SAMSpectrogramViewController* spectroViewControl;
+@property (nonatomic, strong) SAMGestureViewController* gestureViewControl;
 
 @property (nonatomic, strong) UIView* spectroView;
+@property (nonatomic, strong) UIView* gestureView;
+- (IBAction)handlePress:(UILongPressGestureRecognizer *)sender;
 
 - (void)addSquare;
 - (void)addTriangle;

@@ -7,15 +7,16 @@
 //
 
 #import <GLKit/GLKit.h>
+#import "SAMTouchTracker.h"
 
 @interface SAMSpectrogramViewController : GLKViewController
+{
+    SAMTouchTracker* touchTracker;
+}
 
 @property BOOL editMode;
 @property float redAmt;
 
-//- (IBAction)handlePress:(UILongPressGestureRecognizer *)sender;
-//- (IBAction)handlePan:(UIPanGestureRecognizer *)sender;
-//- (IBAction)handlePinch:(UIPinchGestureRecognizer *)sender;
-
+- (void)pressHandle:(UILongPressGestureRecognizer *)sender;
 
 @end

@@ -12,6 +12,10 @@
 #import "RegionPolygon.h"
 
 @interface SAMTouchTracker : NSObject
+{
+    NSTimeInterval timeStamp;
+    NSTimeInterval prevTimeStamp;
+}
 
 @property (nonatomic, strong) SAMTouchContainer* touchContainer;
 @property (nonatomic, strong) UIView* view;

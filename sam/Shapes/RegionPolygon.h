@@ -34,6 +34,7 @@
 - (void)addVertex:(GLKVector2)newPosition;
 - (id)isTouchInside:(GLKVector2)press;
 - (void)setPosition:(GLKVector2)newPosition withSubShape:(id)shape;
+- (int)isTouchingLine:(GLKVector2)currentPosition;
 
 
 @end

@@ -59,7 +59,7 @@
     [editView setHidden:NO];
     [editView setFrame:editRect];
     [self.view addSubview:editView];
-    
+    //[editViewControl setSpectroViewControl:spectroViewControl];
     //[self addGestureView];          // sandwiching views
     
     // Settings for Toolbar View
@@ -75,7 +75,7 @@
     spectroViewControl = [[SAMSpectrogramViewController alloc] initWithNibName:@"SpectrogramView" bundle:[NSBundle mainBundle]];
     spectroView = spectroViewControl.view;
     CGRect spectroRect = CGRectMake(0, 0, spectroView.bounds.size.width, spectroView.bounds.size.height);
-    [spectroView setHidden:YES];
+    [spectroView setHidden:NO];
     [spectroView setFrame:spectroRect];
     [self.view addSubview:spectroView];
 }

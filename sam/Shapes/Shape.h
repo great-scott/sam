@@ -38,6 +38,7 @@
 @property GLubyte drawingStyle;
 @property int number;
 @property GLKVector2 grabPoint;
+@property float angle;
 
 - (void)update;
 - (void)render;

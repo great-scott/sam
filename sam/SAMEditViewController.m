@@ -17,7 +17,9 @@
 @implementation SAMEditViewController
 @synthesize context = _context;
 @synthesize spectroViewControl;
+@synthesize gestureViewControl;
 @synthesize spectroView;
+@synthesize gestureView;
 
 #pragma mark - View Initialization -
 
@@ -49,6 +51,9 @@
     
     shapes = [[NSMutableArray alloc] init];
     [[SAMAudioModel sharedAudioModel] setShapeReference:shapes];
+    
+    spectroViewControl = nil;
+    //[self addGestureView];
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
@@ -72,6 +77,11 @@
 
 #pragma mark - View Methods -
 
+- (IBAction)handlePress:(UILongPressGestureRecognizer *)sender
+{
+    [spectroViewControl pressHandle:sender];
+}
+
 - (void)addSquare
 {
     RegionPolygon* poly = [[RegionPolygon alloc] initWithRect:self.view.bounds];
@@ -86,14 +96,28 @@
     [shapes addObject:triangle];
 }
 
-- (void)addSpectrogram
+- (void)addGestureView
 {
-    spectroViewControl = [[SAMSpectrogramViewController alloc] initWithNibName:@"SpectrogramView" bundle:[NSBundle mainBundle]];
-    spectroView = spectroViewControl.view;
-    CGRect spectroRect = CGRectMake(0, 0, spectroView.bounds.size.width, spectroView.bounds.size.height);
-    [spectroView setHidden:YES];
-    [spectroView setFrame:spectroRect];
-    [self.view addSubview:spectroView];
+    gestureViewControl = [[SAMGestureViewController alloc] initWithNibName:@"GestureView" bundle:[NSBundle mainBundle]];
+    gestureView = gestureViewControl.view;
+    CGRect gestureRect = CGRectMake(0, 0, gestureView.bounds.size.width, gestureView.bounds.size.height);
+    [gestureView setHidden:NO];
+    [gestureView setFrame:gestureRect];
+    [self.view addSubview:gestureView];
+}
+
+- (void)setSpectroViewControl:(SAMSpectrogramViewController *)svc
+{
+    // TODO: This could get really hairy really quick keep this marked for debugging
+    if (svc != nil)
+        gestureViewControl.spectroViewController = svc;
+    
+    spectroViewControl = svc;
+}
+
+- (SAMSpectrogramViewController *)spectroViewControl
+{
+    return spectroViewControl;
 }
 
 #pragma mark - Touch Callbacks -
@@ -101,16 +125,19 @@
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
 {
     [touchTracker startTouches:touches withEvent:event withShapes:shapes];
+    //[gestureViewControl touchesBegan:touches withEvent:event withShapes:shapes];
 }
 
 - (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event
 {
     [touchTracker moveTouches:touches withEvent:event withShapes:shapes];
+    //[gestureViewControl touchesMoved:touches withEvent:event withShapes:shapes];
 }
 
 - (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
 {
     [touchTracker endTouches:touches withEvent:event withShapes:shapes];
+    //[gestureViewControl touchesEnded:touches withEvent:event withShapes:shapes];
 }
 
 

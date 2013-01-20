@@ -23,7 +23,8 @@
 {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
-        // Custom initialization
+        touchTracker = [[SAMTouchTracker alloc] init];
+        touchTracker.view = self.view;
     }
     return self;
 }
@@ -53,26 +54,14 @@
 
 - (void)glkView:(GLKView *)view drawInRect:(CGRect)rect
 {
-    glClearColor(redAmt, 0.9, 0.9, 1.0);
+    glClearColor(redAmt, 0.6, 0.6, 1.0);
     glClear(GL_COLOR_BUFFER_BIT);
 }
 
-//- (IBAction)handlePress:(UILongPressGestureRecognizer *)sender
-//{
-//    if (sender.state == UIGestureRecognizerStateEnded)
-//    {
-//        editMode = !editMode;
-//        if (editMode == YES)
-//            redAmt = 0.5;
-//        else
-//            redAmt = 0.9;
-//    }
-//}
-//
-//- (IBAction)handlePan:(UIPanGestureRecognizer *)sender {
-//}
-//
-//- (IBAction)handlePinch:(UIPinchGestureRecognizer *)sender {
-//}
+- (void)pressHandle:(UILongPressGestureRecognizer *)sender
+{
+    //CGPoint point = sender.view.
+}
+
 
 @end
