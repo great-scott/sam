@@ -27,7 +27,7 @@
 
 @property int numVertices;
 @property GLKVector4 color;         // Different parts have a different color relationship and will change on their own
-@property GLKVector2 boundPoints;
+@property GLKVector4 boundPoints;
 @property (nonatomic, strong) NSMutableArray* circles;
 
 - (id)initWithRect:(CGRect)bounds;

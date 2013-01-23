@@ -75,9 +75,9 @@
     
     shapes = [[NSMutableArray alloc] init];
     [[SAMAudioModel sharedAudioModel] setShapeReference:shapes];
+    [[SAMAudioModel sharedAudioModel] setEditArea:self.view.bounds];
     
     spectroViewControl = nil;
-
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
@@ -111,6 +111,8 @@
     RegionPolygon* poly = [[RegionPolygon alloc] initWithRect:self.view.bounds];
     poly.numVertices = 4;
     [shapes addObject:poly];
+    
+    [[SAMAudioModel sharedAudioModel] setPoly:poly];
 }
 
 - (void)addTriangle

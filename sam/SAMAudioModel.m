@@ -18,8 +18,20 @@
 @synthesize stftBuffer;
 @synthesize numFFTFrames;
 
+//----
+@synthesize editArea;
+@synthesize poly;
+
+
+float changeTouchYScale(float inputPoint, float scale)
+{
+    return scale * atan(inputPoint / TOUCH_DIVIDE);
+//    return scale * (log(inputPoint) + 4.0);
+}
+
 
 #pragma mark - Render Callback -
+
 static OSStatus renderCallback(void *inRefCon, 
                                AudioUnitRenderActionFlags *ioActionFlags,
                                const AudioTimeStamp *inTimeStamp,
@@ -37,6 +49,9 @@ static OSStatus renderCallback(void *inRefCon,
 //    float fac, scale, delta;
 //    fac = (float) (this->hopSize * TWO_PI / this->sampleRate);
 //    scale = this->sampleRate / this->windowSize;
+    
+    float h = changeTouchYScale(this->poly.boundPoints.z, this->touchScale);
+    printf("%f\n", h);
     
     if (NO)
     {
@@ -156,9 +171,6 @@ static OSStatus renderCallback(void *inRefCon,
         circleBuffer[0] = (float *)malloc(windowSize * sizeof(float));
         circleBuffer[1] = (float *)malloc(windowSize * sizeof(float));
         
-        // Circular Buffer thingy
-        //overlapBuffer = createBufferManager(overlap, windowSize);
-        
         // Polar window buffers
         polarWindows[0] = newPolarWindow(windowSize / 2);
         polarWindows[1] = newPolarWindow(windowSize / 2);
@@ -168,6 +180,7 @@ static OSStatus renderCallback(void *inRefCon,
         //-----------------------------------------------
         fileLoaded = NO;
         shapeReferences = nil;
+        touchScale = [self findTouchScale];
     }
     
     return self;
@@ -287,6 +300,51 @@ static OSStatus renderCallback(void *inRefCon,
 }
 
 
+#pragma mark - Utility Methods -
+// This method creates a mono track and stuffs it into the left channel
+- (void)convertToMonoWith:(float *)left andRightChannel:(float *)right withSize:(int)size
+{
+    for (int i = 0; i < size; i++)
+        left[i] = (left[i] + right[i]) / 2.0;
+}
+
+// Converts from AudioUnit sample type to float
+- (void)convert:(AudioUnitSampleType *)input withSize:(int)size
+{
+    for (int i = 0; i < size; i++)
+        input[i] = (float)((SInt16)(input[i] >> 9) / 32768.0);
+}
+
+- (float)findTouchScale
+{
+    float maxBounds = atan(editArea.size.height / TOUCH_DIVIDE) * TOUCH_HIGHEND_CUT;
+    float halfWindow = windowSize / 2;
+    float scale = halfWindow / maxBounds;
+    
+//    float scale = halfWindow / 6.3026;
+    
+    return scale;
+}
+
+- (void)createBuffers
+{
+    if (audioBuffer == nil)
+    {
+        audioBuffer = (float *)malloc(numFramesInAudioFile * sizeof(float));
+        outputBuffer = (float *)malloc(numFramesInAudioFile * sizeof(float));
+    }
+    else
+    {
+        realloc(audioBuffer, numFramesInAudioFile * sizeof(float));
+        realloc(outputBuffer, numFramesInAudioFile * sizeof(float));
+    }
+    
+    if (stftBuffer != nil)
+        free(stftBuffer);
+    
+    stftBuffer = newSTFTBuffer(windowSize, overlap, &numFFTFrames, numFramesInAudioFile);
+}
+
 
 #pragma mark - Public Methods -
 
@@ -325,7 +383,7 @@ static OSStatus renderCallback(void *inRefCon,
     AudioUnitSampleType* rightBuffer = NULL;
     if (channelCount == 2)
         rightBuffer = calloc(numFramesInAudioFile, sizeof(AudioUnitSampleType));
-
+    
     // create / reallocate reused variables
     [self createBuffers];
     
@@ -335,7 +393,7 @@ static OSStatus renderCallback(void *inRefCon,
     {
         size_t bytesPerSample = sizeof (AudioUnitSampleType);
         
-        // Fill the application audio format struct's fields to define a linear PCM, 
+        // Fill the application audio format struct's fields to define a linear PCM,
         //        stereo, noninterleaved stream at the hardware sample rate.
         importFormat.mFormatID          = kAudioFormatLinearPCM;
         importFormat.mFormatFlags       = kAudioFormatFlagsAudioUnitCanonical;
@@ -350,7 +408,7 @@ static OSStatus renderCallback(void *inRefCon,
     {
         size_t bytesPerSample = sizeof (AudioUnitSampleType);
         
-        // Fill the application audio format struct's fields to define a linear PCM, 
+        // Fill the application audio format struct's fields to define a linear PCM,
         //        stereo, noninterleaved stream at the hardware sample rate.
         importFormat.mFormatID          = kAudioFormatLinearPCM;
         importFormat.mFormatFlags       = kAudioFormatFlagsAudioUnitCanonical;
@@ -363,9 +421,9 @@ static OSStatus renderCallback(void *inRefCon,
     }
     
     
-    // Assign the appropriate mixer input bus stream data format to the extended audio 
-    //        file object. This is the format used for the audio data placed into the audio 
-    //        buffer in the SoundStruct data structure, which is in turn used in the 
+    // Assign the appropriate mixer input bus stream data format to the extended audio
+    //        file object. This is the format used for the audio data placed into the audio
+    //        buffer in the SoundStruct data structure, which is in turn used in the
     //        inputRenderCallback callback function.
     result = ExtAudioFileSetProperty (audioFileObject, kExtAudioFileProperty_ClientDataFormat, sizeof(importFormat), &importFormat);
     assert(result == noErr);
@@ -373,14 +431,14 @@ static OSStatus renderCallback(void *inRefCon,
     
     // Set up an AudioBufferList struct, which has two roles:
     //
-    //        1. It gives the ExtAudioFileRead function the configuration it 
+    //        1. It gives the ExtAudioFileRead function the configuration it
     //            needs to correctly provide the data to the buffer.
     //
-    //        2. It points to the soundStructArray[audioFile].audioDataLeft buffer, so 
+    //        2. It points to the soundStructArray[audioFile].audioDataLeft buffer, so
     //            that audio data obtained from disk using the ExtAudioFileRead function
     //            goes to that buffer
     
-    // Allocate memory for the buffer list struct according to the number of 
+    // Allocate memory for the buffer list struct according to the number of
     //    channels it represents.
     AudioBufferList *bufferList;
     bufferList = (AudioBufferList *) malloc(sizeof(AudioBufferList) + sizeof(AudioBuffer) * (channelCount - 1));
@@ -434,43 +492,6 @@ static OSStatus renderCallback(void *inRefCon,
 }
 
 
-#pragma mark - Utility Methods -
-// This method creates a mono track and stuffs it into the left channel
-- (void)convertToMonoWith:(float *)left andRightChannel:(float *)right withSize:(int)size
-{
-    for (int i = 0; i < size; i++)
-        left[i] = (left[i] + right[i]) / 2.0;
-}
-
-// Converts from AudioUnit sample type to float
-//- (void)convert:(AudioUnitSampleType *)input to:(float *)output withSize:(int)size
-- (void)convert:(AudioUnitSampleType *)input withSize:(int)size
-{
-    for (int i = 0; i < size; i++)
-        input[i] = (float)((SInt16)(input[i] >> 9) / 32768.0);
-}
-
-- (void)createBuffers
-{
-    if (audioBuffer == nil)
-    {
-        audioBuffer = (float *)malloc(numFramesInAudioFile * sizeof(float));
-        outputBuffer = (float *)malloc(numFramesInAudioFile * sizeof(float));
-    }
-    else
-    {
-        realloc(audioBuffer, numFramesInAudioFile * sizeof(float));
-        realloc(outputBuffer, numFramesInAudioFile * sizeof(float));
-    }
-    
-    if (stftBuffer != nil)
-        free(stftBuffer);
-    
-    stftBuffer = newSTFTBuffer(windowSize, overlap, &numFFTFrames, numFramesInAudioFile);
-}
-
-#pragma mark - Public Methods -
-
 - (void)calculateSTFT
 {
     computeSTFT(fftManager, stftBuffer, audioBuffer);
@@ -495,7 +516,16 @@ static OSStatus renderCallback(void *inRefCon,
     AudioSessionSetActive(false);
 }
 
+- (void)setEditArea:(CGRect)newEditArea
+{
+    editArea = newEditArea;
+    touchScale = [self findTouchScale];
+}
 
+- (CGRect)editArea
+{
+    return editArea;
+}
 
 
 

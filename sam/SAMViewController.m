@@ -139,8 +139,10 @@
 {
     if (fileSelected)
     {
-        [audioModel openAudioFile:fileUrl];
-        [audioModel calculateSTFT];
+//        [audioModel openAudioFile:fileUrl];
+//        [audioModel calculateSTFT];
+        [[SAMAudioModel sharedAudioModel] openAudioFile:fileUrl];
+        [[SAMAudioModel sharedAudioModel] calculateSTFT];
         [spectroView setHidden:NO];
         [self animateFileView:NO];
     }
@@ -180,13 +182,13 @@
         // Turn On/Off Audio Unit / Session
         if (audioStatus == NO)
         {
-            [audioModel startAudioPlayback];
+            [[SAMAudioModel sharedAudioModel] startAudioPlayback];
             sender.backgroundColor = [[UIColor alloc] initWithRed:0.0 green:0.8 blue:0.2 alpha:1.0];
             audioStatus = YES;
         }
         else
         {
-            [audioModel stopAudioPlayback];
+            [[SAMAudioModel sharedAudioModel] stopAudioPlayback];
             sender.backgroundColor = [UIColor lightGrayColor];
             audioStatus = NO;
         }

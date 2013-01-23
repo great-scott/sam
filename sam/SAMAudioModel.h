@@ -14,6 +14,16 @@
 
 #include "FFTManager.h"
 
+#define TOUCH_DIVIDE 100                // this is used in a scaling operation
+#define TOUCH_HIGHEND_CUT 1.5
+
+# pragma mark - C Functions -
+
+float changeTouchYScale(float inputPoint, float scale);
+
+
+# pragma mark - Main Interface -
+
 @interface SAMAudioModel : NSObject
 {    
     // FFT Properties
@@ -58,7 +68,10 @@
     int currentPolar;
     
     //-------------------------------
-    BOOL fileLoaded;
+    BOOL        fileLoaded;
+    CGRect      editArea;
+    float       touchScale;             // scale value used in touch mapping
+    
 }
 
 @property int windowSize;
@@ -66,6 +79,9 @@
 @property int numFFTFrames;
 @property int screenWidth;
 @property int screenHeight;
+@property CGRect editArea;
+
+@property (nonatomic, weak) RegionPolygon* poly;
 
 @property (readonly) STFT_BUFFER* stftBuffer;
 

@@ -86,9 +86,6 @@
             
             [touchContainer removeTouch:touch];
         }
-        
-        //timeStamp = touch.timestamp - timeStamp;
-//        NSLog(@"%f", touch.timestamp);
     }
 }
 

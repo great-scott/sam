@@ -213,15 +213,27 @@
 {
     float leftMost = -1;
     float rightMost = -1;
+    float topMost = -1;
+    float bottomMost = -1;
     for (int i = 0; i < numVertices; i++)
     {
         if (leftMost == -1 || self.vertices[i].x < leftMost)
             leftMost = self.vertices[i].x;
         if (rightMost == -1 || self.vertices[i].x > rightMost)
             rightMost = self.vertices[i].x;
+        if (topMost == -1 || self.vertices[i].y > topMost)
+        {
+            // Need to invert values
+            topMost = bounds.size.height - self.vertices[i].y;
+        }
+        if (bottomMost == -1 || self.vertices[i].y < bottomMost)
+        {
+            // Need to invert values
+            bottomMost = bounds.size.height - self.vertices[i].y;
+        }
     }
     
-    boundPoints = GLKVector2Make(leftMost, rightMost);
+    boundPoints = GLKVector4Make(leftMost, rightMost, topMost, bottomMost);
 }
 
 - (int)isTouchingLine:(GLKVector2)_position
