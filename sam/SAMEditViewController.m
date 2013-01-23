@@ -10,16 +10,17 @@
 
 @interface SAMEditViewController ()
 
-@property (strong, nonatomic) EAGLContext* context;
+//@property (strong, nonatomic) EAGLContext* context;
 
 @end
 
 @implementation SAMEditViewController
-@synthesize context = _context;
+@synthesize context;// = _context;
 @synthesize spectroViewControl;
 @synthesize gestureViewControl;
 @synthesize spectroView;
 @synthesize gestureView;
+
 
 #pragma mark - View Initialization -
 
@@ -41,9 +42,32 @@
     self.context = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES2];
     if (!self.context)
         NSLog(@"Failed to create ES context.");
+//
+//    GLKView* view = (GLKView *)self.view;
+//    [EAGLContext setCurrentContext:self.context];
+//    view.context = self.context;
+//    
+//    view.drawableMultisample = GLKViewDrawableMultisample4X;
+//    view.multipleTouchEnabled = YES;
+//    self.view.opaque = NO; // NB: Apple DELETES THIS VALUE FROM NIB
+//    self.view.backgroundColor = [UIColor clearColor];
+//    
+//    shapes = [[NSMutableArray alloc] init];
+//    [[SAMAudioModel sharedAudioModel] setShapeReference:shapes];
+//    
+//    spectroViewControl = nil;
+    //[self addGestureView];
+}
+
+- (void)reinit
+{
+    if (!self.context)
+        NSLog(@"Failed to create ES context.");
     
     GLKView* view = (GLKView *)self.view;
+    [EAGLContext setCurrentContext:self.context];
     view.context = self.context;
+    
     view.drawableMultisample = GLKViewDrawableMultisample4X;
     view.multipleTouchEnabled = YES;
     self.view.opaque = NO; // NB: Apple DELETES THIS VALUE FROM NIB
@@ -53,7 +77,7 @@
     [[SAMAudioModel sharedAudioModel] setShapeReference:shapes];
     
     spectroViewControl = nil;
-    //[self addGestureView];
+
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation

@@ -23,6 +23,7 @@ static GLKBaseEffect *effect;
 @synthesize number;
 @synthesize bounds;
 @synthesize grabPoint;
+@synthesize useConstantColor;
 
 @synthesize position;
 
@@ -61,6 +62,8 @@ static GLKBaseEffect *effect;
         
         lineWidth = 1.0;
         drawingStyle = GL_TRIANGLE_FAN;
+        texture = nil;
+        useConstantColor = YES;
     }
     return self;
 }
@@ -94,31 +97,35 @@ static GLKBaseEffect *effect;
     return [vertexColorData mutableBytes];
 }
 
-//- (void)setPosition:(GLKVector2)newPosition
-//{
-//    GLKVector2 differenceOfPositions = GLKVector2Subtract(newPosition, grabPoint);
-//
-//    for (int i = 0; i < self.numVertices; i++)
-//        self.vertices[i] = GLKVector2Add(self.vertices[i], differenceOfPositions);
-//    
-//    position = GLKVector2Add(differenceOfPositions, position);
-//    grabPoint = GLKVector2Add(differenceOfPositions, grabPoint);
-//}
-//
-//- (GLKVector2)getPosition
-//{
-//    return position;
-//}
+- (GLKVector2 *)textureCoordinates {
+    if (textureCoordinateData == nil)
+        textureCoordinateData = [NSMutableData dataWithLength:sizeof(GLKVector2)*self.numVertices];
+    return [textureCoordinateData mutableBytes];
+}
 
-- (void)update
+- (void)setTextureImage:(UIImage *)image
 {
-    // nothing here yet
+    NSData* imdata =  UIImageJPEGRepresentation(image, 1.0);
+    NSError *error;
+    //texture = [GLKTextureLoader textureWithContentsOfData:imdata options:nil error:&error];
+    texture = [GLKTextureLoader textureWithCGImage:image.CGImage options:nil error:&error];
+    
+    if (error) {
+        NSLog(@"createTextureFromImagePicker has failed to load picked image: %@",error);
+    }
 }
 
 - (void)render
 {
-    effect.useConstantColor = YES;
+
+    effect.useConstantColor = useConstantColor;
     effect.constantColor = self.color;
+    
+    if (texture != nil) {
+        effect.texture2d0.envMode = GLKTextureEnvModeReplace;
+        effect.texture2d0.target = GLKTextureTarget2D;
+        effect.texture2d0.name = texture.name;
+    }
     
     GLKMatrix4 scaleMatrix = GLKMatrix4MakeScale(scale.x, scale.y, depth);
     GLKMatrix4 translateMatrix = GLKMatrix4MakeTranslation(position.x, position.y, depth);
@@ -129,16 +136,35 @@ static GLKBaseEffect *effect;
     
     [effect prepareToDraw];
     
+    //---------------------------------------------------------
+    
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    
     glLineWidth(lineWidth);
+    
+    if (texture != nil)
+    {
+        glEnableVertexAttribArray(GLKVertexAttribTexCoord0);
+        glVertexAttribPointer(GLKVertexAttribTexCoord0, 2, GL_FLOAT, GL_FALSE, 0, self.textureCoordinates);
+    }
+    if (!useConstantColor) {
+        glEnableVertexAttribArray(GLKVertexAttribColor);
+        glVertexAttribPointer(GLKVertexAttribColor, 4, GL_FLOAT, GL_FALSE, 0, self.vertexColors);
+    }
     
     glEnableVertexAttribArray(GLKVertexAttribPosition);
     glVertexAttribPointer(GLKVertexAttribPosition, 2, GL_FLOAT, GL_FALSE, 0, self.vertices);
+    
     glDrawArrays(drawingStyle, 0, self.numVertices);
+    
+    if (texture != nil)
+        glDisableVertexAttribArray(GLKVertexAttribTexCoord0);
+    if (!useConstantColor)
+        glDisableVertexAttribArray(GLKVertexAttribColor);
+    
     glDisableVertexAttribArray(GLKVertexAttribPosition);
     glDisable(GL_BLEND);
+    
 }
 
 //-(GLKMatrix4)projectionMatrix {

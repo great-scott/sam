@@ -12,8 +12,8 @@
 
 @interface Shape : NSObject
 {
-    NSMutableData *vertexData;
-    NSMutableData *vertexColorData;
+    NSMutableData* vertexData;
+    NSMutableData* vertexColorData;
     
     GLKVector4 color;
     GLKVector2 position;
@@ -21,9 +21,14 @@
     float depth;
     int number;
     int numVertices;
+    GLboolean       useConstantColor;
+    
+    GLKTextureInfo* texture;
+    NSMutableData *textureCoordinateData;
 }
 
 @property int numVertices;
+@property GLboolean useConstantColor;
 @property (readonly) GLKVector2 *vertices;
 @property (readonly) GLKVector4 *vertexColors;
 @property (readonly) GLKMatrix4 projectionMatrix;
@@ -40,8 +45,10 @@
 @property GLKVector2 grabPoint;
 @property float angle;
 
-- (void)update;
+@property(readonly) GLKVector2 *textureCoordinates;
+
 - (void)render;
+- (void)setTextureImage:(UIImage *)imageNamed;
 + (GLKBaseEffect *)getEffect;
 
 @end

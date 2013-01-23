@@ -20,10 +20,12 @@
     NSMutableArray* shapes;
     SAMTouchTracker* touchTracker;
     SAMSpectrogramViewController* spectroViewControl;
+    EAGLContext*    context;
 }
 
 @property (nonatomic, strong) SAMSpectrogramViewController* spectroViewControl;
 @property (nonatomic, strong) SAMGestureViewController* gestureViewControl;
+@property (strong, nonatomic) EAGLContext* context;
 
 @property (nonatomic, strong) UIView* spectroView;
 @property (nonatomic, strong) UIView* gestureView;
@@ -31,6 +33,7 @@
 
 - (void)addSquare;
 - (void)addTriangle;
-- (void)addSpectrogram;
+- (void)reinit;
+//- (void)addSpectrogram;
 
 @end

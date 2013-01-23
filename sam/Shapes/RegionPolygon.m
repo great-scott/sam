@@ -52,6 +52,7 @@
     polygon.bounds = bounds;
     polygon.color = GLKVector4Make(0.5, 0.5, 0.5, 0.7);     //TODO: make this dynamic
     polygon.numVertices = numberVertices;
+    polygon.useConstantColor = YES;
     // Setup polygon vertex positions
     for (int i = 0; i < numberVertices; i++)
     {
@@ -69,6 +70,7 @@
         circle.position = initPositions[i];
         circle.color = GLKVector4Make(0.4, 0.4, 0.4, 1.0);
         circle.bounds = bounds;
+        circle.useConstantColor = YES;
         [circles addObject:circle];
     }
     
@@ -89,6 +91,7 @@
         
         line.color = GLKVector4Make(0.4, 0.4, 0.4, 1.0);
         line.bounds = bounds;
+        line.useConstantColor = YES;
         
         [lines addObject:line];
     }

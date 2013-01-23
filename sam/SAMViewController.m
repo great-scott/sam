@@ -34,7 +34,7 @@
     [self setupFileDirectory];
     
     audioStatus = NO;
-    audioModel = [[SAMAudioModel alloc] init];
+    //audioModel = [[SAMAudioModel alloc] init];
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
@@ -47,11 +47,14 @@
 
 - (void)setupView
 {
+    //[self addSpectrogramView];
+    
     editViewControl = [[SAMEditViewController alloc] initWithNibName:@"EditView" bundle:[NSBundle mainBundle]];
     toolbarViewControl = [[SAMToolbarViewController alloc] initWithNibName:@"ToolbarView" bundle:[NSBundle mainBundle]];
     toolbarViewControl.delegate = self;
     
-    //[self addSpectrogramView];
+    //editViewControl.context = spectroViewControl.context;
+    [editViewControl reinit];
     
     // Settings for Edit View
     editView = editViewControl.view;
@@ -74,7 +77,7 @@
 {
     spectroViewControl = [[SAMSpectrogramViewController alloc] initWithNibName:@"SpectrogramView" bundle:[NSBundle mainBundle]];
     spectroView = spectroViewControl.view;
-    CGRect spectroRect = CGRectMake(0, 0, spectroView.bounds.size.width, spectroView.bounds.size.height);
+    CGRect spectroRect = CGRectMake(500, 0, spectroView.bounds.size.width, spectroView.bounds.size.height);
     [spectroView setHidden:NO];
     [spectroView setFrame:spectroRect];
     [self.view addSubview:spectroView];
