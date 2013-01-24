@@ -29,6 +29,33 @@ float changeTouchYScale(float inputPoint, float scale)
 //    return scale * (log(inputPoint) + 4.0);
 }
 
+void render(void *inRefCon,
+            AudioUnitRenderActionFlags *ioActionFlags,
+            const AudioTimeStamp *inTimeStamp,
+            UInt32 inBusNumber,
+            UInt32 inNumberFrames,
+            AudioBufferList *ioData)
+{
+    SAMAudioModel* this = (__bridge SAMAudioModel *)inRefCon;
+    float* audioFileBuffer = this->audioBuffer;
+    float* outputBuffer = (float *)ioData->mBuffers[0].mData;
+    
+    if (this->dspTick == 0)
+    {
+        
+        
+
+    }
+    
+    // Advance the dsp tick
+    this->dspTick += inNumberFrames;
+    if (this->dspTick >= this->hopSize)
+    {
+        this->dspTick = 0;
+    }
+    
+}
+
 
 #pragma mark - Render Callback -
 
@@ -43,15 +70,18 @@ static OSStatus renderCallback(void *inRefCon,
     SAMAudioModel* this = (__bridge SAMAudioModel *)inRefCon;
     Float32 *buffer = (Float32 *)ioData->mBuffers[0].mData;
     
+    if(this->fileLoaded == YES)
+    {
+        render(inRefCon, ioActionFlags, inTimeStamp, inBusNumber, inNumberFrames, ioData);
+    }
+    else
+    {
+        for (int frame = 0; frame < inNumberFrames; frame++)
+            buffer[frame] = 0.0;
+    }
+    
     // Reference to STFT buffer
     STFT_BUFFER* thisSTFTBuffer = this->stftBuffer;
-    
-//    float fac, scale, delta;
-//    fac = (float) (this->hopSize * TWO_PI / this->sampleRate);
-//    scale = this->sampleRate / this->windowSize;
-    
-    float h = changeTouchYScale(this->poly.boundPoints.z, this->touchScale);
-    printf("%f\n", h);
     
     if (NO)
     {
@@ -65,11 +95,11 @@ static OSStatus renderCallback(void *inRefCon,
             // try zeroing out stuff
             for (int w = 0; w < this->windowSize / 2; w++)
             {
-//                if (w > this->playbackBottom || w < this->playbackTop)              
-//                {
-//                    this->polarWindows[this->currentPolar]->buffer[w].mag = 0.0;
-//                    this->polarWindows[this->currentPolar]->buffer[w].phase = 0.0;
-//                }
+                if (w > this->poly.boundPoints.w && w < this->poly.boundPoints.z)
+                {
+                    this->polarWindows[this->currentPolar]->buffer[w].mag = 0.0;
+                    this->polarWindows[this->currentPolar]->buffer[w].phase = 0.0;
+                }
             }
         
             pvUnwrapPhase(this->polarWindows[this->currentPolar]);
@@ -103,14 +133,13 @@ static OSStatus renderCallback(void *inRefCon,
         if (this->dspTick >= this->hopSize)
         {
             this->dspTick = 0;
-        
             if (this->rateCounter % this->rate == 0)
                 this->counter++;
         
             this->rateCounter++;
         }
-//        if (this->counter >= this->playbackRight)
-//            this->counter = this->playbackLeft;
+        if (this->counter >= this->poly.boundPoints.y)
+            this->counter = this->poly.boundPoints.x;
     }
    
     return noErr;
@@ -322,7 +351,6 @@ static OSStatus renderCallback(void *inRefCon,
     float scale = halfWindow / maxBounds;
     
 //    float scale = halfWindow / 6.3026;
-    
     return scale;
 }
 
@@ -489,6 +517,9 @@ static OSStatus renderCallback(void *inRefCon,
     free(leftBuffer);
     if (rightBuffer != NULL)
         free(rightBuffer);
+    
+    // Finally set the file loaded flag
+    fileLoaded = YES;
 }
 
 
