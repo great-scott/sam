@@ -73,6 +73,8 @@ void render(void *inRefCon, AudioUnitRenderActionFlags *ioActionFlags, const Aud
     CGRect      editArea;
     float       touchScale;             // scale value used in touch mapping
     
+    FFT_FRAME*  fftFrameBuffer[2];
+    int         whichFrame;
 }
 
 @property int windowSize;

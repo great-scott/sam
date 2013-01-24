@@ -40,19 +40,48 @@ void render(void *inRefCon,
     float* audioFileBuffer = this->audioBuffer;
     float* outputBuffer = (float *)ioData->mBuffers[0].mData;
     
-    if (this->dspTick == 0)
-    {
-        
-        
-
-    }
+    // Need function to get position data and turn it into sample mapping
+    
+    
+    int sizeDiff = this->windowSize - inNumberFrames;
+    for (int i = 0; i < sizeDiff; i++)
+        this->circleBuffer[0][i] = this->circleBuffer[0][i + inNumberFrames];
+    
+    for (int i = 0; i < inNumberFrames; i++)
+        this->circleBuffer[0][i + sizeDiff] = audioFileBuffer[i];
     
     // Advance the dsp tick
     this->dspTick += inNumberFrames;
+    
     if (this->dspTick >= this->hopSize)
     {
         this->dspTick = 0;
+        int begin = floor(this->poly.boundPoints.x);
+        int end = floor(this->poly.boundPoints.y);
+        int length = end - begin;
+        
+        // Choose which frame we're going to put data into
+        FFT_FRAME* fftFrame = this->fftFrameBuffer[!this->whichFrame];
+        
+        // Take fft
+        computeFFT(this->fftManager, fftFrame, this->circleBuffer[0]);
+        
+        if (length < inNumberFrames)
+        {
+            for (int frame = 0; frame < inNumberFrames; frame++)
+            {
+                outputBuffer[frame] = audioFileBuffer[begin + frame];
+            }
+        }
+
     }
+    
+    // TODO: overlap-add inverse fft stuff with circleBuffer[1]
+    
+    // Re-block on the way out
+    memcpy(outputBuffer, this->circleBuffer[1], inNumberFrames);
+    for (int i = 0; i < inNumberFrames; i++)
+        this->circleBuffer[1][i] = this->circleBuffer[1][i + inNumberFrames];
     
 }
 
@@ -210,6 +239,11 @@ static OSStatus renderCallback(void *inRefCon,
         fileLoaded = NO;
         shapeReferences = nil;
         touchScale = [self findTouchScale];
+        
+        fftFrameBuffer[0] = newFFTFrame(windowSize);
+        fftFrameBuffer[1] = newFFTFrame(windowSize);
+        
+        whichFrame = 1;
     }
     
     return self;
@@ -238,6 +272,10 @@ static OSStatus renderCallback(void *inRefCon,
     
     // Free stft buffer
     freeSTFTBuffer(stftBuffer);
+    
+    // Free fft frames
+    freeFFTFrame(fftFrameBuffer[0]);
+    freeFFTFrame(fftFrameBuffer[1]);
     
     // Free buffer manager / overlap buffer
     //freeBufferManager(overlapBuffer);
@@ -338,10 +376,12 @@ static OSStatus renderCallback(void *inRefCon,
 }
 
 // Converts from AudioUnit sample type to float
-- (void)convert:(AudioUnitSampleType *)input withSize:(int)size
+- (void)convert:(AudioUnitSampleType *)input to:(float *)output withSize:(int)size
 {
     for (int i = 0; i < size; i++)
-        input[i] = (float)((SInt16)(input[i] >> 9) / 32768.0);
+    {
+        output[i] = (float)((SInt16)(input[i] >> 9) / 32768.0);
+    };
 }
 
 - (float)findTouchScale
@@ -409,6 +449,8 @@ static OSStatus renderCallback(void *inRefCon,
     // allocate temporary channel buffers
     AudioUnitSampleType* leftBuffer = calloc(numFramesInAudioFile, sizeof(AudioUnitSampleType));
     AudioUnitSampleType* rightBuffer = NULL;
+    float* leftFloatBuffer = calloc(numFramesInAudioFile, sizeof(float));
+    float* rightFloatBuffer = calloc(numFramesInAudioFile, sizeof(float));
     if (channelCount == 2)
         rightBuffer = calloc(numFramesInAudioFile, sizeof(AudioUnitSampleType));
     
@@ -502,21 +544,25 @@ static OSStatus renderCallback(void *inRefCon,
     ExtAudioFileDispose (audioFileObject);
     
     // Convert to floating point format
-    [self convert:leftBuffer withSize:totalFramesInFile];
+    [self convert:leftBuffer to:leftFloatBuffer withSize:numFramesInAudioFile];
     
     // If stereo convert right channel to float then convert to mono
     if (channelCount == 2)
     {
-        [self convert:rightBuffer withSize:totalFramesInFile];
-        [self convertToMonoWith:(float *)leftBuffer andRightChannel:(float *)rightBuffer withSize:totalFramesInFile];
+        [self convert:rightBuffer to:rightFloatBuffer withSize:totalFramesInFile];
+        [self convertToMonoWith:(float *)leftFloatBuffer andRightChannel:(float *)rightFloatBuffer withSize:numFramesInAudioFile];
     }
     
     // Copy over samples from leftbuffer to main audio buffer
-    memcpy(audioBuffer, leftBuffer, numFramesInAudioFile * sizeof(float));
+    memcpy(audioBuffer, leftFloatBuffer, numFramesInAudioFile * sizeof(float));
     
     free(leftBuffer);
+    free(leftFloatBuffer);
     if (rightBuffer != NULL)
+    {
         free(rightBuffer);
+        free(rightFloatBuffer);
+    }
     
     // Finally set the file loaded flag
     fileLoaded = YES;
