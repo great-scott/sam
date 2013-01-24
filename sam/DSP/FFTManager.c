@@ -95,7 +95,7 @@ FFT_FRAME* newFFTFrame(UInt32 windowSize)
     
     frame->polarWindow = newPolarWindow(windowSize / 2);
     frame->polarWindowMod = newPolarWindow(windowSize / 2);
-    frame->lastPhase = 0.0;
+    frame->lastPhase = (float *)malloc(frame->nOver2 * sizeof(float));
     
     return frame;
 }
@@ -104,6 +104,7 @@ void freeFFTFrame(FFT_FRAME* frameToFree)
 {
     free(frameToFree->complexBuffer.realp);
     free(frameToFree->complexBuffer.imagp);
+    free(frameToFree->lastPhase);
     freePolarWindow(frameToFree->polarWindow);
     freePolarWindow(frameToFree->polarWindowMod);
     free(frameToFree);

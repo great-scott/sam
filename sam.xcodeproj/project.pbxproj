@@ -147,8 +147,8 @@
 		4253415C169E2860009E53DC /* DSP */ = {
 			isa = PBXGroup;
 			children = (
-				42534156169E2859009E53DC /* FFTManager.c */,
 				42534157169E2859009E53DC /* FFTManager.h */,
+				42534156169E2859009E53DC /* FFTManager.c */,
 			);
 			name = DSP;
 			sourceTree = "<group>";

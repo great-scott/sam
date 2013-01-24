@@ -21,6 +21,7 @@
 
 float changeTouchYScale(float inputPoint, float scale);
 void render(void *inRefCon, AudioUnitRenderActionFlags *ioActionFlags, const AudioTimeStamp *inTimeStamp, UInt32 inBusNumber, UInt32 inNumberFrames, AudioBufferList *ioData);
+void pva(FFT_FRAME* frame, int sampleRate, int hopSize)
 
 
 # pragma mark - Main Interface -

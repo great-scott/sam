@@ -29,6 +29,33 @@ float changeTouchYScale(float inputPoint, float scale)
 //    return scale * (log(inputPoint) + 4.0);
 }
 
+void pva(FFT_FRAME* frame, int sampleRate, int hopSize)
+{
+    float mag, phi, delta, scale, fac;
+    
+    fac = (float)(sampleRate / (hopSize * TWO_PI));
+    scale = (float)(TWO_PI * hopSize / frame->windowSize);
+    
+    for (int i = 1; i < frame->windowSize/2; i++)
+    {
+        float* real = frame->complexBuffer.realp;
+        float* imag = frame->complexBuffer.imagp;
+        POLAR_WINDOW* p = frame->polarWindow;
+        
+        mag = (float)sqrt(real[i] * real[i] + imag[i] * imag[i]);
+        phi = (float)atan2(imag[i], real[i]);
+        
+        delta = phi - frame->lastPhase[i - 1];      // TODO: check to see if this is right
+        frame->lastPhase[i - 1] = phi;
+        
+        while(delta > PI) delta -= (float)TWO_PI;
+        while(delta < -PI) delta += (float)TWO_PI;
+        
+        p->buffer[i].mag = mag;
+        p->buffer[i].phase = (delta + i * scale) * fac;
+    }
+}
+
 void render(void *inRefCon,
             AudioUnitRenderActionFlags *ioActionFlags,
             const AudioTimeStamp *inTimeStamp,
@@ -39,6 +66,7 @@ void render(void *inRefCon,
     SAMAudioModel* this = (__bridge SAMAudioModel *)inRefCon;
     float* audioFileBuffer = this->audioBuffer;
     float* outputBuffer = (float *)ioData->mBuffers[0].mData;
+    
     
     // Need function to get position data and turn it into sample mapping
     
@@ -65,6 +93,9 @@ void render(void *inRefCon,
         
         // Take fft
         computeFFT(this->fftManager, fftFrame, this->circleBuffer[0]);
+        
+        // Do phase voc stuff
+        pva(fftFrame, this->sampleRate, this->hopSize);
         
         if (length < inNumberFrames)
         {

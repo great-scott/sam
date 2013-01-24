@@ -35,7 +35,7 @@ typedef struct t_fftFrame
     vDSP_Length     log2n;
     UInt32          nOver2;
     float           normFactor;
-    float           lastPhase;  
+    float*          lastPhase;
     POLAR_WINDOW*   polarWindow;
     POLAR_WINDOW*   polarWindowMod;
     
