@@ -142,7 +142,7 @@
 //        [audioModel openAudioFile:fileUrl];
 //        [audioModel calculateSTFT];
         [[SAMAudioModel sharedAudioModel] openAudioFile:fileUrl];
-        [[SAMAudioModel sharedAudioModel] calculateSTFT];
+        //[[SAMAudioModel sharedAudioModel] calculateSTFT];
         [spectroView setHidden:NO];
         [self animateFileView:NO];
     }

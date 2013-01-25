@@ -29,7 +29,7 @@ float changeTouchYScale(float inputPoint, float scale)
 //    return scale * (log(inputPoint) + 4.0);
 }
 
-void pva(FFT_FRAME* frame, int sampleRate, int hopSize)
+void pva(FFT_FRAME* frame, int sampleRate, int hopSize, float* lastPhase)
 {
     float mag, phi, delta, scale, fac;
     
@@ -45,8 +45,8 @@ void pva(FFT_FRAME* frame, int sampleRate, int hopSize)
         mag = (float)sqrt(real[i] * real[i] + imag[i] * imag[i]);
         phi = (float)atan2(imag[i], real[i]);
         
-        delta = phi - frame->lastPhase[i - 1];      // TODO: check to see if this is right
-        frame->lastPhase[i - 1] = phi;
+        delta = phi - lastPhase[i - 1];      // TODO: check to see if this is right
+        lastPhase[i - 1] = phi;
         
         while(delta > PI) delta -= (float)TWO_PI;
         while(delta < -PI) delta += (float)TWO_PI;
@@ -54,6 +54,31 @@ void pva(FFT_FRAME* frame, int sampleRate, int hopSize)
         p->buffer[i].mag = mag;
         p->buffer[i].phase = (delta + i * scale) * fac;
     }
+}
+
+void pvs(FFT* fft, FFT_FRAME* frame, float* output, int sampleRate, int hopSize, float* lastPhase)
+{
+    float mag, phi, delta, scale, fac;
+    
+    fac = (float)(hopSize * TWO_PI / sampleRate);
+    scale = sampleRate / frame->windowSize;
+    
+    for (int i = 1; i < frame->windowSize/2; i++)
+    {
+        float* real = frame->complexBuffer.realp;
+        float* imag = frame->complexBuffer.imagp;
+        POLAR_WINDOW* p = frame->polarWindow;
+        
+        delta = (p->buffer[i].phase - i * scale) * fac;
+        phi = lastPhase[i] + delta;
+        lastPhase[i] = phi;
+        mag = p->buffer[i].mag;
+        
+        real[i] = (float)(mag * cos(phi));
+        imag[i] = (float)(mag * sin(phi));
+    }
+    
+    //inverseFFT(fft, frame, output);
 }
 
 void render(void *inRefCon,
@@ -69,6 +94,12 @@ void render(void *inRefCon,
     
     
     // Need function to get position data and turn it into sample mapping
+    int begin = (int)(this->numFramesInAudioFile / this->editArea.size.width * this->poly.boundPoints.x);
+    //int end = (int)(this->numFramesInAudioFile / this->editArea.size.width * this->poly.boundPoints.y);
+    int end = begin + (inNumberFrames * 2);
+    int length = end - begin;
+    if (length < inNumberFrames)
+        end = begin + inNumberFrames;
     
     
     int sizeDiff = this->windowSize - inNumberFrames;
@@ -76,43 +107,74 @@ void render(void *inRefCon,
         this->circleBuffer[0][i] = this->circleBuffer[0][i + inNumberFrames];
     
     for (int i = 0; i < inNumberFrames; i++)
-        this->circleBuffer[0][i + sizeDiff] = audioFileBuffer[i];
+        this->circleBuffer[0][i + sizeDiff] = audioFileBuffer[i + this->counter];
     
     // Advance the dsp tick
     this->dspTick += inNumberFrames;
+    //this->counter = (this->counter % this->numFramesInAudioFile) + inNumberFrames;
+    //this->counter = this->counter + inNumberFrames;
+    
+    if (this->rateCounter % this->rate == 0)
+        this->counter = this->counter + inNumberFrames;
+    //this->counter = (this->counter % this->numFramesInAudioFile) + inNumberFrames;
+    
+    this->rateCounter++;
     
     if (this->dspTick >= this->hopSize)
     {
+        int diff = this->windowSize - this->hopSize;
+        this->hopPosition = this->hopPosition % this->windowSize;
         this->dspTick = 0;
-        int begin = floor(this->poly.boundPoints.x);
-        int end = floor(this->poly.boundPoints.y);
-        int length = end - begin;
         
         // Choose which frame we're going to put data into
-        FFT_FRAME* fftFrame = this->fftFrameBuffer[!this->whichFrame];
+        FFT_FRAME* fftFrame = this->fftFrameBuffer[0];
+        FFT_FRAME* avgFrame = this->fftFrameBuffer[1];
+        
+        memcpy(avgFrame, fftFrame, sizeof(FFT_FRAME));
+        
+        for (int i = 0; i < this->windowSize; i++)
+            this->circleBuffer[0][i] = this->circleBuffer[0][i] * this->fftManager->window[i];
         
         // Take fft
         computeFFT(this->fftManager, fftFrame, this->circleBuffer[0]);
         
         // Do phase voc stuff
-        pva(fftFrame, this->sampleRate, this->hopSize);
+        pva(fftFrame, this->sampleRate, this->hopSize, this->lp);
         
-        if (length < inNumberFrames)
+        for (int bin = 0; bin < this->windowSize/2; bin++)
         {
-            for (int frame = 0; frame < inNumberFrames; frame++)
-            {
-                outputBuffer[frame] = audioFileBuffer[begin + frame];
-            }
+            avgFrame->polarWindow->buffer[bin].mag = (avgFrame->polarWindow->buffer[bin].mag + fftFrame->polarWindow->buffer[bin].mag) / 2.0;
         }
+        
+        pvs(this->fftManager, fftFrame, this->circleBuffer[0], this->sampleRate, this->hopSize, this->lp);
+        
+        inverseFFT(this->fftManager, fftFrame, this->circleBuffer[0]);
+        
+        for (int i = 0; i < this->windowSize; i++)
+            this->circleBuffer[0][i] = this->circleBuffer[0][i] * this->fftManager->window[i];
+        
+        // TODO: This is the source of the crackling, I'm not sure this is the right overlap add method
+        for (int i = 0; i < diff; i++)
+            this->circleBuffer[1][i] = (this->circleBuffer[1][this->hopSize + i] + this->circleBuffer[0][i]) * 1.2;
+
+        // assign remaining values to playback buffer
+        for (int i = 0; i < this->hopSize; i++)
+            this->circleBuffer[1][diff + i] = this->circleBuffer[0][diff + i];
+        
+        
+        this->hopPosition += this->hopSize;
 
     }
     
-    // TODO: overlap-add inverse fft stuff with circleBuffer[1]
+    for (int i = 0; i < inNumberFrames; i ++)
+    {
+        outputBuffer[i] = this->circleBuffer[1][i + this->dspTick];
+        //printf("%f\n", outputBuffer[i]);
+    }
     
-    // Re-block on the way out
-    memcpy(outputBuffer, this->circleBuffer[1], inNumberFrames);
-    for (int i = 0; i < inNumberFrames; i++)
-        this->circleBuffer[1][i] = this->circleBuffer[1][i + inNumberFrames];
+    
+    if (this->counter >= end)
+        this->counter = begin;
     
 }
 
@@ -170,7 +232,6 @@ static OSStatus renderCallback(void *inRefCon,
             int diff = this->windowSize - this->hopSize;
             for (int i = 0; i < diff; i++)
                 this->circleBuffer[1][i] = this->circleBuffer[1][diff + i] + this->circleBuffer[0][i];
-                //this->circleBuffer[1][i] = this->circleBuffer[1][diff + i] + this->circleBuffer[0][(i + this->modAmount) % this->windowSize];
         
             // assign remaining values to playback buffer
             for (int i = 0; i < this->hopSize; i++)
@@ -227,13 +288,13 @@ static OSStatus renderCallback(void *inRefCon,
     
     if (self)
     {
-        windowSize = 1024;
-        overlap = 2;
+        windowSize = 2048;
+        overlap = 4;
         hopSize = windowSize / overlap;
         audioBuffer = nil;        
         normalizationFactor = 0.0;
         counter = 0;
-        rate = 4;
+        rate = 2;
         rateCounter = 0;
         
         // Appwide AU settings
@@ -260,6 +321,9 @@ static OSStatus renderCallback(void *inRefCon,
         circleBuffer[0] = (float *)malloc(windowSize * sizeof(float));
         circleBuffer[1] = (float *)malloc(windowSize * sizeof(float));
         
+        lp = (float *)malloc((windowSize / 2) * sizeof(float));
+        memset(lp, 0.0, (windowSize/2) * sizeof(float));
+        
         // Polar window buffers
         polarWindows[0] = newPolarWindow(windowSize / 2);
         polarWindows[1] = newPolarWindow(windowSize / 2);
@@ -275,6 +339,7 @@ static OSStatus renderCallback(void *inRefCon,
         fftFrameBuffer[1] = newFFTFrame(windowSize);
         
         whichFrame = 1;
+        hopPosition = 0;
     }
     
     return self;
@@ -293,6 +358,7 @@ static OSStatus renderCallback(void *inRefCon,
         samUnit = nil;
     }
     
+    free(lp);
     free(audioBuffer);
     free(outputBuffer);
     free(circleBuffer[0]);
@@ -622,6 +688,7 @@ static OSStatus renderCallback(void *inRefCon,
 - (void)stopAudioPlayback
 {
     AudioSessionSetActive(false);
+    AudioOutputUnitStop(samUnit);
 }
 
 - (void)setEditArea:(CGRect)newEditArea

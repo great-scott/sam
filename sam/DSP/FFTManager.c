@@ -46,7 +46,11 @@ FFT* newFFT(UInt32 windowSize)
     
     // allocate memory for a window 
     fft->window = (float *)malloc(fft->fftLength * sizeof(float));
-    vDSP_hann_window(fft->window, fft->fftLength, vDSP_HANN_NORM);
+    //vDSP_hann_window(fft->window, fft->fftLength, vDSP_HANN_DENORM);
+    
+    // hann
+    for (int i = 0; i < fft->fftLength; i++)
+        fft->window[i] = 0.5 * (1 - cos((TWO_PI * i) / (fft->fftLength - 1)));
     
     fft->outOfPlaceComplex.realp = (float *)malloc((fft->fftLength / 2.0) * sizeof(float));
     fft->outOfPlaceComplex.imagp = (float *)malloc((fft->fftLength / 2.0) * sizeof(float));
@@ -96,6 +100,7 @@ FFT_FRAME* newFFTFrame(UInt32 windowSize)
     frame->polarWindow = newPolarWindow(windowSize / 2);
     frame->polarWindowMod = newPolarWindow(windowSize / 2);
     frame->lastPhase = (float *)malloc(frame->nOver2 * sizeof(float));
+    memset(frame->lastPhase, 0.0, frame->nOver2 * sizeof(float));
     
     return frame;
 }
@@ -196,11 +201,16 @@ void freeSTFTBuffer(STFT_BUFFER* bufferToFree)
 
 void computeFFT (FFT* instantiatedFFT, FFT_FRAME* fftFrameInstance, float* audioBuffer)
 {
-    // Do some data packing stuff
-    vDSP_ctoz((COMPLEX*)audioBuffer, 2, &fftFrameInstance->complexBuffer, 1, fftFrameInstance->nOver2);
+//    for (int i = 0; i < instantiatedFFT->fftLength; i++)
+//        audioBuffer[i] = audioBuffer[i] * instantiatedFFT->window[i];
     
     // This applies the windowing
-    vDSP_vmul(audioBuffer, 1, instantiatedFFT->window, 1, audioBuffer, 1, instantiatedFFT->fftLength);
+    //vDSP_vmul(audioBuffer, 1, instantiatedFFT->window, 1, audioBuffer, 1, instantiatedFFT->fftLength);
+    
+    
+    
+    // Do some data packing stuff
+    vDSP_ctoz((COMPLEX*)audioBuffer, 2, &fftFrameInstance->complexBuffer, 1, fftFrameInstance->nOver2);
     
     // Actually perform the fft
     vDSP_fft_zrip(instantiatedFFT->fftSetup, &fftFrameInstance->complexBuffer, 1, fftFrameInstance->log2n, FFT_FORWARD);
@@ -217,16 +227,16 @@ void computeFFT (FFT* instantiatedFFT, FFT_FRAME* fftFrameInstance, float* audio
 void inverseFFT (FFT* instantiatedFFT, FFT_FRAME* fftFrameInstance, float* outputBuffer)
 {
     
-    POLAR_WINDOW* window = fftFrameInstance->polarWindowMod;
-    const POLAR* p = (const POLAR*)window->buffer;
-    
-    COMPLEX_SPLIT *c = &fftFrameInstance->complexBuffer;
-    
-    for(int i = 0; i < window->length; i++)
-    {
-        c->realp[i] = p[i].mag * cos(p[i].phase);
-        c->imagp[i] = p[i].mag * sin(p[i].phase);
-    }
+//    POLAR_WINDOW* window = fftFrameInstance->polarWindowMod;
+//    const POLAR* p = (const POLAR*)window->buffer;
+//    
+//    COMPLEX_SPLIT *c = &fftFrameInstance->complexBuffer;
+//    
+//    for(int i = 0; i < window->length; i++)
+//    {
+//        c->realp[i] = p[i].mag * cos(p[i].phase);
+//        c->imagp[i] = p[i].mag * sin(p[i].phase);
+//    }
     // perform IFFT
     vDSP_fft_zrop(instantiatedFFT->fftSetup, &fftFrameInstance->complexBuffer, 1, &instantiatedFFT->outOfPlaceComplex, 1, fftFrameInstance->log2n, FFT_INVERSE);
     
@@ -234,7 +244,10 @@ void inverseFFT (FFT* instantiatedFFT, FFT_FRAME* fftFrameInstance, float* outpu
     vDSP_ztoc(&instantiatedFFT->outOfPlaceComplex, 1, (COMPLEX *)outputBuffer, 2, fftFrameInstance->nOver2);
     
     // This applies the windowing
-    vDSP_vmul(outputBuffer, 1, instantiatedFFT->window, 1, outputBuffer, 1, instantiatedFFT->fftLength);
+    //vDSP_vmul(outputBuffer, 1, instantiatedFFT->window, 1, outputBuffer, 1, instantiatedFFT->fftLength);
+    
+//    for (int i = 0; i < instantiatedFFT->fftLength; i++)
+//        outputBuffer[i] = outputBuffer[i] * instantiatedFFT->window[i];
 }
 
 

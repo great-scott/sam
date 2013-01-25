@@ -21,7 +21,8 @@
 
 float changeTouchYScale(float inputPoint, float scale);
 void render(void *inRefCon, AudioUnitRenderActionFlags *ioActionFlags, const AudioTimeStamp *inTimeStamp, UInt32 inBusNumber, UInt32 inNumberFrames, AudioBufferList *ioData);
-void pva(FFT_FRAME* frame, int sampleRate, int hopSize)
+void pva(FFT_FRAME* frame, int sampleRate, int hopSize, float* lastPhase);
+void pvs(FFT* fft, FFT_FRAME* frame, float* output, int sampleRate, int hopSize, float* lastPhase);
 
 
 # pragma mark - Main Interface -
@@ -76,6 +77,8 @@ void pva(FFT_FRAME* frame, int sampleRate, int hopSize)
     
     FFT_FRAME*  fftFrameBuffer[2];
     int         whichFrame;
+    float*      lp;
+    int         hopPosition;
 }
 
 @property int windowSize;
