@@ -95,30 +95,29 @@ void render(void *inRefCon,
     
     // Need function to get position data and turn it into sample mapping
     int begin = (int)(this->numFramesInAudioFile / this->editArea.size.width * this->poly.boundPoints.x);
-    //int end = (int)(this->numFramesInAudioFile / this->editArea.size.width * this->poly.boundPoints.y);
-    int end = begin + (inNumberFrames * 2);
+    int end = (int)(this->numFramesInAudioFile / this->editArea.size.width * this->poly.boundPoints.y);
+    //int end = begin + (inNumberFrames * 2);
     int length = end - begin;
     if (length < inNumberFrames)
         end = begin + inNumberFrames;
     
     
+    // Reblocking 
     int sizeDiff = this->windowSize - inNumberFrames;
     for (int i = 0; i < sizeDiff; i++)
+    {
         this->circleBuffer[0][i] = this->circleBuffer[0][i + inNumberFrames];
+    }
     
     for (int i = 0; i < inNumberFrames; i++)
+    {
         this->circleBuffer[0][i + sizeDiff] = audioFileBuffer[i + this->counter];
+    }
     
     // Advance the dsp tick
     this->dspTick += inNumberFrames;
-    //this->counter = (this->counter % this->numFramesInAudioFile) + inNumberFrames;
-    //this->counter = this->counter + inNumberFrames;
-    
-    if (this->rateCounter % this->rate == 0)
-        this->counter = this->counter + inNumberFrames;
-    //this->counter = (this->counter % this->numFramesInAudioFile) + inNumberFrames;
-    
-    this->rateCounter++;
+    this->counter = this->counter + (floor(inNumberFrames / this->rate)) ;
+    //this->counter = (this->counter + inNumberFrames) % this->numFramesInAudioFile;
     
     if (this->dspTick >= this->hopSize)
     {
@@ -130,13 +129,15 @@ void render(void *inRefCon,
         FFT_FRAME* fftFrame = this->fftFrameBuffer[0];
         FFT_FRAME* avgFrame = this->fftFrameBuffer[1];
         
-        memcpy(avgFrame, fftFrame, sizeof(FFT_FRAME));
+        memcpy(avgFrame, fftFrame, sizeof(FFT_FRAME));      // should put the previous frame into avgFrame
         
         for (int i = 0; i < this->windowSize; i++)
-            this->circleBuffer[0][i] = this->circleBuffer[0][i] * this->fftManager->window[i];
+        {
+            this->circleBuffer[2][i] = this->circleBuffer[0][i] * this->fftManager->window[i];
+        }
         
         // Take fft
-        computeFFT(this->fftManager, fftFrame, this->circleBuffer[0]);
+        computeFFT(this->fftManager, fftFrame, this->circleBuffer[2]);
         
         // Do phase voc stuff
         pva(fftFrame, this->sampleRate, this->hopSize, this->lp);
@@ -146,35 +147,31 @@ void render(void *inRefCon,
             avgFrame->polarWindow->buffer[bin].mag = (avgFrame->polarWindow->buffer[bin].mag + fftFrame->polarWindow->buffer[bin].mag) / 2.0;
         }
         
-        pvs(this->fftManager, fftFrame, this->circleBuffer[0], this->sampleRate, this->hopSize, this->lp);
+        pvs(this->fftManager, fftFrame, this->circleBuffer[2], this->sampleRate, this->hopSize, this->lp);
         
-        inverseFFT(this->fftManager, fftFrame, this->circleBuffer[0]);
+        inverseFFT(this->fftManager, fftFrame, this->circleBuffer[2]);
         
         for (int i = 0; i < this->windowSize; i++)
-            this->circleBuffer[0][i] = this->circleBuffer[0][i] * this->fftManager->window[i];
+            this->circleBuffer[2][i] = this->circleBuffer[2][i] * this->fftManager->window[i];
         
-        // TODO: This is the source of the crackling, I'm not sure this is the right overlap add method
+        // overlap and add
         for (int i = 0; i < diff; i++)
-            this->circleBuffer[1][i] = (this->circleBuffer[1][this->hopSize + i] + this->circleBuffer[0][i]) * 1.2;
+            this->circleBuffer[1][i] = (this->circleBuffer[1][this->hopSize + i] + this->circleBuffer[2][i]);
 
         // assign remaining values to playback buffer
         for (int i = 0; i < this->hopSize; i++)
-            this->circleBuffer[1][diff + i] = this->circleBuffer[0][diff + i];
-        
+            this->circleBuffer[1][diff + i] = this->circleBuffer[2][diff + i];
         
         this->hopPosition += this->hopSize;
 
     }
     
     for (int i = 0; i < inNumberFrames; i ++)
-    {
         outputBuffer[i] = this->circleBuffer[1][i + this->dspTick];
-        //printf("%f\n", outputBuffer[i]);
-    }
-    
-    
-    if (this->counter >= end)
-        this->counter = begin;
+
+
+//    if (this->counter >= end)
+//        this->counter = begin;
     
 }
 
@@ -208,6 +205,8 @@ static OSStatus renderCallback(void *inRefCon,
     if (NO)
     {
         // ------------------------------------------------------------------------------------
+        this->counter = (this->counter + inNumberFrames) % this->numFramesInAudioFile;
+        
         if (this->dspTick == 0)
         {
             FFT_FRAME* frame = thisSTFTBuffer->buffer[this->counter];
@@ -215,14 +214,14 @@ static OSStatus renderCallback(void *inRefCon,
             this->polarWindows[this->currentPolar] = frame->polarWindowMod;
         
             // try zeroing out stuff
-            for (int w = 0; w < this->windowSize / 2; w++)
-            {
-                if (w > this->poly.boundPoints.w && w < this->poly.boundPoints.z)
-                {
-                    this->polarWindows[this->currentPolar]->buffer[w].mag = 0.0;
-                    this->polarWindows[this->currentPolar]->buffer[w].phase = 0.0;
-                }
-            }
+//            for (int w = 0; w < this->windowSize / 2; w++)
+//            {
+//                if (w > this->poly.boundPoints.w && w < this->poly.boundPoints.z)
+//                {
+//                    this->polarWindows[this->currentPolar]->buffer[w].mag = 0.0;
+//                    this->polarWindows[this->currentPolar]->buffer[w].phase = 0.0;
+//                }
+//            }
         
             pvUnwrapPhase(this->polarWindows[this->currentPolar]);
             pvFixPhase(this->polarWindows[!this->currentPolar], this->polarWindows[this->currentPolar], 0.5);
@@ -259,8 +258,8 @@ static OSStatus renderCallback(void *inRefCon,
         
             this->rateCounter++;
         }
-        if (this->counter >= this->poly.boundPoints.y)
-            this->counter = this->poly.boundPoints.x;
+//        if (this->counter >= this->poly.boundPoints.y)
+//            this->counter = this->poly.boundPoints.x;
     }
    
     return noErr;
@@ -320,6 +319,7 @@ static OSStatus renderCallback(void *inRefCon,
         
         circleBuffer[0] = (float *)malloc(windowSize * sizeof(float));
         circleBuffer[1] = (float *)malloc(windowSize * sizeof(float));
+        circleBuffer[2] = (float *)malloc(windowSize * sizeof(float));
         
         lp = (float *)malloc((windowSize / 2) * sizeof(float));
         memset(lp, 0.0, (windowSize/2) * sizeof(float));
@@ -360,12 +360,9 @@ static OSStatus renderCallback(void *inRefCon,
     
     free(lp);
     free(audioBuffer);
-    free(outputBuffer);
     free(circleBuffer[0]);
     free(circleBuffer[1]);
-    
-    // Free fft stuff and instance
-    freeFFT(fftManager);
+    free(circleBuffer[2]);
     
     // Free stft buffer
     freeSTFTBuffer(stftBuffer);
@@ -379,6 +376,9 @@ static OSStatus renderCallback(void *inRefCon,
     
     freePolarWindow(polarWindows[0]);
     freePolarWindow(polarWindows[1]);
+    
+    // Free fft stuff and instance
+    freeFFT(fftManager);
 }
 
 
@@ -493,16 +493,10 @@ static OSStatus renderCallback(void *inRefCon,
 
 - (void)createBuffers
 {
-    if (audioBuffer == nil)
-    {
-        audioBuffer = (float *)malloc(numFramesInAudioFile * sizeof(float));
-        outputBuffer = (float *)malloc(numFramesInAudioFile * sizeof(float));
-    }
-    else
-    {
-        realloc(audioBuffer, numFramesInAudioFile * sizeof(float));
-        realloc(outputBuffer, numFramesInAudioFile * sizeof(float));
-    }
+    if (audioBuffer != nil)
+        free(audioBuffer);
+    
+    audioBuffer = (float *)malloc(numFramesInAudioFile * sizeof(float));
     
     if (stftBuffer != nil)
         free(stftBuffer);

@@ -46,11 +46,11 @@ FFT* newFFT(UInt32 windowSize)
     
     // allocate memory for a window 
     fft->window = (float *)malloc(fft->fftLength * sizeof(float));
-    //vDSP_hann_window(fft->window, fft->fftLength, vDSP_HANN_DENORM);
+    vDSP_hann_window(fft->window, fft->fftLength, vDSP_HANN_DENORM);
     
     // hann
-    for (int i = 0; i < fft->fftLength; i++)
-        fft->window[i] = 0.5 * (1 - cos((TWO_PI * i) / (fft->fftLength - 1)));
+    //for (int i = 0; i < fft->fftLength; i++)
+    //    fft->window[i] = 0.5 * (1 - cos((TWO_PI * i) / (fft->fftLength - 1)));
     
     fft->outOfPlaceComplex.realp = (float *)malloc((fft->fftLength / 2.0) * sizeof(float));
     fft->outOfPlaceComplex.imagp = (float *)malloc((fft->fftLength / 2.0) * sizeof(float));

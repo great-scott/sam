@@ -53,7 +53,7 @@ void pvs(FFT* fft, FFT_FRAME* frame, float* output, int sampleRate, int hopSize,
     FFT* fftManager;
     STFT_BUFFER* stftBuffer;
     
-    float* circleBuffer[2];
+    float* circleBuffer[3];
     float* outputBuffer;
     
     int counter;
