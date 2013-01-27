@@ -8,6 +8,7 @@
 
 #import <GLKit/GLKit.h>
 #import "SAMTouchTracker.h"
+#import "FFTManager.h"
 
 typedef struct SpectrumLinkedTexture {
 	GLuint							textureName;
@@ -26,13 +27,15 @@ double linearInterp(double valA, double valB, double fract);
     
     NSMutableArray*         spectrum;
     EAGLContext*            context;
+    STFT_BUFFER*            stft;
     
 }
 
 @property BOOL editMode;
 @property float redAmt;
-@property (strong, nonatomic) EAGLContext* context;
 
+- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil context:(EAGLContext *) parentContext;
 - (void)pressHandle:(UILongPressGestureRecognizer *)sender;
+- (void)glkView:(GLKView *)view drawInRect:(CGRect)rect;
 
 @end

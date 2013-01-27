@@ -47,14 +47,9 @@
 
 - (void)setupView
 {
-    //[self addSpectrogramView];
-    
     editViewControl = [[SAMEditViewController alloc] initWithNibName:@"EditView" bundle:[NSBundle mainBundle]];
     toolbarViewControl = [[SAMToolbarViewController alloc] initWithNibName:@"ToolbarView" bundle:[NSBundle mainBundle]];
     toolbarViewControl.delegate = self;
-    
-    //editViewControl.context = spectroViewControl.context;
-    [editViewControl reinit];
     
     // Settings for Edit View
     editView = editViewControl.view;
@@ -62,8 +57,6 @@
     [editView setHidden:NO];
     [editView setFrame:editRect];
     [self.view addSubview:editView];
-    //[editViewControl setSpectroViewControl:spectroViewControl];
-    //[self addGestureView];          // sandwiching views
     
     // Settings for Toolbar View
     toolbarView = toolbarViewControl.view;
@@ -71,26 +64,6 @@
     [toolbarView setHidden:NO];
     [toolbarView setFrame:toolRect];
     [self.view addSubview:toolbarView];
-}
-
-- (void)addSpectrogramView
-{
-    spectroViewControl = [[SAMSpectrogramViewController alloc] initWithNibName:@"SpectrogramView" bundle:[NSBundle mainBundle]];
-    spectroView = spectroViewControl.view;
-    CGRect spectroRect = CGRectMake(500, 0, spectroView.bounds.size.width, spectroView.bounds.size.height);
-    [spectroView setHidden:NO];
-    [spectroView setFrame:spectroRect];
-    [self.view addSubview:spectroView];
-}
-
-- (void)addGestureView
-{
-    gestureViewControl = [[SAMGestureViewController alloc] initWithNibName:@"GestureView" bundle:[NSBundle mainBundle]];
-    gestureView = gestureViewControl.view;
-    CGRect gestureRect = CGRectMake(0, 0, gestureView.bounds.size.width, gestureView.bounds.size.height);
-    [gestureView setHidden:NO];
-    [gestureView setFrame:gestureRect];
-    [self.view addSubview:gestureView];
 }
 
 
@@ -120,14 +93,14 @@
         case TRUE: //Fade In
         {
             [fileView setHidden:NO];
-            [UIView animateWithDuration: 1.0
+            [UIView animateWithDuration: 0.6
                              animations:^{[fileView setAlpha:1.0];}
                              completion:^(BOOL finished){;}];
             break;
         }
         case FALSE: //Fade Out
         {
-            [UIView animateWithDuration: 1.0
+            [UIView animateWithDuration: 0.6
                              animations:^{[fileView setAlpha:0.0];}
                              completion:^(BOOL finished){[fileView setHidden:YES];}];
             break;
@@ -141,7 +114,7 @@
     {
         [[SAMAudioModel sharedAudioModel] openAudioFile:fileUrl];
         [[SAMAudioModel sharedAudioModel] calculateSTFT];
-        //[spectroView setHidden:NO];
+        [editViewControl addSpectrogramView];
         [self animateFileView:NO];
     }
 }

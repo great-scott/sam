@@ -24,16 +24,14 @@
 }
 
 @property (nonatomic, strong) SAMSpectrogramViewController* spectroViewControl;
-@property (nonatomic, strong) SAMGestureViewController* gestureViewControl;
 @property (strong, nonatomic) EAGLContext* context;
 
 @property (nonatomic, strong) UIView* spectroView;
-@property (nonatomic, strong) UIView* gestureView;
 - (IBAction)handlePress:(UILongPressGestureRecognizer *)sender;
 
 - (void)addSquare;
 - (void)addTriangle;
 - (void)reinit;
-//- (void)addSpectrogram;
+- (void)addSpectrogramView;
 
 @end

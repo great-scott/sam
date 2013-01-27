@@ -25,8 +25,9 @@
 
 float changeTouchYScale(float inputPoint, float scale)
 {
-    return scale * atan(inputPoint / TOUCH_DIVIDE);
+//    return scale * atan(inputPoint / TOUCH_DIVIDE);
 //    return scale * (log(inputPoint) + 4.0);
+    return powf(inputPoint, 2.0) / scale;
 }
 
 void pva(FFT_FRAME* frame, int sampleRate, int hopSize, float* lastPhase)
@@ -81,112 +82,6 @@ void pvs(FFT* fft, FFT_FRAME* frame, int sampleRate, int hopSize, float* lastPha
     }
 }
 
-void render(void *inRefCon,
-            AudioUnitRenderActionFlags *ioActionFlags,
-            const AudioTimeStamp *inTimeStamp,
-            UInt32 inBusNumber,
-            UInt32 inNumberFrames,
-            AudioBufferList *ioData)
-{
-    SAMAudioModel* this = (__bridge SAMAudioModel *)inRefCon;
-    float* audioFileBuffer = this->audioBuffer;
-    float* outputBuffer = (float *)ioData->mBuffers[0].mData;
-    int scale = 1.0;
-    
-    // Need function to get position data and turn it into sample mapping
-    int begin = (int)(this->numFramesInAudioFile / this->editArea.size.width * this->poly.boundPoints.x);
-    int end = (int)(this->numFramesInAudioFile / this->editArea.size.width * this->poly.boundPoints.y);
-    //int end = begin + (inNumberFrames * 2);
-    
-    end = ((floor(end / begin) + 1) * this->windowSize) + begin;
-    
-    if (this->counter >= end)
-        this->counter = begin;
-    
-    // Reblocking 
-    //int sizeDiff = this->windowSize - inNumberFrames;
-    int diff = this->windowSize - (this->hopSize * scale);
-    for (int i = 0; i < diff; i++)
-        this->circleBuffer[0][i] = this->circleBuffer[0][i + inNumberFrames];
-    
-    for (int i = 0; i < inNumberFrames; i++)
-        this->circleBuffer[0][i + diff] = audioFileBuffer[i + this->counter];
-    
-    // Advance the dsp tick
-    this->dspTick += inNumberFrames;
-    //this->counter = (int)(this->counter + (floor(inNumberFrames / scale))) % this->numFramesInAudioFile ;
-    this->counter = (this->counter + inNumberFrames) % this->numFramesInAudioFile;
-    
-    if (this->dspTick >= this->hopSize)
-    {
-        this->hopPosition = this->hopPosition % this->windowSize;
-        this->dspTick = 0;
-        
-        // Choose which frame we're going to put data into
-        FFT_FRAME* fftFrame = this->fftFrameBuffer[0];
-        FFT_FRAME* avgFrame = this->fftFrameBuffer[1];
-        memcpy(avgFrame, fftFrame, sizeof(FFT_FRAME));      // should put the previous frame into avgFrame
-
-        // window
-        vDSP_vmul(this->circleBuffer[0], 1, this->fftManager->window, 1, this->circleBuffer[2], 1, this->windowSize);
-        
-//        for (int i = 0; i < this->windowSize; i++)
-//            printf("1 %f\n", this->circleBuffer[2][i]);
-        
-        // Take fft
-        computeFFT(this->fftManager, fftFrame, this->circleBuffer[2]);
-        // Do phase voc stuff
-        //pva(fftFrame, this->sampleRate, this->hopSize * scale, this->lpIn);
-        
-//        for (int bin = 0; bin < this->windowSize/2; bin++)
-//        {
-//            // z = top
-//            // w = bottom
-////            if (bin > this->poly.boundPoints.z || bin < this->poly.boundPoints.w)
-////            {
-////                fftFrame->polarWindow->buffer[bin].mag = fftFrame->polarWindow->buffer[bin].mag * 0.5;
-////                fftFrame->polarWindow->buffer[bin].phase = fftFrame->polarWindow->buffer[bin].phase * 0.5;
-////            }
-//            
-//            //float temp = fftFrame->polarWindow->buffer[bin].mag;
-//            avgFrame->polarWindow->buffer[bin].mag = (avgFrame->polarWindow->buffer[bin].mag + fftFrame->polarWindow->buffer[bin].mag) / 2.0;
-//        }
-        
-        //pvs(this->fftManager, fftFrame, this->sampleRate, this->hopSize * scale, this->lpOut);
-        inverseFFT(this->fftManager, fftFrame, this->circleBuffer[2]);
-        
-        // window
-        vDSP_vmul(this->circleBuffer[2], 1, this->fftManager->window, 1, this->circleBuffer[3], 1, this->windowSize);
-        
-//        for (int i = 0; i < this->windowSize; i++)
-//            printf("0 %f\n", this->circleBuffer[3][i]);
-        
-        // overlap and add
-        for (int i = 0; i < diff; i++)
-            this->circleBuffer[1][i] = this->circleBuffer[1][this->hopSize + i] + this->circleBuffer[3][i];
-
-//        for (int i = 0; i < this->windowSize; i++)
-//            printf("1 %f\n", this->circleBuffer[1][i]);
-        
-        // assign remaining values to playback buffer
-        for (int i = 0; i < this->hopSize; i++)
-            this->circleBuffer[1][diff + i] = this->circleBuffer[3][diff + i];
-        
-//        for (int i = 0; i < this->windowSize; i++)
-//            printf("2 %f\n", this->circleBuffer[1][i]);
-        
-        this->hopPosition += this->hopSize;
-    }
-    
-    for (int i = 0; i < inNumberFrames; i ++)
-    {
-        outputBuffer[i] = this->circleBuffer[1][i + this->dspTick];
-        //if (this->monitor == YES)
-        //printf("3 %f\n", outputBuffer[i]);
-    }
-    
-}
-
 
 #pragma mark - Render Callback -
 
@@ -204,72 +99,81 @@ static OSStatus renderCallback(void *inRefCon,
     // Reference to STFT buffer
     STFT_BUFFER* thisSTFTBuffer = this->stftBuffer;
     
-    int begin = (int)(thisSTFTBuffer->size / this->editArea.size.width * this->poly.boundPoints.x);
-    int end = (int)(thisSTFTBuffer->size / this->editArea.size.width * this->poly.boundPoints.y);
-    
-    end = (floor(end / begin) + 1) + begin;
-    
-    // ------------------------------------------------------------------------------------
-    if (this->dspTick == 0)
+    if (this->fileLoaded == YES)
     {
-        FFT_FRAME* frame = thisSTFTBuffer->buffer[this->counter];
-        //FFT_FRAME* prevFrame = thisSTFTBuffer->buffer[(this->counter - 1) % (thisSTFTBuffer->size - 10)];
-        
-        memcpy(frame->polarWindowMod, frame->polarWindow, sizeof(POLAR_WINDOW));
-        this->polarWindows[this->currentPolar] = frame->polarWindowMod;
-        
-        for (int bin = 256; bin < this->windowSize/4; bin++)
+        int begin = (int)(thisSTFTBuffer->size / this->editArea.size.width * this->poly.boundPoints.x);
+        int end = (int)(thisSTFTBuffer->size / this->editArea.size.width * this->poly.boundPoints.y);
+        int top = changeTouchYScale(this->poly.boundPoints.z, this->touchScale);
+        int bottom = changeTouchYScale(this->poly.boundPoints.w, this->touchScale);
+    
+        end = (floor(end / begin) + 1) + begin;
+    
+        // ------------------------------------------------------------------------------------
+        if (this->dspTick == 0)
         {
-            //if (bin > this->poly.boundPoints.z || bin < this->poly.boundPoints.w)
-            //{
-            this->polarWindows[this->currentPolar]->buffer[bin].mag = 0.0;
-            this->polarWindows[this->currentPolar]->buffer[bin].phase = 0.0;
-            //}
+            FFT_FRAME* frame = thisSTFTBuffer->buffer[this->counter];
+            memcpy(frame->polarWindowMod, frame->polarWindow, sizeof(POLAR_WINDOW));
+            this->polarWindows[this->currentPolar] = frame->polarWindowMod;
+        
+            for (int bin = 0; bin < this->windowSize/2; bin++)
+            {
+                if (bin > top || bin < bottom)
+                {
+                    this->polarWindows[this->currentPolar]->buffer[bin].mag = 0.0;
+                    this->polarWindows[this->currentPolar]->buffer[bin].phase = 0.0;
+                }
+            }
+        
+            for (int i = 0; i < this->windowSize/2; i++)
+            {
+                this->polarWindows[this->currentPolar]->buffer[i].mag = (this->polarWindows[this->currentPolar]->buffer[i].mag + this->polarWindows[!this->currentPolar]->buffer[i].mag) / 2.0;
+                this->polarWindows[this->currentPolar]->buffer[i].phase = (this->polarWindows[this->currentPolar]->buffer[i].phase + this->polarWindows[!this->currentPolar]->buffer[i].phase) / 2.0;
+            }
+        
+            pvUnwrapPhase(this->polarWindows[this->currentPolar]);
+            pvFixPhase(this->polarWindows[!this->currentPolar], this->polarWindows[this->currentPolar], 0.5);
+            inverseFFT(this->fftManager, frame, this->circleBuffer[0]);
+        
+            // shift and overlap add new buffer
+            int diff = this->windowSize - this->hopSize;
+            for (int i = 0; i < diff; i++)
+                this->circleBuffer[1][i] = this->circleBuffer[1][this->hopSize + i] + this->circleBuffer[0][i];
+        
+            // assign remaining values to playback buffer
+            for (int i = 0; i < this->hopSize; i++)
+                this->circleBuffer[1][diff + i] = this->circleBuffer[0][diff + i];
+        
+            this->currentPolar = !this->currentPolar;
         }
         
-        for (int i = 0; i < this->windowSize/2; i++)
+        for (int frameCounter = 0; frameCounter < inNumberFrames; frameCounter++)
         {
-            this->polarWindows[this->currentPolar]->buffer[i].mag = (this->polarWindows[this->currentPolar]->buffer[i].mag + this->polarWindows[!this->currentPolar]->buffer[i].mag) / 2.0;
-            this->polarWindows[this->currentPolar]->buffer[i].phase = (this->polarWindows[this->currentPolar]->buffer[i].phase + this->polarWindows[!this->currentPolar]->buffer[i].phase) / 2.0;
+            buffer[frameCounter] = this->circleBuffer[1][frameCounter + this->dspTick];
         }
         
-        pvUnwrapPhase(this->polarWindows[this->currentPolar]);
-        pvFixPhase(this->polarWindows[!this->currentPolar], this->polarWindows[this->currentPolar], 0.5);
-        inverseFFT(this->fftManager, frame, this->circleBuffer[0]);
         
-        // shift and overlap add new buffer
-        int diff = this->windowSize - this->hopSize;
-        for (int i = 0; i < diff; i++)
-            this->circleBuffer[1][i] = this->circleBuffer[1][this->hopSize + i] + this->circleBuffer[0][i];
+        // ------------------------------------------------------------------------------------
+        // Deal with progressing time / dsp ticks
+        this->dspTick += inNumberFrames;
+        this->modAmount = (this->modAmount + inNumberFrames) % this->windowSize;
         
-        // assign remaining values to playback buffer
-        for (int i = 0; i < this->hopSize; i++)
-            this->circleBuffer[1][diff + i] = this->circleBuffer[0][diff + i];
+        if (this->dspTick >= this->hopSize)
+        {
+            this->dspTick = 0;
+            
+            if (this->rateCounter % this->rate == 0)
+                this->counter++;
+            
+            this->rateCounter++;
+        }
+        if (this->counter >= end)
+            this->counter = begin;
         
-        this->currentPolar = !this->currentPolar;
     }
-    
-    for (int frameCounter = 0; frameCounter < inNumberFrames; frameCounter++)
+    else
     {
-        buffer[frameCounter] = this->circleBuffer[1][frameCounter + this->dspTick];
+        memset(buffer, 0.0, inNumberFrames);
     }
-    
-    // ------------------------------------------------------------------------------------
-    // Deal with progressing time / dsp ticks
-    this->dspTick += inNumberFrames;
-    this->modAmount = (this->modAmount + inNumberFrames) % this->windowSize;
-    
-    if (this->dspTick >= this->hopSize)
-    {
-        this->dspTick = 0;
-        
-        if (this->rateCounter % this->rate == 0)
-            this->counter++;
-        
-        this->rateCounter++;
-    }
-    if (this->counter >= end)
-        this->counter = begin;
     
     return noErr;
 }
@@ -302,7 +206,7 @@ static OSStatus renderCallback(void *inRefCon,
         audioBuffer = nil;        
         normalizationFactor = 0.0;
         counter = 0;
-        rate = 1;
+        rate = 2;
         rateCounter = 0;
         
         // Appwide AU settings
@@ -498,11 +402,15 @@ static OSStatus renderCallback(void *inRefCon,
 
 - (float)findTouchScale
 {
-    float maxBounds = atan(editArea.size.height / TOUCH_DIVIDE) * TOUCH_HIGHEND_CUT;
-    float halfWindow = windowSize / 2;
-    float scale = halfWindow / maxBounds;
+    //float maxBounds = atan(editArea.size.height / TOUCH_DIVIDE) * TOUCH_HIGHEND_CUT;
+//    float maxBounds = log(editArea.size.height);
+//    float halfWindow = windowSize / 2;
+//    float scale = halfWindow / maxBounds;
     
-//    float scale = halfWindow / 6.3026;
+    //float scale = halfWindow / 6.3026;
+    //float scale = editArea.size.height / 10;
+    
+    float scale = pow(editArea.size.height, 2) / (windowSize / 2);
     return scale;
 }
 

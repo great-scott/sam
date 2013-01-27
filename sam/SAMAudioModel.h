@@ -15,7 +15,7 @@
 #include "FFTManager.h"
 
 #define TOUCH_DIVIDE 100                // this is used in a scaling operation
-#define TOUCH_HIGHEND_CUT 1.5
+#define TOUCH_HIGHEND_CUT 1
 
 # pragma mark - C Functions -
 

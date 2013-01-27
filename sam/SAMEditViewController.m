@@ -17,9 +17,7 @@
 @implementation SAMEditViewController
 @synthesize context;// = _context;
 @synthesize spectroViewControl;
-@synthesize gestureViewControl;
 @synthesize spectroView;
-@synthesize gestureView;
 
 
 #pragma mark - View Initialization -
@@ -40,27 +38,6 @@
     [super viewDidLoad];
 
     self.context = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES2];
-    if (!self.context)
-        NSLog(@"Failed to create ES context.");
-//
-//    GLKView* view = (GLKView *)self.view;
-//    [EAGLContext setCurrentContext:self.context];
-//    view.context = self.context;
-//    
-//    view.drawableMultisample = GLKViewDrawableMultisample4X;
-//    view.multipleTouchEnabled = YES;
-//    self.view.opaque = NO; // NB: Apple DELETES THIS VALUE FROM NIB
-//    self.view.backgroundColor = [UIColor clearColor];
-//    
-//    shapes = [[NSMutableArray alloc] init];
-//    [[SAMAudioModel sharedAudioModel] setShapeReference:shapes];
-//    
-//    spectroViewControl = nil;
-    //[self addGestureView];
-}
-
-- (void)reinit
-{
     if (!self.context)
         NSLog(@"Failed to create ES context.");
     
@@ -85,6 +62,16 @@
     return UIDeviceOrientationLandscapeLeft;
 }
 
+- (void)addSpectrogramView
+{
+    if (spectroViewControl == nil)
+    {
+        spectroViewControl = [[SAMSpectrogramViewController alloc] initWithNibName:@"SpectrogramView" bundle:[NSBundle mainBundle] context:self.context];
+    }
+    
+    // calculate spectrogram
+}
+
 
 #pragma mark - View Drawing Callback -
 
@@ -93,6 +80,8 @@
 //    glClearColor(0.95, 0.95, 0.95, 0.0);
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
     glClear(GL_COLOR_BUFFER_BIT);
+
+    [spectroViewControl glkView:view drawInRect:rect];
     
     if ([shapes count] > 0)
         [shapes makeObjectsPerformSelector:@selector(render)];
@@ -122,29 +111,6 @@
     [shapes addObject:triangle];
 }
 
-- (void)addGestureView
-{
-    gestureViewControl = [[SAMGestureViewController alloc] initWithNibName:@"GestureView" bundle:[NSBundle mainBundle]];
-    gestureView = gestureViewControl.view;
-    CGRect gestureRect = CGRectMake(0, 0, gestureView.bounds.size.width, gestureView.bounds.size.height);
-    [gestureView setHidden:NO];
-    [gestureView setFrame:gestureRect];
-    [self.view addSubview:gestureView];
-}
-
-- (void)setSpectroViewControl:(SAMSpectrogramViewController *)svc
-{
-    // TODO: This could get really hairy really quick keep this marked for debugging
-    if (svc != nil)
-        gestureViewControl.spectroViewController = svc;
-    
-    spectroViewControl = svc;
-}
-
-- (SAMSpectrogramViewController *)spectroViewControl
-{
-    return spectroViewControl;
-}
 
 #pragma mark - Touch Callbacks -
 
