@@ -221,12 +221,12 @@
             leftMost = self.vertices[i].x;
         if (rightMost == -1 || self.vertices[i].x > rightMost)
             rightMost = self.vertices[i].x;
-        if (topMost == -1 || self.vertices[i].y > topMost)
+        if (topMost == -1 || bounds.size.height - self.vertices[i].y > topMost)
         {
             // Need to invert values
             topMost = bounds.size.height - self.vertices[i].y;
         }
-        if (bottomMost == -1 || self.vertices[i].y < bottomMost)
+        if (bottomMost == -1 || bounds.size.height - self.vertices[i].y < bottomMost)
         {
             // Need to invert values
             bottomMost = bounds.size.height - self.vertices[i].y;

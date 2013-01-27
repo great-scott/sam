@@ -22,7 +22,7 @@
 float changeTouchYScale(float inputPoint, float scale);
 void render(void *inRefCon, AudioUnitRenderActionFlags *ioActionFlags, const AudioTimeStamp *inTimeStamp, UInt32 inBusNumber, UInt32 inNumberFrames, AudioBufferList *ioData);
 void pva(FFT_FRAME* frame, int sampleRate, int hopSize, float* lastPhase);
-void pvs(FFT* fft, FFT_FRAME* frame, float* output, int sampleRate, int hopSize, float* lastPhase);
+void pvs(FFT* fft, FFT_FRAME* frame, int sampleRate, int hopSize, float* lastPhase);
 
 
 # pragma mark - Main Interface -
@@ -53,7 +53,7 @@ void pvs(FFT* fft, FFT_FRAME* frame, float* output, int sampleRate, int hopSize,
     FFT* fftManager;
     STFT_BUFFER* stftBuffer;
     
-    float* circleBuffer[3];
+    float* circleBuffer[4];
     float* outputBuffer;
     
     int counter;
@@ -77,7 +77,8 @@ void pvs(FFT* fft, FFT_FRAME* frame, float* output, int sampleRate, int hopSize,
     
     FFT_FRAME*  fftFrameBuffer[2];
     int         whichFrame;
-    float*      lp;
+    float*      lpIn;
+    float*      lpOut;
     int         hopPosition;
 }
 
@@ -87,6 +88,7 @@ void pvs(FFT* fft, FFT_FRAME* frame, float* output, int sampleRate, int hopSize,
 @property int screenWidth;
 @property int screenHeight;
 @property CGRect editArea;
+@property BOOL monitor;
 
 @property (nonatomic, weak) RegionPolygon* poly;
 

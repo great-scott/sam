@@ -139,11 +139,9 @@
 {
     if (fileSelected)
     {
-//        [audioModel openAudioFile:fileUrl];
-//        [audioModel calculateSTFT];
         [[SAMAudioModel sharedAudioModel] openAudioFile:fileUrl];
-        //[[SAMAudioModel sharedAudioModel] calculateSTFT];
-        [spectroView setHidden:NO];
+        [[SAMAudioModel sharedAudioModel] calculateSTFT];
+        //[spectroView setHidden:NO];
         [self animateFileView:NO];
     }
 }
@@ -172,6 +170,13 @@
     {
         // Edit View Add Square
         [editViewControl addSquare];
+    }
+    else if ([title isEqualToString:@"Play"])
+    {
+        if ([[SAMAudioModel sharedAudioModel] monitor] == NO)
+            [[SAMAudioModel sharedAudioModel] setMonitor:YES];
+        else
+            [[SAMAudioModel sharedAudioModel] setMonitor:NO];
     }
     else if ([title isEqualToString:@"Tri"])
     {
