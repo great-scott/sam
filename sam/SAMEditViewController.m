@@ -69,7 +69,7 @@
         spectroViewControl = [[SAMSpectrogramViewController alloc] initWithNibName:@"SpectrogramView" bundle:[NSBundle mainBundle] context:self.context];
     }
     
-    // calculate spectrogram
+    [spectroViewControl createSpectrum];
 }
 
 
