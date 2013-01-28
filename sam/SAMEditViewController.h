@@ -27,7 +27,6 @@
 @property (strong, nonatomic) EAGLContext* context;
 
 @property (nonatomic, strong) UIView* spectroView;
-- (IBAction)handlePress:(UILongPressGestureRecognizer *)sender;
 
 - (void)addSquare;
 - (void)addTriangle;

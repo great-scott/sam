@@ -35,7 +35,6 @@ double linearInterp(double valA, double valB, double fract);
 @property float redAmt;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil context:(EAGLContext *) parentContext;
-- (void)pressHandle:(UILongPressGestureRecognizer *)sender;
 - (void)glkView:(GLKView *)view drawInRect:(CGRect)rect;
 - (void)createSpectrum;
 

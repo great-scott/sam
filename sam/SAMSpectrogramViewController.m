@@ -223,11 +223,8 @@ double linearInterp(double valA, double valB, double fract)
 }
 
 - (void)render
-{
-    //[self renderFFTToTex];
-	
+{	
     [spectrum makeObjectsPerformSelector:@selector(render)];
-
 }
 
 

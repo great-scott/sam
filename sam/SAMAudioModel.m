@@ -112,7 +112,16 @@ static OSStatus renderCallback(void *inRefCon,
         if (this->dspTick == 0)
         {
             FFT_FRAME* frame = thisSTFTBuffer->buffer[this->counter];
-            memcpy(frame->polarWindowMod, frame->polarWindow, sizeof(POLAR_WINDOW));
+            
+            frame->polarWindowMod->length = frame->polarWindow->length;
+            for (int i = 0; i < this->windowSize/2; i++)
+            {
+                frame->polarWindowMod->buffer[i].mag = frame->polarWindow->buffer[i].mag;
+                frame->polarWindowMod->buffer[i].phase = frame->polarWindowMod->buffer[i].phase;
+                frame->polarWindowMod->oldBuffer[i].mag = frame->polarWindow->oldBuffer[i].mag;
+                frame->polarWindowMod->oldBuffer[i].phase = frame->polarWindow->oldBuffer[i].phase;
+            }
+            
             this->polarWindows[this->currentPolar] = frame->polarWindowMod;
         
             for (int bin = 0; bin < this->windowSize/2; bin++)
@@ -131,7 +140,7 @@ static OSStatus renderCallback(void *inRefCon,
             }
         
             pvUnwrapPhase(this->polarWindows[this->currentPolar]);
-            pvFixPhase(this->polarWindows[!this->currentPolar], this->polarWindows[this->currentPolar], 0.5);
+            pvFixPhase(this->polarWindows[!this->currentPolar], this->polarWindows[this->currentPolar], 0.25);
             inverseFFT(this->fftManager, frame, this->circleBuffer[0]);
         
             // shift and overlap add new buffer
@@ -161,7 +170,7 @@ static OSStatus renderCallback(void *inRefCon,
         {
             this->dspTick = 0;
             
-            if (this->rateCounter % this->rate == 0)
+            if (this->rateCounter % (this->rate * this->overlap) == 0)
                 this->counter++;
             
             this->rateCounter++;

@@ -139,7 +139,12 @@ static GLKBaseEffect *effect;
     //---------------------------------------------------------
     
     glEnable(GL_BLEND);
+    glBlendEquation(GL_FUNC_ADD);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    
+//    glBlendEquation(GL_FUNC_ADD);
+//    glBlendFunc(GL_ONE_MINUS_DST_COLOR, GL_ONE);
+    
     glLineWidth(lineWidth);
     
     if (texture != nil)

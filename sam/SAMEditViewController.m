@@ -90,10 +90,6 @@
 
 #pragma mark - View Methods -
 
-- (IBAction)handlePress:(UILongPressGestureRecognizer *)sender
-{
-    [spectroViewControl pressHandle:sender];
-}
 
 - (void)addSquare
 {
@@ -117,19 +113,16 @@
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
 {
     [touchTracker startTouches:touches withEvent:event withShapes:shapes];
-    //[gestureViewControl touchesBegan:touches withEvent:event withShapes:shapes];
 }
 
 - (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event
 {
     [touchTracker moveTouches:touches withEvent:event withShapes:shapes];
-    //[gestureViewControl touchesMoved:touches withEvent:event withShapes:shapes];
 }
 
 - (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
 {
     [touchTracker endTouches:touches withEvent:event withShapes:shapes];
-    //[gestureViewControl touchesEnded:touches withEvent:event withShapes:shapes];
 }
 
 
