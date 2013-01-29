@@ -80,7 +80,7 @@ double linearInterp(double valA, double valB, double fract)
     for (int i = 0; i < numFrames; i++)
     {
         
-        for (int step = 0; step < 5; step++)
+        for (int step = 0; step < 1; step++)
         {
             Shape* s = [[Shape alloc] init];
             s.bounds = self.view.bounds;

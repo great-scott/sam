@@ -105,13 +105,15 @@ static OSStatus renderCallback(void *inRefCon,
         int end = (int)(thisSTFTBuffer->size / this->editArea.size.width * this->poly.boundPoints.y);
         int top = changeTouchYScale(this->poly.boundPoints.z, this->touchScale);
         int bottom = changeTouchYScale(this->poly.boundPoints.w, this->touchScale);
+        int length = end - begin;
     
         end = (floor(end / begin) + 1) + begin;
     
         // ------------------------------------------------------------------------------------
         if (this->dspTick == 0)
         {
-            FFT_FRAME* frame = thisSTFTBuffer->buffer[this->counter];
+            int newPos = ((rand() % length) + begin) % end;            
+            FFT_FRAME* frame = thisSTFTBuffer->buffer[(this->counter + newPos) % end];
             
             frame->polarWindowMod->length = frame->polarWindow->length;
             for (int i = 0; i < this->windowSize/2; i++)
