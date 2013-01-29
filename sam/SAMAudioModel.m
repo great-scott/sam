@@ -142,7 +142,7 @@ static OSStatus renderCallback(void *inRefCon,
             }
         
             pvUnwrapPhase(this->polarWindows[this->currentPolar]);
-            pvFixPhase(this->polarWindows[!this->currentPolar], this->polarWindows[this->currentPolar], 0.25);
+            pvFixPhase(this->polarWindows[!this->currentPolar], this->polarWindows[this->currentPolar], 0.1);
             inverseFFT(this->fftManager, frame, this->circleBuffer[0]);
         
             // shift and overlap add new buffer

@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		423D1F58169CD64B000074E3 /* FileView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 423D1F57169CD64B000074E3 /* FileView.xib */; };
+		4247CB3816B865AC0047BA2E /* FFTFrame.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4247CB3616B865AC0047BA2E /* FFTFrame.cpp */; };
 		42534139169D0156009E53DC /* Ellipse.m in Sources */ = {isa = PBXBuildFile; fileRef = 42534130169D0156009E53DC /* Ellipse.m */; };
 		4253413A169D0156009E53DC /* Line.m in Sources */ = {isa = PBXBuildFile; fileRef = 42534132169D0156009E53DC /* Line.m */; };
 		4253413B169D0156009E53DC /* Rectangle.m in Sources */ = {isa = PBXBuildFile; fileRef = 42534134169D0156009E53DC /* Rectangle.m */; };
@@ -24,6 +25,7 @@
 		4254A0FF16A7AB6A00C35BE2 /* GestureView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4254A0FE16A7AB6A00C35BE2 /* GestureView.xib */; };
 		4254A10216A7ABCA00C35BE2 /* SAMGestureViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4254A10116A7ABCA00C35BE2 /* SAMGestureViewController.m */; };
 		4264B7BB16A6E31C00ACCC18 /* SAMTouchTrack.m in Sources */ = {isa = PBXBuildFile; fileRef = 4264B7BA16A6E31C00ACCC18 /* SAMTouchTrack.m */; };
+		427F09AB16B774080066B1B4 /* FFT.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 427F09A916B774080066B1B4 /* FFT.cpp */; };
 		42D4489F16A4BCFF00B7B195 /* RegionPolygon.m in Sources */ = {isa = PBXBuildFile; fileRef = 42D4489E16A4BCFF00B7B195 /* RegionPolygon.m */; };
 		42D448A216A4BFAF00B7B195 /* Vertex.m in Sources */ = {isa = PBXBuildFile; fileRef = 42D448A116A4BFAF00B7B195 /* Vertex.m */; };
 		42EA6B45169B60AE005960F5 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 42EA6B44169B60AE005960F5 /* UIKit.framework */; };
@@ -47,6 +49,8 @@
 
 /* Begin PBXFileReference section */
 		423D1F57169CD64B000074E3 /* FileView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = FileView.xib; sourceTree = "<group>"; };
+		4247CB3616B865AC0047BA2E /* FFTFrame.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FFTFrame.cpp; sourceTree = "<group>"; };
+		4247CB3716B865AC0047BA2E /* FFTFrame.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FFTFrame.h; sourceTree = "<group>"; };
 		4253412F169D0156009E53DC /* Ellipse.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Ellipse.h; sourceTree = "<group>"; };
 		42534130169D0156009E53DC /* Ellipse.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Ellipse.m; sourceTree = "<group>"; };
 		42534131169D0156009E53DC /* Line.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Line.h; sourceTree = "<group>"; };
@@ -75,6 +79,8 @@
 		4254A10116A7ABCA00C35BE2 /* SAMGestureViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SAMGestureViewController.m; sourceTree = "<group>"; };
 		4264B7B916A6E31C00ACCC18 /* SAMTouchTrack.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SAMTouchTrack.h; sourceTree = "<group>"; };
 		4264B7BA16A6E31C00ACCC18 /* SAMTouchTrack.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SAMTouchTrack.m; sourceTree = "<group>"; };
+		427F09A916B774080066B1B4 /* FFT.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FFT.cpp; sourceTree = "<group>"; };
+		427F09AA16B774080066B1B4 /* FFT.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FFT.h; sourceTree = "<group>"; };
 		42D4489D16A4BCFF00B7B195 /* RegionPolygon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RegionPolygon.h; sourceTree = "<group>"; };
 		42D4489E16A4BCFF00B7B195 /* RegionPolygon.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RegionPolygon.m; sourceTree = "<group>"; };
 		42D448A016A4BFAF00B7B195 /* Vertex.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Vertex.h; sourceTree = "<group>"; };
@@ -149,6 +155,10 @@
 			children = (
 				42534157169E2859009E53DC /* FFTManager.h */,
 				42534156169E2859009E53DC /* FFTManager.c */,
+				427F09AA16B774080066B1B4 /* FFT.h */,
+				427F09A916B774080066B1B4 /* FFT.cpp */,
+				4247CB3716B865AC0047BA2E /* FFTFrame.h */,
+				4247CB3616B865AC0047BA2E /* FFTFrame.cpp */,
 			);
 			name = DSP;
 			sourceTree = "<group>";
@@ -341,6 +351,8 @@
 				4264B7BB16A6E31C00ACCC18 /* SAMTouchTrack.m in Sources */,
 				4254A0F916A7977E00C35BE2 /* SAMSpectrogramViewController.m in Sources */,
 				4254A10216A7ABCA00C35BE2 /* SAMGestureViewController.m in Sources */,
+				427F09AB16B774080066B1B4 /* FFT.cpp in Sources */,
+				4247CB3816B865AC0047BA2E /* FFTFrame.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -283,9 +283,6 @@ void computeSTFT(FFT* instantiatedFFT, STFT_BUFFER* stftBuffer, float* audioBuff
         // calculate magnitude and phase and put in another array for now
         for (int i = 0; i < frame->windowSize / 2; i++)
         {
-            //p->buffer[i].mag = getMagnitude(frame->complexBuffer.realp[i], frame->complexBuffer.imagp[i]);
-            //p->buffer[i].phase = getPhase(frame->complexBuffer.realp[i], frame->complexBuffer.imagp[i]);
-            
             mag = getMagnitude(frame->complexBuffer.realp[i], frame->complexBuffer.imagp[i]);
             phi = getPhase(frame->complexBuffer.realp[i], frame->complexBuffer.imagp[i]);
             
@@ -302,7 +299,6 @@ void computeSTFT(FFT* instantiatedFFT, STFT_BUFFER* stftBuffer, float* audioBuff
             
             if (p->buffer[i].mag > stftBuffer->max)
                 stftBuffer->max = p->buffer[i].mag;
-            
         }
         
         // make a copy
