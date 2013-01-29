@@ -28,24 +28,28 @@ typedef struct t_polarWindow
 class FFTFrame
 {
     public:
+    
         // Constructor
-        FFTFrame();
+        FFTFrame(int fftWindowSize);
     
         // Destructor
         ~FFTFrame();
     
-        //
-        COMPLEX_SPLIT* getComplex();
+        // Returns pointer to complex buffer
+        COMPLEX_SPLIT*  getComplex();
+        POLAR_WINDOW*   getPolar();
     
     private:
+    
         // Main complex plane buffer
         COMPLEX_SPLIT   complexBuffer;
     
         // Polar coordinates
-        POLAR_WINDOW*   polarBuffer;
-        POLAR_WINDOW*   polarBufferMod;
+        POLAR_WINDOW    polarBuffer;
+        POLAR_WINDOW    polarBufferMod;
     
         int             windowSize;
+        int             halfWindowSize;
     
     
 };

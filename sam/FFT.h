@@ -30,16 +30,17 @@ class FFT
     
     private:
     
-        int         windowSize;
-        int         halfWindowSize;
-        float       normFactor;
+        int             windowSize;
+        int             halfWindowSize;
+        float           normFactor;
     
-        float*      window;
-        float*      forwardBuffer;
-        float*      inverseBuffer;
+        float*          window;
+        float*          forwardBuffer;
+        float*          inverseBuffer;
     
-        vDSP_Length log2n;
-        FFTSetup    fftSetup;
+        COMPLEX_SPLIT   internalComplex;
+        vDSP_Length     log2n;
+        FFTSetup        fftSetup;
 
 };
 
