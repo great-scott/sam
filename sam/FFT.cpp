@@ -86,6 +86,17 @@ void FFT::inverseFFT(FFTFrame* frame, float* buffer)
 }
 
 
+int FFT::getWindowSize()
+{
+    return windowSize;
+}
+
+int FFT::getHalfWindowSize()
+{
+    return halfWindowSize;
+}
+
+
 
 
 

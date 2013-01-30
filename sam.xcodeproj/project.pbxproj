@@ -26,6 +26,7 @@
 		4254A10216A7ABCA00C35BE2 /* SAMGestureViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4254A10116A7ABCA00C35BE2 /* SAMGestureViewController.m */; };
 		4264B7BB16A6E31C00ACCC18 /* SAMTouchTrack.m in Sources */ = {isa = PBXBuildFile; fileRef = 4264B7BA16A6E31C00ACCC18 /* SAMTouchTrack.m */; };
 		427F09AB16B774080066B1B4 /* FFT.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 427F09A916B774080066B1B4 /* FFT.cpp */; };
+		42CC2DFE16B99A0100EE48D5 /* PhaseVocoder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 42CC2DFC16B99A0100EE48D5 /* PhaseVocoder.cpp */; };
 		42D4489F16A4BCFF00B7B195 /* RegionPolygon.m in Sources */ = {isa = PBXBuildFile; fileRef = 42D4489E16A4BCFF00B7B195 /* RegionPolygon.m */; };
 		42D448A216A4BFAF00B7B195 /* Vertex.m in Sources */ = {isa = PBXBuildFile; fileRef = 42D448A116A4BFAF00B7B195 /* Vertex.m */; };
 		42EA6B45169B60AE005960F5 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 42EA6B44169B60AE005960F5 /* UIKit.framework */; };
@@ -81,6 +82,8 @@
 		4264B7BA16A6E31C00ACCC18 /* SAMTouchTrack.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SAMTouchTrack.m; sourceTree = "<group>"; };
 		427F09A916B774080066B1B4 /* FFT.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FFT.cpp; sourceTree = "<group>"; };
 		427F09AA16B774080066B1B4 /* FFT.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FFT.h; sourceTree = "<group>"; };
+		42CC2DFC16B99A0100EE48D5 /* PhaseVocoder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PhaseVocoder.cpp; sourceTree = "<group>"; };
+		42CC2DFD16B99A0100EE48D5 /* PhaseVocoder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhaseVocoder.h; sourceTree = "<group>"; };
 		42D4489D16A4BCFF00B7B195 /* RegionPolygon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RegionPolygon.h; sourceTree = "<group>"; };
 		42D4489E16A4BCFF00B7B195 /* RegionPolygon.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RegionPolygon.m; sourceTree = "<group>"; };
 		42D448A016A4BFAF00B7B195 /* Vertex.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Vertex.h; sourceTree = "<group>"; };
@@ -159,6 +162,8 @@
 				427F09A916B774080066B1B4 /* FFT.cpp */,
 				4247CB3716B865AC0047BA2E /* FFTFrame.h */,
 				4247CB3616B865AC0047BA2E /* FFTFrame.cpp */,
+				42CC2DFD16B99A0100EE48D5 /* PhaseVocoder.h */,
+				42CC2DFC16B99A0100EE48D5 /* PhaseVocoder.cpp */,
 			);
 			name = DSP;
 			sourceTree = "<group>";
@@ -353,6 +358,7 @@
 				4254A10216A7ABCA00C35BE2 /* SAMGestureViewController.m in Sources */,
 				427F09AB16B774080066B1B4 /* FFT.cpp in Sources */,
 				4247CB3816B865AC0047BA2E /* FFTFrame.cpp in Sources */,
+				42CC2DFE16B99A0100EE48D5 /* PhaseVocoder.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

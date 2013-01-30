@@ -28,6 +28,11 @@ class FFT
         // Inverse fft
         void inverseFFT(FFTFrame* frame, float* buffer);
     
+        // window size getters
+        int getWindowSize();
+    
+        int getHalfWindowSize();
+    
     private:
     
         int             windowSize;

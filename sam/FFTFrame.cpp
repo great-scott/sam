@@ -15,29 +15,29 @@ FFTFrame::FFTFrame(int fftWindowSize)
     halfWindowSize = windowSize / 2;
     
     // Complex buffer
-    complex.realp = new float[halfWindowSize];
-    complex.imagp = new float[halfWindowSize];
+    complexBuffer.realp = new float[halfWindowSize];
+    complexBuffer.imagp = new float[halfWindowSize];
     
     // Polar window
-    polarBuffer.buffer = new POLAR[halfWindowSize];
-    polarBuffer.length = halfWindowSize;
+//    polarBuffer.buffer = new POLAR[halfWindowSize];
+//    polarBuffer.length = halfWindowSize;
 }
 
 
 FFTFrame::~FFTFrame()
 {
-    delete[] complex.realp;
-    delete[] complex.imagp;
+    delete[] complexBuffer.realp;
+    delete[] complexBuffer.imagp;
 }
 
 
 COMPLEX_SPLIT* FFTFrame::getComplex()
 {
-    return &complex;
+    return &complexBuffer;
 }
 
 
-POLAR_WINDOW* FFTFrame::getPolar()
-{
-    return &polarBuffer;
-}
+//POLAR_WINDOW* FFTFrame::getPolar()
+//{
+//    return &polarBuffer;
+//}

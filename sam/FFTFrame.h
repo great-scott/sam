@@ -12,17 +12,17 @@
 #include <iostream>
 #include "FFT.h"
 
-typedef struct t_polar
-{
-    float mag;
-    float phase;
-} POLAR;
-
-typedef struct t_polarWindow
-{
-    POLAR* buffer;
-    int    length;
-} POLAR_WINDOW;
+//typedef struct t_polar
+//{
+//    float mag;
+//    float phase;
+//} POLAR;
+//
+//typedef struct t_polarWindow
+//{
+//    POLAR* buffer;
+//    int    length;
+//} POLAR_WINDOW;
 
 
 class FFTFrame
@@ -37,7 +37,7 @@ class FFTFrame
     
         // Returns pointer to complex buffer
         COMPLEX_SPLIT*  getComplex();
-        POLAR_WINDOW*   getPolar();
+//        POLAR_WINDOW*   getPolar();
     
     private:
     
@@ -45,8 +45,8 @@ class FFTFrame
         COMPLEX_SPLIT   complexBuffer;
     
         // Polar coordinates
-        POLAR_WINDOW    polarBuffer;
-        POLAR_WINDOW    polarBufferMod;
+//        POLAR_WINDOW    polarBuffer;
+//        POLAR_WINDOW    polarBufferMod;
     
         int             windowSize;
         int             halfWindowSize;
