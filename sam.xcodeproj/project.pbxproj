@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		422793E916B9B533004737CE /* SAMAudioModel.mm in Sources */ = {isa = PBXBuildFile; fileRef = 422793E816B9B533004737CE /* SAMAudioModel.mm */; };
+		422793F116B9B935004737CE /* STFT.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 422793EF16B9B935004737CE /* STFT.cpp */; };
 		423D1F58169CD64B000074E3 /* FileView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 423D1F57169CD64B000074E3 /* FileView.xib */; };
 		4247CB3816B865AC0047BA2E /* FFTFrame.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4247CB3616B865AC0047BA2E /* FFTFrame.cpp */; };
 		42534139169D0156009E53DC /* Ellipse.m in Sources */ = {isa = PBXBuildFile; fileRef = 42534130169D0156009E53DC /* Ellipse.m */; };
@@ -17,7 +19,6 @@
 		42534141169D1F64009E53DC /* SAMTouchTracker.m in Sources */ = {isa = PBXBuildFile; fileRef = 42534140169D1F63009E53DC /* SAMTouchTracker.m */; };
 		42534144169DDD1F009E53DC /* SAMTouchContainer.m in Sources */ = {isa = PBXBuildFile; fileRef = 42534143169DDD1F009E53DC /* SAMTouchContainer.m */; };
 		4253415A169E285A009E53DC /* FFTManager.c in Sources */ = {isa = PBXBuildFile; fileRef = 42534156169E2859009E53DC /* FFTManager.c */; };
-		42534162169E289D009E53DC /* SAMAudioModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 42534161169E289D009E53DC /* SAMAudioModel.m */; };
 		42534164169E2E0D009E53DC /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 42534163169E2E0D009E53DC /* Accelerate.framework */; };
 		42534166169E2E2E009E53DC /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 42534165169E2E2E009E53DC /* AudioToolbox.framework */; };
 		4254A0F516A796C100C35BE2 /* SpectrogramView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4254A0F416A796C100C35BE2 /* SpectrogramView.xib */; };
@@ -49,6 +50,9 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		422793E816B9B533004737CE /* SAMAudioModel.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = SAMAudioModel.mm; sourceTree = "<group>"; };
+		422793EF16B9B935004737CE /* STFT.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = STFT.cpp; sourceTree = "<group>"; };
+		422793F016B9B935004737CE /* STFT.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STFT.h; sourceTree = "<group>"; };
 		423D1F57169CD64B000074E3 /* FileView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = FileView.xib; sourceTree = "<group>"; };
 		4247CB3616B865AC0047BA2E /* FFTFrame.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FFTFrame.cpp; sourceTree = "<group>"; };
 		4247CB3716B865AC0047BA2E /* FFTFrame.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FFTFrame.h; sourceTree = "<group>"; };
@@ -69,7 +73,6 @@
 		42534156169E2859009E53DC /* FFTManager.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = FFTManager.c; path = DSP/FFTManager.c; sourceTree = "<group>"; };
 		42534157169E2859009E53DC /* FFTManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FFTManager.h; path = DSP/FFTManager.h; sourceTree = "<group>"; };
 		42534160169E289C009E53DC /* SAMAudioModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SAMAudioModel.h; sourceTree = "<group>"; };
-		42534161169E289D009E53DC /* SAMAudioModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SAMAudioModel.m; sourceTree = "<group>"; };
 		42534163169E2E0D009E53DC /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
 		42534165169E2E2E009E53DC /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 		4254A0F416A796C100C35BE2 /* SpectrogramView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SpectrogramView.xib; sourceTree = "<group>"; };
@@ -164,6 +167,8 @@
 				4247CB3616B865AC0047BA2E /* FFTFrame.cpp */,
 				42CC2DFD16B99A0100EE48D5 /* PhaseVocoder.h */,
 				42CC2DFC16B99A0100EE48D5 /* PhaseVocoder.cpp */,
+				422793F016B9B935004737CE /* STFT.h */,
+				422793EF16B9B935004737CE /* STFT.cpp */,
 			);
 			name = DSP;
 			sourceTree = "<group>";
@@ -202,8 +207,8 @@
 		42EA6B4A169B60AE005960F5 /* sam */ = {
 			isa = PBXGroup;
 			children = (
+				422793E816B9B533004737CE /* SAMAudioModel.mm */,
 				42534160169E289C009E53DC /* SAMAudioModel.h */,
-				42534161169E289D009E53DC /* SAMAudioModel.m */,
 				4253415C169E2860009E53DC /* DSP */,
 				4253412E169D0156009E53DC /* Shapes */,
 				42EA6B6A169B6416005960F5 /* Views */,
@@ -350,7 +355,6 @@
 				42534141169D1F64009E53DC /* SAMTouchTracker.m in Sources */,
 				42534144169DDD1F009E53DC /* SAMTouchContainer.m in Sources */,
 				4253415A169E285A009E53DC /* FFTManager.c in Sources */,
-				42534162169E289D009E53DC /* SAMAudioModel.m in Sources */,
 				42D4489F16A4BCFF00B7B195 /* RegionPolygon.m in Sources */,
 				42D448A216A4BFAF00B7B195 /* Vertex.m in Sources */,
 				4264B7BB16A6E31C00ACCC18 /* SAMTouchTrack.m in Sources */,
@@ -359,6 +363,8 @@
 				427F09AB16B774080066B1B4 /* FFT.cpp in Sources */,
 				4247CB3816B865AC0047BA2E /* FFTFrame.cpp in Sources */,
 				42CC2DFE16B99A0100EE48D5 /* PhaseVocoder.cpp in Sources */,
+				422793E916B9B533004737CE /* SAMAudioModel.mm in Sources */,
+				422793F116B9B935004737CE /* STFT.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -30,13 +30,13 @@ PhaseVocoder::~PhaseVocoder()
     delete complexFrame;
 }
 
-void PhaseVocoder::analyze(float* buffer, PhaseVocoder& previousPV)
+void PhaseVocoder::analyze(float* buffer, PhaseVocoder& previousPV, int hopSize)
 {
     float mag, phi, delta;
     COMPLEX_SPLIT* complex;
     
-    float scale = (float)(TWO_PI * 512 / 2048);     //TODO: make this not hard coded
-    float fac = (float)(44100.0 / (512 * TWO_PI));
+    float scale = (float)(TWO_PI * hopSize / fft->getWindowSize());
+    float fac = (float)(44100.0 / (hopSize * TWO_PI));
     
     fft->forwardFFT(complexFrame, buffer);
     
@@ -80,9 +80,23 @@ double PhaseVocoder::getPhase(float real, float imag)
     return atan2((double)imag, (double)real);
 }
 
-const POLAR& PhaseVocoder::operator[] (const int nIndex)
+POLAR& PhaseVocoder::operator[] (const int nIndex)
 {
     assert(nIndex >= 0 && nIndex < fft->getHalfWindowSize());
     
     return polarWindow[nIndex];
 }
+
+void PhaseVocoder::fixPhase(PhaseVocoder& previousPV, float factor)
+{
+    int length = fft->getHalfWindowSize();
+    for (int i = 0; i < length; i++)
+    {
+        float previousPhase = previousPV[i].phase;
+        polarWindow[i].phase = factor * (polarWindow[i].phase - previousPhase) + previousPhase;
+    }
+}
+
+
+
+

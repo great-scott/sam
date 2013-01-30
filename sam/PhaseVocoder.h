@@ -36,12 +36,14 @@ class PhaseVocoder
         ~PhaseVocoder();
     
         // PV Analysis
-        void analyze(float* buffer, PhaseVocoder& previousPV);            // in both of these cases, buffer is a time domain signal
+        void analyze(float* buffer, PhaseVocoder& previousPV, int hopSize);            // in both of these cases, buffer is a time domain signal
     
         // PV Synthesis
         void synthesize(float* buffer);
     
-        const POLAR& operator[] (const int nIndex);
+        void fixPhase(PhaseVocoder& previousPV, float factor);
+    
+        POLAR& operator[] (const int nIndex);
     
     private:
         // instance of fft
