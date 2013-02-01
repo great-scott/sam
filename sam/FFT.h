@@ -2,53 +2,42 @@
 //  FFT.h
 //  sam
 //
-//  Created by Scott McCoid on 1/28/13.
+//  Created by Scott McCoid on 2/1/13.
 //  Copyright (c) 2013 Scott McCoid. All rights reserved.
 //
 
-#ifndef __sam__FFT__
-#define __sam__FFT__
+#ifndef sam_FFT_h
+#define sam_FFT_h
 
-#include <iostream>
 #include <Accelerate/Accelerate.h>
+#include "Constants.h"
 #include "FFTFrame.h"
 
-class FFT
+typedef struct t_fft
 {
-    public:
-        // Constructor
-        FFT(int fftWindowSize, int windowType);
+    int             windowSize;
+    int             halfWindowSize;
+    float           normFactor;
     
-        // Destructor
-        ~FFT();
+    float*          window;
+    float*          forwardBuffer;
+    float*          inverseBuffer;
     
-        // Forward fft
-        void forwardFFT(FFTFrame* frame, float* buffer);
+    COMPLEX_SPLIT   internalComplex;
+    vDSP_Length     log2n;
+    FFTSetup        fftSetup;
     
-        // Inverse fft
-        void inverseFFT(FFTFrame* frame, float* buffer);
-    
-        // window size getters
-        int getWindowSize();
-    
-        int getHalfWindowSize();
-    
-    private:
-    
-        int             windowSize;
-        int             halfWindowSize;
-        float           normFactor;
-    
-        float*          window;
-        float*          forwardBuffer;
-        float*          inverseBuffer;
-    
-        COMPLEX_SPLIT   internalComplex;
-        vDSP_Length     log2n;
-        FFTSetup        fftSetup;
+} FFT;
 
-};
+// Constructor
+FFT* newFFT(int windowSize, int windowType);
 
+// Destructor
+void freeFFT(FFT* fft);
 
+// Forward fft
+void forwardFFT(FFTFrame* frame, float* buffer);
 
-#endif /* defined(__sam__FFT__) */
+void inverseFFT(FFTFrame* frame, float* buffer);
+
+#endif

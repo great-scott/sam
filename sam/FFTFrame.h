@@ -2,57 +2,28 @@
 //  FFTFrame.h
 //  sam
 //
-//  Created by Scott McCoid on 1/29/13.
+//  Created by Scott McCoid on 2/1/13.
 //  Copyright (c) 2013 Scott McCoid. All rights reserved.
 //
 
-#ifndef __sam__FFTFrame__
-#define __sam__FFTFrame__
+#ifndef sam_FFTFrame_h
+#define sam_FFTFrame_h
 
-#include <iostream>
 #include "FFT.h"
 
-//typedef struct t_polar
-//{
-//    float mag;
-//    float phase;
-//} POLAR;
-//
-//typedef struct t_polarWindow
-//{
-//    POLAR* buffer;
-//    int    length;
-//} POLAR_WINDOW;
-
-
-class FFTFrame
+typedef struct t_fftFrame
 {
-    public:
+    FFT*            fft;
+    COMPLEX_SPLIT   complexBuffer;
     
-        // Constructor
-        FFTFrame(int fftWindowSize);
+    int             windowSize;
     
-        // Destructor
-        ~FFTFrame();
-    
-        // Returns pointer to complex buffer
-        COMPLEX_SPLIT*  getComplex();
-//        POLAR_WINDOW*   getPolar();
-    
-    private:
-    
-        // Main complex plane buffer
-        COMPLEX_SPLIT   complexBuffer;
-    
-        // Polar coordinates
-//        POLAR_WINDOW    polarBuffer;
-//        POLAR_WINDOW    polarBufferMod;
-    
-        int             windowSize;
-        int             halfWindowSize;
-    
-    
-};
+} FFTFrame;
 
+// Constructor
+FFTFrame* newFFTFrame(FFT* fft, int windowSize);
 
-#endif /* defined(__sam__FFTFrame__) */
+// Destructor
+void freeFFTFrame(FFTFrame* frame);
+
+#endif

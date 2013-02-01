@@ -2,63 +2,51 @@
 //  PhaseVocoder.h
 //  sam
 //
-//  Created by Scott McCoid on 1/30/13.
+//  Created by Scott McCoid on 2/1/13.
 //  Copyright (c) 2013 Scott McCoid. All rights reserved.
 //
-//  This class represents all the methods / data associated with a frame of a phase vocoder
-//  It mainly wraps up current FFT methods / data into a "neater" package
-//  Instantiate an FFT object and pass that in the constructor, the class will take care of the
-//  analysis and instantiating / deleting 
-//  
 
+#ifndef sam_PhaseVocoder_h
+#define sam_PhaseVocoder_h
 
-#ifndef __sam__PhaseVocoder__
-#define __sam__PhaseVocoder__
-
-#include <iostream>
-#include "FFT.h"
 #include "FFTFrame.h"
 
 typedef struct t_polar
 {
     float mag;
     float phase;
-} POLAR;
+    
+} Polar;
 
 
-class PhaseVocoder
+typedef struct t_pv
 {
-    public:
-        // Constructor
-        PhaseVocoder(FFT* fftManager);
+    FFT*      fft;
+    FFTFrame* complexFrame;
     
-        // Destructor
-        ~PhaseVocoder();
+    Polar*    polarWindow;
+    Polar*    polarWindowMod;
     
-        // PV Analysis
-        void analyze(float* buffer, PhaseVocoder& previousPV, int hopSize);            // in both of these cases, buffer is a time domain signal
+    int       windowSize;               // it's possible that we want to have a different windowSize than FFT has at the moment
+    int       halfWindowSize;
     
-        // PV Synthesis
-        void synthesize(float* buffer);
-    
-        void fixPhase(PhaseVocoder& previousPV, float factor);
-    
-        POLAR& operator[] (const int nIndex);
-    
-    private:
-        // instance of fft
-        FFT*      fft;
-        FFTFrame* complexFrame;
-    
-        POLAR*    polarWindow;
-        POLAR*    polarWindowMod;
-    
-    
-        float getMagnitude(float real, float imag);
-    
-        double getPhase(float real, float imag);
+} PhaseVocoder;
 
-    
-};
 
-#endif /* defined(__sam__PhaseVocoder__) */
+// Constructor
+PhaseVocoder* newPhaseVocoder(FFT* fft, int windowSize);
+
+// Destructor
+void freePhaseVocoder(PhaseVocoder* pv);
+
+void analyze(PhaseVocoder* pv, PhaseVocoder* previousPV, float* buffer, int hopSize);
+
+void synthesize(PhaseVocoder* pv, float* buffer);
+
+void fixPhase(PhaseVocoder* pv, PhaseVocoder* previousPV, float factor);
+
+float getMagnitude(float real, float imag);
+
+double getPhase(float real, float imag);
+
+#endif
