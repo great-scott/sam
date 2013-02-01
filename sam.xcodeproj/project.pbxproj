@@ -7,10 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		422793E916B9B533004737CE /* SAMAudioModel.mm in Sources */ = {isa = PBXBuildFile; fileRef = 422793E816B9B533004737CE /* SAMAudioModel.mm */; };
-		422793F116B9B935004737CE /* STFT.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 422793EF16B9B935004737CE /* STFT.cpp */; };
+		420B0A4B16BB4424009A2552 /* SAMAudioModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 420B0A4A16BB4424009A2552 /* SAMAudioModel.m */; };
 		423D1F58169CD64B000074E3 /* FileView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 423D1F57169CD64B000074E3 /* FileView.xib */; };
-		4247CB3816B865AC0047BA2E /* FFTFrame.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4247CB3616B865AC0047BA2E /* FFTFrame.cpp */; };
 		42534139169D0156009E53DC /* Ellipse.m in Sources */ = {isa = PBXBuildFile; fileRef = 42534130169D0156009E53DC /* Ellipse.m */; };
 		4253413A169D0156009E53DC /* Line.m in Sources */ = {isa = PBXBuildFile; fileRef = 42534132169D0156009E53DC /* Line.m */; };
 		4253413B169D0156009E53DC /* Rectangle.m in Sources */ = {isa = PBXBuildFile; fileRef = 42534134169D0156009E53DC /* Rectangle.m */; };
@@ -26,8 +24,6 @@
 		4254A0FF16A7AB6A00C35BE2 /* GestureView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4254A0FE16A7AB6A00C35BE2 /* GestureView.xib */; };
 		4254A10216A7ABCA00C35BE2 /* SAMGestureViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4254A10116A7ABCA00C35BE2 /* SAMGestureViewController.m */; };
 		4264B7BB16A6E31C00ACCC18 /* SAMTouchTrack.m in Sources */ = {isa = PBXBuildFile; fileRef = 4264B7BA16A6E31C00ACCC18 /* SAMTouchTrack.m */; };
-		427F09AB16B774080066B1B4 /* FFT.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 427F09A916B774080066B1B4 /* FFT.cpp */; };
-		42CC2DFE16B99A0100EE48D5 /* PhaseVocoder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 42CC2DFC16B99A0100EE48D5 /* PhaseVocoder.cpp */; };
 		42D4489F16A4BCFF00B7B195 /* RegionPolygon.m in Sources */ = {isa = PBXBuildFile; fileRef = 42D4489E16A4BCFF00B7B195 /* RegionPolygon.m */; };
 		42D448A216A4BFAF00B7B195 /* Vertex.m in Sources */ = {isa = PBXBuildFile; fileRef = 42D448A116A4BFAF00B7B195 /* Vertex.m */; };
 		42EA6B45169B60AE005960F5 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 42EA6B44169B60AE005960F5 /* UIKit.framework */; };
@@ -50,12 +46,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		422793E816B9B533004737CE /* SAMAudioModel.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = SAMAudioModel.mm; sourceTree = "<group>"; };
-		422793EF16B9B935004737CE /* STFT.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = STFT.cpp; sourceTree = "<group>"; };
-		422793F016B9B935004737CE /* STFT.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STFT.h; sourceTree = "<group>"; };
+		420B0A4A16BB4424009A2552 /* SAMAudioModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SAMAudioModel.m; sourceTree = "<group>"; };
 		423D1F57169CD64B000074E3 /* FileView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = FileView.xib; sourceTree = "<group>"; };
-		4247CB3616B865AC0047BA2E /* FFTFrame.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FFTFrame.cpp; sourceTree = "<group>"; };
-		4247CB3716B865AC0047BA2E /* FFTFrame.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FFTFrame.h; sourceTree = "<group>"; };
 		4253412F169D0156009E53DC /* Ellipse.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Ellipse.h; sourceTree = "<group>"; };
 		42534130169D0156009E53DC /* Ellipse.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Ellipse.m; sourceTree = "<group>"; };
 		42534131169D0156009E53DC /* Line.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Line.h; sourceTree = "<group>"; };
@@ -83,10 +75,6 @@
 		4254A10116A7ABCA00C35BE2 /* SAMGestureViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SAMGestureViewController.m; sourceTree = "<group>"; };
 		4264B7B916A6E31C00ACCC18 /* SAMTouchTrack.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SAMTouchTrack.h; sourceTree = "<group>"; };
 		4264B7BA16A6E31C00ACCC18 /* SAMTouchTrack.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SAMTouchTrack.m; sourceTree = "<group>"; };
-		427F09A916B774080066B1B4 /* FFT.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FFT.cpp; sourceTree = "<group>"; };
-		427F09AA16B774080066B1B4 /* FFT.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FFT.h; sourceTree = "<group>"; };
-		42CC2DFC16B99A0100EE48D5 /* PhaseVocoder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PhaseVocoder.cpp; sourceTree = "<group>"; };
-		42CC2DFD16B99A0100EE48D5 /* PhaseVocoder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhaseVocoder.h; sourceTree = "<group>"; };
 		42D4489D16A4BCFF00B7B195 /* RegionPolygon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RegionPolygon.h; sourceTree = "<group>"; };
 		42D4489E16A4BCFF00B7B195 /* RegionPolygon.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RegionPolygon.m; sourceTree = "<group>"; };
 		42D448A016A4BFAF00B7B195 /* Vertex.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Vertex.h; sourceTree = "<group>"; };
@@ -161,14 +149,6 @@
 			children = (
 				42534157169E2859009E53DC /* FFTManager.h */,
 				42534156169E2859009E53DC /* FFTManager.c */,
-				427F09AA16B774080066B1B4 /* FFT.h */,
-				427F09A916B774080066B1B4 /* FFT.cpp */,
-				4247CB3716B865AC0047BA2E /* FFTFrame.h */,
-				4247CB3616B865AC0047BA2E /* FFTFrame.cpp */,
-				42CC2DFD16B99A0100EE48D5 /* PhaseVocoder.h */,
-				42CC2DFC16B99A0100EE48D5 /* PhaseVocoder.cpp */,
-				422793F016B9B935004737CE /* STFT.h */,
-				422793EF16B9B935004737CE /* STFT.cpp */,
 			);
 			name = DSP;
 			sourceTree = "<group>";
@@ -207,7 +187,7 @@
 		42EA6B4A169B60AE005960F5 /* sam */ = {
 			isa = PBXGroup;
 			children = (
-				422793E816B9B533004737CE /* SAMAudioModel.mm */,
+				420B0A4A16BB4424009A2552 /* SAMAudioModel.m */,
 				42534160169E289C009E53DC /* SAMAudioModel.h */,
 				4253415C169E2860009E53DC /* DSP */,
 				4253412E169D0156009E53DC /* Shapes */,
@@ -360,11 +340,7 @@
 				4264B7BB16A6E31C00ACCC18 /* SAMTouchTrack.m in Sources */,
 				4254A0F916A7977E00C35BE2 /* SAMSpectrogramViewController.m in Sources */,
 				4254A10216A7ABCA00C35BE2 /* SAMGestureViewController.m in Sources */,
-				427F09AB16B774080066B1B4 /* FFT.cpp in Sources */,
-				4247CB3816B865AC0047BA2E /* FFTFrame.cpp in Sources */,
-				42CC2DFE16B99A0100EE48D5 /* PhaseVocoder.cpp in Sources */,
-				422793E916B9B533004737CE /* SAMAudioModel.mm in Sources */,
-				422793F116B9B935004737CE /* STFT.cpp in Sources */,
+				420B0A4B16BB4424009A2552 /* SAMAudioModel.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
