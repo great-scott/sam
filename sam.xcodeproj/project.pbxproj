@@ -24,6 +24,7 @@
 		4254A0FF16A7AB6A00C35BE2 /* GestureView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4254A0FE16A7AB6A00C35BE2 /* GestureView.xib */; };
 		4254A10216A7ABCA00C35BE2 /* SAMGestureViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4254A10116A7ABCA00C35BE2 /* SAMGestureViewController.m */; };
 		4264B7BB16A6E31C00ACCC18 /* SAMTouchTrack.m in Sources */ = {isa = PBXBuildFile; fileRef = 4264B7BA16A6E31C00ACCC18 /* SAMTouchTrack.m */; };
+		4286B67616BF0B78009F6914 /* STFT.c in Sources */ = {isa = PBXBuildFile; fileRef = 4286B67516BF0B78009F6914 /* STFT.c */; };
 		42C71EAA16BC4E3B0067E547 /* FFT.c in Sources */ = {isa = PBXBuildFile; fileRef = 42C71EA916BC4E3B0067E547 /* FFT.c */; };
 		42C71EAF16BC4E6A0067E547 /* FFTFrame.c in Sources */ = {isa = PBXBuildFile; fileRef = 42C71EAE16BC4E6A0067E547 /* FFTFrame.c */; };
 		42C71EB316BC54A90067E547 /* PhaseVocoder.c in Sources */ = {isa = PBXBuildFile; fileRef = 42C71EB216BC54A90067E547 /* PhaseVocoder.c */; };
@@ -78,6 +79,8 @@
 		4254A10116A7ABCA00C35BE2 /* SAMGestureViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SAMGestureViewController.m; sourceTree = "<group>"; };
 		4264B7B916A6E31C00ACCC18 /* SAMTouchTrack.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SAMTouchTrack.h; sourceTree = "<group>"; };
 		4264B7BA16A6E31C00ACCC18 /* SAMTouchTrack.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SAMTouchTrack.m; sourceTree = "<group>"; };
+		4286B67516BF0B78009F6914 /* STFT.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = STFT.c; sourceTree = "<group>"; };
+		4286B67816BF0B84009F6914 /* STFT.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = STFT.h; sourceTree = "<group>"; };
 		42C71EA916BC4E3B0067E547 /* FFT.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = FFT.c; sourceTree = "<group>"; };
 		42C71EAC16BC4E470067E547 /* FFT.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FFT.h; sourceTree = "<group>"; };
 		42C71EAD16BC4E5F0067E547 /* FFTFrame.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FFTFrame.h; sourceTree = "<group>"; };
@@ -166,6 +169,8 @@
 				42C71EAE16BC4E6A0067E547 /* FFTFrame.c */,
 				42C71EB116BC549F0067E547 /* PhaseVocoder.h */,
 				42C71EB216BC54A90067E547 /* PhaseVocoder.c */,
+				4286B67516BF0B78009F6914 /* STFT.c */,
+				4286B67816BF0B84009F6914 /* STFT.h */,
 			);
 			name = DSP;
 			sourceTree = "<group>";
@@ -361,6 +366,7 @@
 				42C71EAA16BC4E3B0067E547 /* FFT.c in Sources */,
 				42C71EAF16BC4E6A0067E547 /* FFTFrame.c in Sources */,
 				42C71EB316BC54A90067E547 /* PhaseVocoder.c in Sources */,
+				4286B67616BF0B78009F6914 /* STFT.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

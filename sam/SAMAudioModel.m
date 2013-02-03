@@ -30,58 +30,6 @@ float changeTouchYScale(float inputPoint, float scale)
     return powf(inputPoint, 2.0) / scale;
 }
 
-void pva(FFT_FRAME* frame, int sampleRate, int hopSize, float* lastPhase)
-{
-    float mag, phi, delta, scale, fac;
-    
-    fac = (float)(sampleRate / (hopSize * TWO_PI));
-    scale = (float)(TWO_PI * hopSize / frame->windowSize);
-    
-    for (int i = 1; i < frame->windowSize/2; i++)
-    {
-        float* real = frame->complexBuffer.realp;
-        float* imag = frame->complexBuffer.imagp;
-        POLAR_WINDOW* p = frame->polarWindow;
-        
-        mag = (float)sqrt(real[i] * real[i] + imag[i] * imag[i]);
-        phi = (float)atan2(imag[i], real[i]);
-        
-        delta = phi - lastPhase[i - 1];      // TODO: check to see if this is right
-        lastPhase[i - 1] = phi;
-        
-        while(delta > PI) delta -= (float)TWO_PI;
-        while(delta < -PI) delta += (float)TWO_PI;
-        
-        p->buffer[i].mag = mag;
-        p->buffer[i].phase = (delta + i * scale) * fac;
-    }
-}
-
-void pvs(FFT* fft, FFT_FRAME* frame, int sampleRate, int hopSize, float* lastPhase)
-{
-    float mag, phi, delta, scale, fac;
-    
-    fac = (float)(hopSize * TWO_PI / sampleRate);
-    scale = sampleRate / frame->windowSize;
-    
-    for (int i = 1; i < frame->windowSize/2; i++)
-    {
-        float* real = frame->complexBuffer.realp;
-        float* imag = frame->complexBuffer.imagp;
-        POLAR_WINDOW* p = frame->polarWindow;
-        
-        delta = (p->buffer[i].phase - i * scale) * fac;
-        phi = lastPhase[i] + delta;
-        lastPhase[i] = phi;
-        mag = p->buffer[i].mag;
-        
-        real[i] = (float)(mag * cos(phi));
-        imag[i] = (float)(mag * sin(phi));
-        
-        //c->phase = factor * (c->phase - r->phase) + p->phase;
-    }
-}
-
 
 #pragma mark - Render Callback -
 

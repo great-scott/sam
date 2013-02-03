@@ -13,6 +13,7 @@
 #import "SAMEditViewController.h"
 
 #include "FFTManager.h"
+//#include "PhaseVocoder.h"
 #include <stdlib.h>
 
 #define TOUCH_DIVIDE 100                // this is used in a scaling operation
@@ -21,9 +22,6 @@
 # pragma mark - C Functions -
 
 float changeTouchYScale(float inputPoint, float scale);
-void render(void *inRefCon, AudioUnitRenderActionFlags *ioActionFlags, const AudioTimeStamp *inTimeStamp, UInt32 inBusNumber, UInt32 inNumberFrames, AudioBufferList *ioData);
-void pva(FFT_FRAME* frame, int sampleRate, int hopSize, float* lastPhase);
-void pvs(FFT* fft, FFT_FRAME* frame, int sampleRate, int hopSize, float* lastPhase);
 
 
 # pragma mark - Main Interface -
