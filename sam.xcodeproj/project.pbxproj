@@ -169,8 +169,8 @@
 				42C71EAE16BC4E6A0067E547 /* FFTFrame.c */,
 				42C71EB116BC549F0067E547 /* PhaseVocoder.h */,
 				42C71EB216BC54A90067E547 /* PhaseVocoder.c */,
-				4286B67516BF0B78009F6914 /* STFT.c */,
 				4286B67816BF0B84009F6914 /* STFT.h */,
+				4286B67516BF0B78009F6914 /* STFT.c */,
 			);
 			name = DSP;
 			sourceTree = "<group>";
