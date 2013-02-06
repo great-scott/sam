@@ -88,19 +88,19 @@ static GLKBaseEffect *effect;
     if (vertexData == nil)
         vertexData = [NSMutableData dataWithLength:sizeof(GLKVector2) * self.numVertices];
 
-    return [vertexData mutableBytes];
+    return (GLKVector2 *)[vertexData mutableBytes];
 }
 
 - (GLKVector4 *)vertexColors {
     if (vertexColorData == nil)
         vertexColorData = [NSMutableData dataWithLength:sizeof(GLKVector4) * self.numVertices];
-    return [vertexColorData mutableBytes];
+    return (GLKVector4 *)[vertexColorData mutableBytes];
 }
 
 - (GLKVector2 *)textureCoordinates {
     if (textureCoordinateData == nil)
         textureCoordinateData = [NSMutableData dataWithLength:sizeof(GLKVector2)*self.numVertices];
-    return [textureCoordinateData mutableBytes];
+    return (GLKVector2 *)[textureCoordinateData mutableBytes];
 }
 
 - (void)setTextureImage:(UIImage *)image

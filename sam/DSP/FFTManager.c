@@ -345,7 +345,8 @@ void pvFixPhase(const POLAR_WINDOW* previous, POLAR_WINDOW* current, float facto
 {
     int length = current->length;
     const POLAR* p = previous->buffer;
-    const POLAR* r = previous->oldBuffer;
+    const POLAR* r = previous->oldBuffer;    
+    
     POLAR* c = current->buffer;
     
     for (int i = 0; i < length; i++, p++, r++, c++)

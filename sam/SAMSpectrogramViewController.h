@@ -8,7 +8,7 @@
 
 #import <GLKit/GLKit.h>
 #import "SAMTouchTracker.h"
-#import "FFTManager.h"
+//#import "FFTManager.h"
 
 typedef struct SpectrumLinkedTexture {
 	GLuint							textureName;
@@ -27,7 +27,7 @@ double linearInterp(double valA, double valB, double fract);
     
     NSMutableArray*         spectrum;
     EAGLContext*            context;
-    STFT_BUFFER*            stft;
+//    STFT_BUFFER*            stft;
     
 }
 

@@ -83,14 +83,18 @@ static OSStatus renderCallback(void *inRefCon,
                 }
             }
         
-            for (int i = 0; i < this->windowSize/2; i++)
+            if (this->polarWindows[!this->currentPolar] != nil)
             {
-                this->polarWindows[this->currentPolar]->buffer[i].mag = (this->polarWindows[this->currentPolar]->buffer[i].mag + this->polarWindows[!this->currentPolar]->buffer[i].mag) / 2.0;
-                this->polarWindows[this->currentPolar]->buffer[i].phase = (this->polarWindows[this->currentPolar]->buffer[i].phase + this->polarWindows[!this->currentPolar]->buffer[i].phase) / 2.0;
-            }
+                for (int i = 0; i < this->windowSize/2; i++)
+                {
+                    this->polarWindows[this->currentPolar]->buffer[i].mag = (this->polarWindows[this->currentPolar]->buffer[i].mag + this->polarWindows[!this->currentPolar]->buffer[i].mag) / 2.0;
+                    this->polarWindows[this->currentPolar]->buffer[i].phase = (this->polarWindows[this->currentPolar]->buffer[i].phase + this->polarWindows[!this->currentPolar]->buffer[i].phase) / 2.0;
+                }
         
-            pvUnwrapPhase(this->polarWindows[this->currentPolar]);
-            pvFixPhase(this->polarWindows[!this->currentPolar], this->polarWindows[this->currentPolar], 0.1);
+                pvUnwrapPhase(this->polarWindows[this->currentPolar]);
+                pvFixPhase(this->polarWindows[!this->currentPolar], this->polarWindows[this->currentPolar], 0.1);
+            }
+            
             inverseFFT(this->fftManager, frame, this->circleBuffer[0]);
         
             // shift and overlap add new buffer
@@ -199,11 +203,10 @@ static OSStatus renderCallback(void *inRefCon,
         memset(lpIn, 0.0, (windowSize/2) * sizeof(float));
         memset(lpOut, 0.0, (windowSize/2) * sizeof(float));
         
-        // Polar window buffers
-        polarWindows[0] = newPolarWindow(windowSize / 2);
-        polarWindows[1] = newPolarWindow(windowSize / 2);
+        // Polar window buffers        
+        polarWindows[0] = nil;
+        polarWindows[1] = nil;
         currentPolar = 0;
-        
         
         //-----------------------------------------------
         fileLoaded = NO;
@@ -252,8 +255,8 @@ static OSStatus renderCallback(void *inRefCon,
     // Free buffer manager / overlap buffer
     //freeBufferManager(overlapBuffer);
     
-    freePolarWindow(polarWindows[0]);
-    freePolarWindow(polarWindows[1]);
+//    freePolarWindow(polarWindows[0]);
+//    freePolarWindow(polarWindows[1]);
     
     // Free fft stuff and instance
     freeFFT(fftManager);

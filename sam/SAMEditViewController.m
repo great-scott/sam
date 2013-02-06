@@ -64,12 +64,12 @@
 
 - (void)addSpectrogramView
 {
-    if (spectroViewControl == nil)
-    {
-        spectroViewControl = [[SAMSpectrogramViewController alloc] initWithNibName:@"SpectrogramView" bundle:[NSBundle mainBundle] context:self.context];
-    }
-    
-    [spectroViewControl createSpectrum];
+//    if (spectroViewControl == nil)
+//    {
+//        spectroViewControl = [[SAMSpectrogramViewController alloc] initWithNibName:@"SpectrogramView" bundle:[NSBundle mainBundle] context:self.context];
+//    }
+//    
+//    [spectroViewControl createSpectrum];
 }
 
 
