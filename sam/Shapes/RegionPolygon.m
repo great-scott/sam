@@ -15,6 +15,44 @@
 @synthesize circles;
 @synthesize boundPoints;
 
+int inSegment(float point, GLKVector2 segment)
+{
+    if (segment.x != segment.y)
+    {    // S is not  vertical
+        if (segment.x <= point && point <= segment.y)
+            return 1;
+        if (segment.x >= point && point >= segment.y)
+            return 1;
+    }
+
+    return 0;
+}
+
+// TODO: ignoring vertical lines probably not the right thing to do
+float getIntersectionPoint(Shape* polygon, int lineNumber, float xPosition)
+{
+    float y2 = polygon.vertices[(lineNumber + 1) % polygon.numVertices].y;
+    float y1 = polygon.vertices[lineNumber].y;
+    
+    float x2 = polygon.vertices[(lineNumber + 1) % polygon.numVertices].x;
+    float x1 = polygon.vertices[lineNumber].x;
+    
+    float m = (y2 - y1) / (x2 - x1);
+    float b = y1 - m * x1;
+    
+    GLKVector2 segment = GLKVector2Make(x1, x2);
+    
+    if (inSegment(xPosition, segment))
+    {
+        float y = m * xPosition + b;
+        y = polygon.bounds.size.height - y;
+        return y;
+    }
+
+    return -1;
+
+}
+
 - (id)initWithRect:(CGRect)boundsRect
 {
     self = [super init];

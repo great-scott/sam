@@ -30,6 +30,7 @@ float changeTouchYScale(float inputPoint, float scale);
 {
     // FFT Properties
     int windowSize;
+    int halfWindowSize;
     int overlap;
     int hopSize;
     
@@ -61,10 +62,6 @@ float changeTouchYScale(float inputPoint, float scale);
     
     NSMutableArray* shapeReferences;
     
-    // Circular Buffer thingy
-    //BUFFER_MANAGER* overlapBuffer;
-    //BUFFER* currentBuffer;
-    
     // Polar window buffers
     POLAR_WINDOW* polarWindows[2];
     int currentPolar;
@@ -79,6 +76,10 @@ float changeTouchYScale(float inputPoint, float scale);
     float*      lpIn;
     float*      lpOut;
     int         hopPosition;
+    
+    //--
+    float top;
+    float bottom;
 }
 
 @property int windowSize;

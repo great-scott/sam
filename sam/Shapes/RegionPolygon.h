@@ -15,6 +15,8 @@
 #define CIRCLE_RADIUS 5.0
 #define FACE_LENGTH = 100.0
 
+float getIntersectionPoint(Shape* polygon, int lineNumber, float xPosition);
+
 @interface RegionPolygon : Shape
 {
     //NSMutableArray* vertices;       // all the vertex...do I even need this?
@@ -35,6 +37,5 @@
 - (id)isTouchInside:(GLKVector2)press;
 - (void)setPosition:(GLKVector2)newPosition withSubShape:(id)shape;
 - (int)isTouchingLine:(GLKVector2)currentPosition;
-
 
 @end

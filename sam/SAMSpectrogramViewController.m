@@ -49,69 +49,69 @@ double linearInterp(double valA, double valB, double fract)
 {
     [super viewDidLoad];
 	
-//    context = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES2];
-//    if (!context)
-//        NSLog(@"Failed to create ES context.");
-//    
-//    GLKView* view = (GLKView *)self.view;
-//    [EAGLContext setCurrentContext:context];
-//    view.context = context;
-//    view.drawableMultisample = GLKViewDrawableMultisample4X;
-//    view.multipleTouchEnabled = YES;
-//    //self.preferredFramesPerSecond = 10.0;
-//    
-//    stft = [[SAMAudioModel sharedAudioModel] stftBuffer];
-//    
-//    redAmt = 0.9;
-//    editMode = NO;
-//    
-//    spectrum = [[NSMutableArray alloc] init];
-//    
-//    [self createSpectrum];
-//}
-//
-//- (void)createSpectrum
-//{
-//    [spectrum removeAllObjects];
-//    
-//    int numBins = [[SAMAudioModel sharedAudioModel] windowSize] / 8.0;  // TODO: get this to line up with audio
-//    int numFrames = (stft->size - 5) / [[SAMAudioModel sharedAudioModel] overlap]; // TODO: this is ridic
-//    // x
-//    for (int i = 0; i < numFrames; i++)
-//    {
-//        
-//        for (int step = 0; step < 1; step++)
-//        {
-//            Shape* s = [[Shape alloc] init];
-//            s.bounds = self.view.bounds;
-//            s.numVertices = numBins;            // number of vertical bins
-//            s.useConstantColor = NO;
-//            
-//            FFT_FRAME* frame = stft->buffer[i];
-//            
-//            // y
-//            for (int j = 0; j < numBins; j++)
-//            {
-//                float ypos = s.bounds.size.height - (j * (s.bounds.size.height / numBins));
-//                float xpos = i * (s.bounds.size.width / numFrames) + (step * 10);
-//                
-//                s.vertices[j] = GLKVector2Make(xpos, ypos);
-//                float amt = (frame->polarWindow->buffer[j].mag) * 200;
-//                GLKVector4 vertColor;
-//                
-//                if (amt > 0.02)
-//                    vertColor = GLKVector4Make(amt, 0.0, 0.2, 0.9);
-//                else
-//                    vertColor = GLKVector4Make(0.95, 0.95, 0.95, 0.4);
-//                
-//                s.vertexColors[j] = vertColor;
-//            }
-//            
-//            s.lineWidth = 40.0;
-//            s.drawingStyle = GL_LINE_STRIP;
-//            [spectrum addObject:s];
-//        }
-//    }
+    context = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES2];
+    if (!context)
+        NSLog(@"Failed to create ES context.");
+    
+    GLKView* view = (GLKView *)self.view;
+    [EAGLContext setCurrentContext:context];
+    view.context = context;
+    view.drawableMultisample = GLKViewDrawableMultisample4X;
+    view.multipleTouchEnabled = YES;
+    //self.preferredFramesPerSecond = 10.0;
+    
+    stft = [[SAMAudioModel sharedAudioModel] stftBuffer];
+    
+    redAmt = 0.9;
+    editMode = NO;
+    
+    spectrum = [[NSMutableArray alloc] init];
+    
+    [self createSpectrum];
+}
+
+- (void)createSpectrum
+{
+    [spectrum removeAllObjects];
+    
+    int numBins = [[SAMAudioModel sharedAudioModel] windowSize] / 8.0;  // TODO: get this to line up with audio
+    int numFrames = (stft->size - 5) / [[SAMAudioModel sharedAudioModel] overlap]; // TODO: this is ridic
+    // x
+    for (int i = 0; i < numFrames; i++)
+    {
+        
+        for (int step = 0; step < 1; step++)
+        {
+            Shape* s = [[Shape alloc] init];
+            s.bounds = self.view.bounds;
+            s.numVertices = numBins;            // number of vertical bins
+            s.useConstantColor = NO;
+            
+            FFT_FRAME* frame = stft->buffer[i];
+            
+            // y
+            for (int j = 0; j < numBins; j++)
+            {
+                float ypos = s.bounds.size.height - (j * (s.bounds.size.height / numBins));
+                float xpos = i * (s.bounds.size.width / numFrames) + (step * 10);
+                
+                s.vertices[j] = GLKVector2Make(xpos, ypos);
+                float amt = (frame->polarWindow->buffer[j].mag) * 200;
+                GLKVector4 vertColor;
+                
+                if (amt > 0.02)
+                    vertColor = GLKVector4Make(amt, 0.0, 0.2, 0.9);
+                else
+                    vertColor = GLKVector4Make(0.95, 0.95, 0.95, 0.4);
+                
+                s.vertexColors[j] = vertColor;
+            }
+            
+            s.lineWidth = 40.0;
+            s.drawingStyle = GL_LINE_STRIP;
+            [spectrum addObject:s];
+        }
+    }
 }
 
 - (void)didReceiveMemoryWarning

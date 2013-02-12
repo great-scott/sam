@@ -30,10 +30,49 @@ float changeTouchYScale(float inputPoint, float scale)
     return powf(inputPoint, 2.0) / scale;
 }
 
+void averageAcrossFrames()
+{
+    
+}
+
+void shiftToMod(FFT_FRAME* frame)
+{
+    frame->polarWindowMod->length = frame->polarWindow->length;
+    int length = frame->polarWindowMod->length;
+    
+    for (int i = 0; i < length; i++)
+    {
+        frame->polarWindowMod->buffer[i].mag = frame->polarWindow->buffer[i].mag;
+        frame->polarWindowMod->buffer[i].phase = frame->polarWindowMod->buffer[i].phase;
+        frame->polarWindowMod->oldBuffer[i].mag = frame->polarWindow->oldBuffer[i].mag;
+        frame->polarWindowMod->oldBuffer[i].phase = frame->polarWindow->oldBuffer[i].phase;
+    }
+}
+
+void findTopAndBottom(SAMAudioModel* model, float xPosition)
+{
+    float intersect = -1;
+    for (int i = 0; i < model->poly.numVertices; i++)
+    {
+        intersect = getIntersectionPoint(model->poly, i, xPosition);
+        if (intersect != -1)
+        {
+            if (intersect >= model->top)
+            {
+                model->top = intersect;
+            }
+            if (intersect <= model->bottom)
+            {
+                model->bottom = intersect;
+            }
+        }
+
+    }
+}
 
 #pragma mark - Render Callback -
 
-static OSStatus renderCallback(void *inRefCon, 
+static OSStatus renderCallback(void *inRefCon,
                                AudioUnitRenderActionFlags *ioActionFlags,
                                const AudioTimeStamp *inTimeStamp,
                                UInt32 inBusNumber,
@@ -45,38 +84,36 @@ static OSStatus renderCallback(void *inRefCon,
     Float32 *buffer = (Float32 *)ioData->mBuffers[0].mData;
     
     // Reference to STFT buffer
-    STFT_BUFFER* thisSTFTBuffer = this->stftBuffer;
+    STFT_BUFFER* stft = this->stftBuffer;
     
     if (this->fileLoaded == YES)
     {
-        int begin = (int)(thisSTFTBuffer->size / this->editArea.size.width * this->poly.boundPoints.x);
-        int end = (int)(thisSTFTBuffer->size / this->editArea.size.width * this->poly.boundPoints.y);
-        int top = changeTouchYScale(this->poly.boundPoints.z, this->touchScale);
-        int bottom = changeTouchYScale(this->poly.boundPoints.w, this->touchScale);
-        int length = end - begin;
-    
-        end = (floor(end / begin) + 1) + begin;
-    
+        int begin = (int)(stft->size / this->editArea.size.width * this->poly.boundPoints.x);
+        int end = (int)(stft->size / this->editArea.size.width * this->poly.boundPoints.y);
+        //int length = end - begin;
+        //end = (floor(end / begin) + 1) + begin;
+        
+        //int newPos = ((rand() % length) + begin) % end;
+        //int index = this->counter + newPos;
+        int index = this->counter + 1;
+        FFT_FRAME* frame = stft->buffer[index];
+        
+        float xCoord = index * (this->editArea.size.width / stft->size);
+        findTopAndBottom(this, xCoord);
+        int top = changeTouchYScale(this->top, this->touchScale);
+        int bottom = changeTouchYScale(this->bottom, this->touchScale);
+        
         // ------------------------------------------------------------------------------------
         if (this->dspTick == 0)
         {
-            int newPos = ((rand() % length) + begin) % end;            
-            FFT_FRAME* frame = thisSTFTBuffer->buffer[(this->counter + newPos) % end];
-            
-            frame->polarWindowMod->length = frame->polarWindow->length;
-            for (int i = 0; i < this->windowSize/2; i++)
-            {
-                frame->polarWindowMod->buffer[i].mag = frame->polarWindow->buffer[i].mag;
-                frame->polarWindowMod->buffer[i].phase = frame->polarWindowMod->buffer[i].phase;
-                frame->polarWindowMod->oldBuffer[i].mag = frame->polarWindow->oldBuffer[i].mag;
-                frame->polarWindowMod->oldBuffer[i].phase = frame->polarWindow->oldBuffer[i].phase;
-            }
-            
+            // update mod frames
+            shiftToMod(frame);
+            // assign pointer of frameMod to array of pointers 
             this->polarWindows[this->currentPolar] = frame->polarWindowMod;
         
             for (int bin = 0; bin < this->windowSize/2; bin++)
             {
-                if (bin > top || bin < bottom)
+                if (bin > ceil(top) || bin < floor(bottom))
                 {
                     this->polarWindows[this->currentPolar]->buffer[bin].mag = 0.0;
                     this->polarWindows[this->currentPolar]->buffer[bin].phase = 0.0;
@@ -125,11 +162,15 @@ static OSStatus renderCallback(void *inRefCon,
             this->dspTick = 0;
             
             if (this->rateCounter % (this->rate * this->overlap) == 0)
+            {
                 this->counter++;
+                this->top = -1;
+                this->bottom = 9999;
+            }
             
             this->rateCounter++;
         }
-        if (this->counter >= end)
+        if (this->counter >= end || this->counter < begin)          // TODO: this needs to act more like, matt wright's buffer shuffler thingy
             this->counter = begin;
         
     }
@@ -164,12 +205,13 @@ static OSStatus renderCallback(void *inRefCon,
     if (self)
     {
         windowSize = 2048;
+        halfWindowSize = windowSize / 2;
         overlap = 4;
         hopSize = windowSize / overlap;
         audioBuffer = nil;        
         normalizationFactor = 0.0;
         counter = 0;
-        rate = 2;
+        rate = 4;
         rateCounter = 0;
         
         // Appwide AU settings
@@ -198,10 +240,10 @@ static OSStatus renderCallback(void *inRefCon,
         circleBuffer[2] = (float *)malloc(windowSize * sizeof(float));
         circleBuffer[3] = (float *)malloc(windowSize * sizeof(float));
         
-        lpIn = (float *)malloc((windowSize / 2) * sizeof(float));
-        lpOut = (float *)malloc((windowSize / 2) * sizeof(float));
-        memset(lpIn, 0.0, (windowSize/2) * sizeof(float));
-        memset(lpOut, 0.0, (windowSize/2) * sizeof(float));
+        lpIn = (float *)malloc(halfWindowSize * sizeof(float));
+        lpOut = (float *)malloc(halfWindowSize * sizeof(float));
+        memset(lpIn, 0.0, halfWindowSize * sizeof(float));
+        memset(lpOut, 0.0, halfWindowSize * sizeof(float));
         
         // Polar window buffers        
         polarWindows[0] = nil;
@@ -219,6 +261,9 @@ static OSStatus renderCallback(void *inRefCon,
         whichFrame = 1;
         hopPosition = 0;
         monitor = NO;
+        
+        top = -1;
+        bottom = 9999;
     }
     
     return self;
@@ -251,12 +296,6 @@ static OSStatus renderCallback(void *inRefCon,
     // Free fft frames
     freeFFTFrame(fftFrameBuffer[0]);
     freeFFTFrame(fftFrameBuffer[1]);
-    
-    // Free buffer manager / overlap buffer
-    //freeBufferManager(overlapBuffer);
-    
-//    freePolarWindow(polarWindows[0]);
-//    freePolarWindow(polarWindows[1]);
     
     // Free fft stuff and instance
     freeFFT(fftManager);
@@ -364,14 +403,6 @@ static OSStatus renderCallback(void *inRefCon,
 
 - (float)findTouchScale
 {
-    //float maxBounds = atan(editArea.size.height / TOUCH_DIVIDE) * TOUCH_HIGHEND_CUT;
-//    float maxBounds = log(editArea.size.height);
-//    float halfWindow = windowSize / 2;
-//    float scale = halfWindow / maxBounds;
-    
-    //float scale = halfWindow / 6.3026;
-    //float scale = editArea.size.height / 10;
-    
     float scale = pow(editArea.size.height, 2) / (windowSize / 2);
     return scale;
 }
