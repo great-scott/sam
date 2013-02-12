@@ -70,6 +70,41 @@ void findTopAndBottom(SAMAudioModel* model, float xPosition)
     }
 }
 
+float interpolate(float x1, float x0, float x, float y1, float y0)
+{
+    float y = y0 + (y1 - y0) * ((x - x0) / (x1 - x0));
+    
+    return y;
+}
+
+void filter(POLAR_WINDOW* window, float top, float bottom, int length)
+{
+    int lowBound = bottom - length; // interpolate from bottom to lower bound (from 0 - 1)
+    int highBound = top + length; // interpolate from top to high bound (from 1 - 0)
+    
+    for (int bin = 0; bin < window->length; bin++)
+    {
+        if (bin > ceil(top) && bin <= highBound)
+        {
+            // use interpolator to figure this out
+            float interp = interpolate(highBound, top, bin, 1.0, 0.0);
+            float newMag = interp * window->buffer[bin].mag;
+            window->buffer[bin].mag = newMag;
+        }
+        else if (bin > highBound || bin < lowBound)
+        {
+            window->buffer[bin].mag = 0.0;
+        }
+        else if (bin < floor(bottom) && bin >= lowBound)
+        {
+            // use interpolator
+            float interp = interpolate(lowBound, bottom, bin, 0.0, 1.0);
+            float newMag = interp * window->buffer[bin].mag;
+            window->buffer[bin].mag = newMag;
+        }
+    }
+}
+
 #pragma mark - Render Callback -
 
 static OSStatus renderCallback(void *inRefCon,
@@ -111,14 +146,8 @@ static OSStatus renderCallback(void *inRefCon,
             // assign pointer of frameMod to array of pointers 
             this->polarWindows[this->currentPolar] = frame->polarWindowMod;
         
-            for (int bin = 0; bin < this->windowSize/2; bin++)
-            {
-                if (bin > ceil(top) || bin < floor(bottom))
-                {
-                    this->polarWindows[this->currentPolar]->buffer[bin].mag = 0.0;
-                    this->polarWindows[this->currentPolar]->buffer[bin].phase = 0.0;
-                }
-            }
+            // filter function (top, bottom, polar window, # of bins to create line over
+            filter(this->polarWindows[this->currentPolar], top, bottom, 20);
         
             if (this->polarWindows[!this->currentPolar] != nil)
             {
