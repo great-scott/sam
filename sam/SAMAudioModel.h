@@ -63,7 +63,7 @@ float changeTouchYScale(float inputPoint, float scale);
     NSMutableArray* shapeReferences;
     
     // Polar window buffers
-    POLAR_WINDOW* polarWindows[2];
+    POLAR_WINDOW* polarWindows[3];
     int currentPolar;
     
     //-------------------------------

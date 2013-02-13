@@ -30,11 +30,6 @@ float changeTouchYScale(float inputPoint, float scale)
     return powf(inputPoint, 2.0) / scale;
 }
 
-void averageAcrossFrames()
-{
-    
-}
-
 void shiftToMod(FFT_FRAME* frame)
 {
     frame->polarWindowMod->length = frame->polarWindow->length;
@@ -105,6 +100,27 @@ void filter(POLAR_WINDOW* window, float top, float bottom, int length)
     }
 }
 
+
+void interpolateBetweenFrames(SAMAudioModel* model, POLAR_WINDOW* prev, POLAR_WINDOW* current, POLAR_WINDOW* playback)
+{
+    float betweenFrameAmt = (float)model->rateCounter / (float)(model->rate * model->overlap);
+    float newMag, newPhase;
+    
+    for (int bin = 0; bin < prev->length; bin++)
+    {
+        newMag = interpolate(0.0, 1.0, betweenFrameAmt, current->buffer[bin].mag, prev->buffer[bin].mag);
+        playback->buffer[bin].mag = newMag * playback->buffer[bin].mag;
+        
+        newPhase = interpolate(0.0, 1.0, betweenFrameAmt, current->buffer[bin].phase, prev->buffer[bin].phase);
+        playback->buffer[bin].phase = newPhase * playback->buffer[bin].phase;
+    }
+}
+
+void averageAcrossFrames()
+{
+    
+}
+
 #pragma mark - Render Callback -
 
 static OSStatus renderCallback(void *inRefCon,
@@ -130,10 +146,10 @@ static OSStatus renderCallback(void *inRefCon,
         
         //int newPos = ((rand() % length) + begin) % end;
         //int index = this->counter + newPos;
-        int index = this->counter + 1;
-        FFT_FRAME* frame = stft->buffer[index];
+        //int index = this->counter + 1;
+        FFT_FRAME* frame = stft->buffer[this->counter];
         
-        float xCoord = index * (this->editArea.size.width / stft->size);
+        float xCoord = this->counter * (this->editArea.size.width / stft->size);
         findTopAndBottom(this, xCoord);
         int top = changeTouchYScale(this->top, this->touchScale);
         int bottom = changeTouchYScale(this->bottom, this->touchScale);
@@ -143,22 +159,33 @@ static OSStatus renderCallback(void *inRefCon,
         {
             // update mod frames
             shiftToMod(frame);
-            // assign pointer of frameMod to array of pointers 
-            this->polarWindows[this->currentPolar] = frame->polarWindowMod;
+            // assign pointer of frameMod to array of pointers
+            // every counter tick this changes
+            
+            if (this->rateCounter == 0)
+            {
+                this->polarWindows[this->currentPolar] = frame->polarWindowMod;
+                filter(this->polarWindows[this->currentPolar], top, bottom, 20);
+            }
+            
+            this->polarWindows[2] = frame->polarWindowMod;
         
             // filter function (top, bottom, polar window, # of bins to create line over
-            filter(this->polarWindows[this->currentPolar], top, bottom, 20);
         
-            if (this->polarWindows[!this->currentPolar] != nil)
+            if (this->polarWindows[!this->currentPolar] != nil && this->polarWindows[this->currentPolar] != nil)
             {
-                for (int i = 0; i < this->windowSize/2; i++)
-                {
-                    this->polarWindows[this->currentPolar]->buffer[i].mag = (this->polarWindows[this->currentPolar]->buffer[i].mag + this->polarWindows[!this->currentPolar]->buffer[i].mag) / 2.0;
-                    this->polarWindows[this->currentPolar]->buffer[i].phase = (this->polarWindows[this->currentPolar]->buffer[i].phase + this->polarWindows[!this->currentPolar]->buffer[i].phase) / 2.0;
-                }
+//                for (int i = 0; i < this->windowSize/2; i++)
+//                {
+//                    this->polarWindows[this->currentPolar]->buffer[i].mag = (this->polarWindows[this->currentPolar]->buffer[i].mag + this->polarWindows[!this->currentPolar]->buffer[i].mag) / 2.0;
+//                    this->polarWindows[this->currentPolar]->buffer[i].phase = (this->polarWindows[this->currentPolar]->buffer[i].phase + this->polarWindows[!this->currentPolar]->buffer[i].phase) / 2.0;
+//                }
+                
+                interpolateBetweenFrames(this, this->polarWindows[!this->currentPolar], this->polarWindows[this->currentPolar], this->polarWindows[2]);
         
-                pvUnwrapPhase(this->polarWindows[this->currentPolar]);
-                pvFixPhase(this->polarWindows[!this->currentPolar], this->polarWindows[this->currentPolar], 0.1);
+//                pvUnwrapPhase(this->polarWindows[this->currentPolar]);
+//                pvFixPhase(this->polarWindows[!this->currentPolar], this->polarWindows[this->currentPolar], 0.1);
+                pvUnwrapPhase(this->polarWindows[2]);
+                pvFixPhase(this->polarWindows[!this->currentPolar], this->polarWindows[2], 0.1);
             }
             
             inverseFFT(this->fftManager, frame, this->circleBuffer[0]);
@@ -172,7 +199,8 @@ static OSStatus renderCallback(void *inRefCon,
             for (int i = 0; i < this->hopSize; i++)
                 this->circleBuffer[1][diff + i] = this->circleBuffer[0][diff + i];
         
-            this->currentPolar = !this->currentPolar;
+            if (this->rateCounter == 0)
+                this->currentPolar = !this->currentPolar;
         }
         
         for (int frameCounter = 0; frameCounter < inNumberFrames; frameCounter++)
@@ -189,15 +217,17 @@ static OSStatus renderCallback(void *inRefCon,
         if (this->dspTick >= this->hopSize)
         {
             this->dspTick = 0;
+            this->rateCounter++;
             
             if (this->rateCounter % (this->rate * this->overlap) == 0)
             {
                 this->counter++;
                 this->top = -1;
                 this->bottom = 9999;
+                this->rateCounter = 0;
+                //this->currentPolar = !this->currentPolar;
             }
             
-            this->rateCounter++;
         }
         if (this->counter >= end || this->counter < begin)          // TODO: this needs to act more like, matt wright's buffer shuffler thingy
             this->counter = begin;
@@ -275,8 +305,9 @@ static OSStatus renderCallback(void *inRefCon,
         memset(lpOut, 0.0, halfWindowSize * sizeof(float));
         
         // Polar window buffers        
-        polarWindows[0] = nil;
-        polarWindows[1] = nil;
+        polarWindows[0] = nil;      // in general, this is previous
+        polarWindows[1] = nil;      // this is current frame
+        polarWindows[2] = nil;      // this is interpolated -> actual playback frame
         currentPolar = 0;
         
         //-----------------------------------------------
