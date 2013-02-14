@@ -78,8 +78,8 @@ float changeTouchYScale(float inputPoint, float scale);
     int         hopPosition;
     
     //--
-    float top;
-    float bottom;
+    float top, topNext;
+    float bottom, bottomNext;
 }
 
 @property int windowSize;
