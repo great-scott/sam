@@ -13,6 +13,9 @@
 
 @required
 - (IBAction)toolbarButtonPressed:(UIButton *)sender;
+- (IBAction)toolbarButtonDragged:(UIButton *)sender;
+
+- (IBAction)handlePress:(UILongPressGestureRecognizer *)recognizer;
 
 @end
 

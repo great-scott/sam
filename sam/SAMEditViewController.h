@@ -21,6 +21,8 @@
     SAMTouchTracker* touchTracker;
     SAMSpectrogramViewController* spectroViewControl;
     EAGLContext*    context;
+    
+    RegionPolygon* newMovingShape;
 }
 
 @property (nonatomic, strong) SAMSpectrogramViewController* spectroViewControl;
@@ -28,8 +30,8 @@
 
 @property (nonatomic, strong) UIView* spectroView;
 
-- (void)addSquare;
-- (void)addTriangle;
+- (RegionPolygon *)addSquare:(GLKVector2)location;
+- (RegionPolygon *)addTriangle:(GLKVector2)location;
 - (void)reinit;
 - (void)addSpectrogramView;
 

@@ -141,8 +141,8 @@
     }
     else if ([title isEqualToString:@"Square"])
     {
-        // Edit View Add Square
-        [editViewControl addSquare];
+        // Add Square
+        [editViewControl addSquare:GLKVector2Make(100, 100)];
     }
     else if ([title isEqualToString:@"Play"])
     {
@@ -153,7 +153,7 @@
     }
     else if ([title isEqualToString:@"Tri"])
     {
-        [editViewControl addTriangle];
+        [editViewControl addTriangle:GLKVector2Make(100, 100)];
     }
     else if ([title isEqualToString:@"DAC"])
     {
@@ -170,6 +170,18 @@
             sender.backgroundColor = [UIColor lightGrayColor];
             audioStatus = NO;
         }
+    }
+}
+
+- (IBAction)toolbarButtonDragged:(UIButton *)sender
+{
+    NSString* title = sender.currentTitle;
+    
+    if ([title isEqualToString:@"Square"])
+    {
+        NSLog(@"%u", sender.state);
+        if (sender.state == UIControlStateSelected)
+            [editViewControl addSquare:GLKVector2Make(editView.bounds.size.width - 10, 200)];
     }
 }
 

@@ -55,6 +55,12 @@
     [[SAMAudioModel sharedAudioModel] setEditArea:self.view.bounds];
     
     spectroViewControl = nil;
+    newMovingShape = nil;
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(addNewSquare:) name:@"addNewSquare" object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(moveSquare:) name:@"moveSquare" object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(dropSquare:) name:@"dropSquare" object:nil];
+    
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
@@ -70,6 +76,34 @@
     }
     
     [spectroViewControl createSpectrum];
+}
+
+
+#pragma mark - Notification Center Methods -
+
+- (void)addNewSquare:(NSNotification *)notification
+{
+    NSNumber* x = [[notification userInfo] valueForKey:@"x"];
+    NSNumber* y = [[notification userInfo] valueForKey:@"y"];
+    NSString* title = [[notification userInfo] valueForKey:@"title"];
+    
+    if ([title isEqualToString:@"Square"])
+        newMovingShape = [self addSquare:GLKVector2Make([x floatValue], [y floatValue])];
+    else if ([title isEqualToString:@"Tri"])
+        newMovingShape = [self addTriangle:GLKVector2Make([x floatValue], [y floatValue])];
+}
+
+- (void)moveSquare:(NSNotification *)notification
+{
+    NSNumber *x = [[notification userInfo] valueForKey:@"x"];
+    NSNumber *y = [[notification userInfo] valueForKey:@"y"];
+    
+    [newMovingShape setPosition:GLKVector2Make([x floatValue], [y floatValue]) withSubShape:newMovingShape];
+}
+
+- (void)dropSquare:(NSNotification *)notification
+{
+    newMovingShape = nil;
 }
 
 
@@ -90,21 +124,26 @@
 
 #pragma mark - View Methods -
 
-
-- (void)addSquare
+- (RegionPolygon *)addSquare:(GLKVector2)location
 {
     RegionPolygon* poly = [[RegionPolygon alloc] initWithRect:self.view.bounds];
     poly.numVertices = 4;
+    [poly setPosition:location withSubShape:poly];
     [shapes addObject:poly];
     
     [[SAMAudioModel sharedAudioModel] setPoly:poly];
+    
+    return poly;
 }
 
-- (void)addTriangle
+- (RegionPolygon *)addTriangle:(GLKVector2)location
 {
     // The default is 3 vertices for a region polygon, so we don't need to specify the number of them
-    RegionPolygon* triangle = [[RegionPolygon alloc] initWithRect:self.view.bounds];
-    [shapes addObject:triangle];
+    RegionPolygon* poly = [[RegionPolygon alloc] initWithRect:self.view.bounds];
+    [poly setPosition:location withSubShape:poly];
+    [shapes addObject:poly];
+    
+    return poly;
 }
 
 
