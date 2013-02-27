@@ -9,7 +9,7 @@
 #import "SAMAudioModel.h"
 #define PI 3.14159265359
 #define TWO_PI (2 * PI)
-#define FILTER_SLOPE_LENGTH 20
+#define FILTER_SLOPE_LENGTH 10
 
 @implementation SAMAudioModel
 
@@ -23,17 +23,18 @@
 @synthesize editArea;
 @synthesize poly;
 @synthesize monitor;
+@synthesize mode;
 
-float changeTouchYScale(float inputPoint, float scale)
+double changeTouchYScale(double inputPoint, double scale)
 {
 //    return scale * atan(inputPoint / TOUCH_DIVIDE);
 //    return scale * (log(inputPoint) + 4.0);
-    return powf(inputPoint, 2.0) / scale;
+    return pow(inputPoint, 2.0) / scale;
 }
 
 void shiftToMod(FFT_FRAME* frame)
 {
-    frame->polarWindowMod->length = frame->polarWindow->length;
+    frame->polarWindowMod->length = frame->windowSize/2;
     int length = frame->polarWindowMod->length;
     
     for (int i = 0; i < length; i++)
@@ -62,14 +63,17 @@ void findTopAndBottom(SAMAudioModel* model, float xPosition, float* top, float* 
                 *bottom = intersect;
             }
         }
-
     }
+    
+    if (*top == -1)
+        *top = 0;
+    if (*bottom == 9999)
+        *bottom = 0;
 }
 
-float interpolate(float x1, float x0, float x, float y1, float y0)
+double interpolate(double x1, double x0, double x, double y1, double y0)
 {
-    float y = y0 + (y1 - y0) * ((x - x0) / (x1 - x0));
-    
+    double y = y0 + (y1 - y0) * ((x - x0) / (x1 - x0));
     return y;
 }
 
@@ -83,25 +87,26 @@ void filter(POLAR_WINDOW* window, float top, float bottom, int length)
         if (bin > ceil(top) && bin <= highBound)
         {
             // use interpolator to figure this out
-            float interp = interpolate(highBound, top, bin, 1.0, 0.0);
-            float newMag = interp * window->buffer[bin].mag;
+            double interp = interpolate(highBound, top, bin, 1.0, 0.0);
+            double newMag = interp * window->buffer[bin].mag;
             window->buffer[bin].mag = newMag;
             
-            float newPhase = interp * window->buffer[bin].phase;
+            double newPhase = interp * window->buffer[bin].phase;
             window->buffer[bin].phase = newPhase;
         }
         else if (bin > highBound || bin < lowBound)
         {
             window->buffer[bin].mag = 0.0;
+            window->buffer[bin].phase = 0.0;
         }
         else if (bin < floor(bottom) && bin >= lowBound)
         {
             // use interpolator
-            float interp = interpolate(lowBound, bottom, bin, 0.0, 1.0);
-            float newMag = interp * window->buffer[bin].mag;
+            double interp = interpolate(lowBound, bottom, bin, 0.0, 1.0);
+            double newMag = interp * window->buffer[bin].mag;
             window->buffer[bin].mag = newMag;
             
-            float newPhase = interp * window->buffer[bin].phase;
+            double newPhase = interp * window->buffer[bin].phase;
             window->buffer[bin].phase = newPhase;
         }
     }
@@ -111,7 +116,7 @@ void filter(POLAR_WINDOW* window, float top, float bottom, int length)
 void interpolateBetweenFrames(SAMAudioModel* model, POLAR_WINDOW* current, POLAR_WINDOW* next, POLAR_WINDOW* playback)
 {
     float betweenFrameAmt = (float)model->rateCounter / (float)(model->rate * model->overlap);
-    float newMag, newPhase;
+    double newMag, newPhase;
     
     for (int bin = 0; bin < current->length; bin++)
     {
@@ -123,9 +128,117 @@ void interpolateBetweenFrames(SAMAudioModel* model, POLAR_WINDOW* current, POLAR
     }
 }
 
-void averageAcrossFrames()
+void forwardProcessing(SAMAudioModel* model, int begin, int end)
 {
+    // Determine the next frame's index
+    int nextFrameIndex;
+    int frameIndex = model->counter;
+    if (model->counter + 1 >= end)
+        nextFrameIndex = begin  + 1;
+    else
+    {
+        nextFrameIndex = model->counter + 1;
+        if (nextFrameIndex >= end)
+            nextFrameIndex = frameIndex;
+    }
     
+    
+    STFT_BUFFER* stft = model->stftBuffer;
+    
+    // Assign pointers to frames
+    FFT_FRAME* frame = stft->buffer[frameIndex];
+    FFT_FRAME* nextFrame = stft->buffer[nextFrameIndex];
+    FFT_FRAME* playbackFrame = model->fftFrameBuffer[0];
+    
+    float top, topNext, bottom, bottomNext;
+    
+    if (model->rateCounter == 0)
+    {
+        model->top = -1;
+        model->topNext = -1;
+        model->bottom = 9999;
+        model->bottomNext = 9999;
+        
+        float xCoord = frameIndex * (model->editArea.size.width / stft->size);                   // TODO: make this div static variable
+        float xCoordNext = nextFrameIndex * (model->editArea.size.width / stft->size);
+        
+        findTopAndBottom(model, xCoord, &model->top, &model->bottom);
+        findTopAndBottom(model, xCoordNext, &model->topNext, &model->bottomNext);
+        
+        top = changeTouchYScale(model->top, model->touchScale);
+        bottom = changeTouchYScale(model->bottom, model->touchScale);
+        
+        topNext = changeTouchYScale(model->topNext, model->touchScale);
+        bottomNext = changeTouchYScale(model->bottomNext, model->touchScale);
+        
+        // update mod frames
+        shiftToMod(frame);
+        shiftToMod(nextFrame);
+        
+        // assign pointers to array of pointers (easier to track down in my head)
+        model->polarWindows[0] = frame->polarWindowMod;
+        model->polarWindows[1] = nextFrame->polarWindowMod;
+        model->polarWindows[2] = playbackFrame->polarWindowMod;
+        
+        // filter our current and next frame
+        filter(model->polarWindows[0], top, bottom, FILTER_SLOPE_LENGTH);            // TODO: won't need to shift and filter 2nd time through
+        filter(model->polarWindows[1], topNext, bottomNext, FILTER_SLOPE_LENGTH);
+        //-----------
+    }
+}
+
+void averageAcrossFrames(SAMAudioModel* model, int begin, int end)
+{
+    STFT_BUFFER* stft = model->stftBuffer;
+    int numFrames = end - begin;
+    float invNumFrames = 1.0 / numFrames;
+    
+    int frameIndex;
+    float xCoord;
+    float newMag, newPhase;
+    
+    FFT_FRAME* avgFrame = model->fftFrameBuffer[0];
+    shiftToMod(avgFrame);
+    model->polarWindows[2] = avgFrame->polarWindowMod;
+    
+    FFT_FRAME* shiftFrame;
+    
+    for (int i = 0; i < numFrames; i++)
+    {
+        frameIndex = (begin + i);
+        shiftFrame = stft->buffer[frameIndex];
+        
+        xCoord = frameIndex * (model->editArea.size.width / stft->size);
+        findTopAndBottom(model, xCoord, &model->top, &model->bottom);
+        
+        model->top = changeTouchYScale(model->top, model->touchScale);
+        model->bottom = changeTouchYScale(model->bottom, model->touchScale);
+        
+        // update mode frames
+        shiftToMod(shiftFrame);
+        
+        //
+        model->polarWindows[0] = shiftFrame->polarWindowMod;
+        
+        // filter
+        filter(model->polarWindows[0], model->top, model->bottom, FILTER_SLOPE_LENGTH);
+        
+        // sum and divide
+        for (int j = 0; j < avgFrame->nOver2; j++)
+        {
+            float currentMag = model->polarWindows[2]->buffer[j].mag;
+            float added = (model->polarWindows[0]->buffer[j].mag * invNumFrames);
+            newMag = currentMag + added;
+            //newPhase = model->polarWindows[2]->buffer[j].phase + (model->polarWindows[0]->buffer[j].phase * invNumFrames);
+            model->polarWindows[2]->buffer[j].mag = newMag;
+            //model->polarWindows[2]->buffer[j].phase = newPhase;
+        }
+    
+        
+        model->top = -1;
+        model->bottom = 9999;
+
+    }
 }
 
 #pragma mark - Render Callback -
@@ -152,97 +265,62 @@ static OSStatus renderCallback(void *inRefCon,
         {
             // This section only needs to happen every time counter increases
             // Get beginning and endpoints
-            int begin = (int)(stft->size / this->editArea.size.width * this->poly.boundPoints.x);
-            int end = (int)(stft->size / this->editArea.size.width * this->poly.boundPoints.y);
+            int begin = floor(stft->size / this->editArea.size.width * this->poly.boundPoints.x);
+            int end = ceil(stft->size / this->editArea.size.width * this->poly.boundPoints.y);
             
-            // Determine the next frame's index
-            int nextFrameIndex;
-            int frameIndex = this->counter;
-            if (this->counter + 1 > end)
-                nextFrameIndex = begin;
-            else
-                nextFrameIndex = this->counter + 1;
-            
-            // Assign pointers to frames
-            FFT_FRAME* frame = stft->buffer[frameIndex];
-            FFT_FRAME* nextFrame = stft->buffer[nextFrameIndex];
             FFT_FRAME* playbackFrame = this->fftFrameBuffer[0];
             
-            
-            if (this->rateCounter == 0)
+            switch (this->mode)
             {
-                float xCoord = frameIndex * (this->editArea.size.width / stft->size);                   // TODO: make this div static variable
-                float xCoordNext = nextFrameIndex * (this->editArea.size.width / stft->size);
-                
-                findTopAndBottom(this, xCoord, &this->top, &this->bottom);
-                findTopAndBottom(this, xCoordNext, &this->topNext, &this->bottomNext);
-                
-                
-                this->top = changeTouchYScale(this->top, this->touchScale);
-                this->bottom = changeTouchYScale(this->bottom, this->touchScale);
-                
-                this->topNext = changeTouchYScale(this->top, this->touchScale);
-                this->bottomNext = changeTouchYScale(this->bottom, this->touchScale);
-                
-                // update mod frames
-                shiftToMod(frame);
-                shiftToMod(nextFrame);
-                shiftToMod(playbackFrame);
-                
-                // assign pointers to array of pointers (easier to track down in my head)
-                this->polarWindows[0] = frame->polarWindowMod;
-                this->polarWindows[1] = nextFrame->polarWindowMod;
-                this->polarWindows[2] = playbackFrame->polarWindowMod;
-                
-                // filter our current and next frame
-                filter(this->polarWindows[0], this->top, this->bottom, FILTER_SLOPE_LENGTH);            // TODO: won't need to shift and filter 2nd time through
-                filter(this->polarWindows[1], this->topNext, this->bottomNext, FILTER_SLOPE_LENGTH);
-                //-----------
+                case FORWARD:
+                    forwardProcessing(this, begin, end);
+                    interpolateBetweenFrames(this, this->polarWindows[0], this->polarWindows[1], this->polarWindows[2]);
+                    break;
+                    
+                case AVERAGE:
+                    averageAcrossFrames(this, begin, end);
+                    break;
+                    
+                default:
+                    break;
             }
             
-            
             // this is every rateCounter tick
-            interpolateBetweenFrames(this, this->polarWindows[0], this->polarWindows[1], this->polarWindows[2]);
             pvUnwrapPhase(this->polarWindows[2]);
-            pvFixPhase(this->polarWindows[0], this->polarWindows[2], 0.1);
             
+            if (this->pastWindow != nil)
+                pvFixPhase(this->pastWindow, this->polarWindows[2], 0.25);
             
             //------------------- don't change this
             inverseFFT(this->fftManager, playbackFrame, this->circleBuffer[0]);
-        
+            
+            // assign remaining values to playback buffer
             // shift and overlap add new buffer
             int diff = this->windowSize - this->hopSize;
             for (int i = 0; i < diff; i++)
-                this->circleBuffer[1][i] = this->circleBuffer[1][this->hopSize + i] + this->circleBuffer[0][i];
-        
-            // assign remaining values to playback buffer
+                this->circleBuffer[1][i] = (this->circleBuffer[1][this->hopSize + i] + this->circleBuffer[0][i]) * 0.5;
+            
             for (int i = 0; i < this->hopSize; i++)
                 this->circleBuffer[1][diff + i] = this->circleBuffer[0][diff + i];
             //--------------------------------------------------------------------
             
-            
-            
-            if (this->rateCounter == 0)
-                this->currentPolar = !this->currentPolar;
-            
-            
+            this->pastWindow = this->polarWindows[2];
             
             // progress time
-            this->rateCounter++;
+            if (this->mode == FORWARD)
+            {
+                this->rateCounter++;
+            }
             
             if (this->rateCounter % (this->rate * this->overlap) == 0)
             {
                 this->counter++;
                 this->rateCounter = 0;
-                // reset top and bottom bounds
-                this->top = -1;
-                this->topNext = -1;
-                this->bottom = 9999;
-                this->bottomNext = 9999;
             }
             
             if (this->counter >= end || this->counter < begin)          // TODO: this needs to act more like, matt wright's buffer shuffler thingy
-                this->counter = begin;
+                this->counter = begin + 1;
+
         }
         
         for (int frameCounter = 0; frameCounter < inNumberFrames; frameCounter++)
@@ -290,16 +368,16 @@ static OSStatus renderCallback(void *inRefCon,
     {
         windowSize = 2048;
         halfWindowSize = windowSize / 2;
-        overlap = 4;
+        overlap = 2;
         hopSize = windowSize / overlap;
         audioBuffer = nil;        
         normalizationFactor = 0.0;
         counter = 0;
-        rate = 1;
+        rate = 4;
         rateCounter = 0;
         
         // Appwide AU settings
-        blockSize = 512;
+        blockSize = 1024;
         sampleRate = 44100;
         
         // DSP Tick Business
@@ -351,6 +429,15 @@ static OSStatus renderCallback(void *inRefCon,
         bottom = 9999;
         topNext = -1;
         bottomNext = 9999;
+        
+//        top = 50;
+//        bottom = 0;
+//        topNext = 70;
+//        bottomNext = 0;
+        
+        pastWindow = nil;
+        
+        mode = FORWARD;
     }
     
     return self;

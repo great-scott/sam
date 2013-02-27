@@ -21,7 +21,13 @@
 
 # pragma mark - C Functions -
 
-float changeTouchYScale(float inputPoint, float scale);
+enum PLAYBACK_MODE
+{
+    FORWARD = 0,
+    AVERAGE = 1
+};
+
+double changeTouchYScale(double inputPoint, double scale);
 
 
 # pragma mark - Main Interface -
@@ -66,6 +72,8 @@ float changeTouchYScale(float inputPoint, float scale);
     POLAR_WINDOW* polarWindows[3];
     int currentPolar;
     
+    POLAR_WINDOW* pastWindow;
+    
     //-------------------------------
     BOOL        fileLoaded;
     CGRect      editArea;
@@ -80,6 +88,8 @@ float changeTouchYScale(float inputPoint, float scale);
     //--
     float top, topNext;
     float bottom, bottomNext;
+    
+    enum PLAYBACK_MODE mode;
 }
 
 @property int windowSize;
@@ -89,6 +99,7 @@ float changeTouchYScale(float inputPoint, float scale);
 @property int screenHeight;
 @property CGRect editArea;
 @property BOOL monitor;
+@property enum PLAYBACK_MODE mode;
 
 @property (nonatomic, weak) RegionPolygon* poly;
 
