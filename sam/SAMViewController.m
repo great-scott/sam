@@ -146,10 +146,10 @@
     }
     else if ([title isEqualToString:@"Play"])
     {
-        if ([[SAMAudioModel sharedAudioModel] monitor] == NO)
-            [[SAMAudioModel sharedAudioModel] setMonitor:YES];
+        if ([[SAMAudioModel sharedAudioModel] mode] == FORWARD)
+            [[SAMAudioModel sharedAudioModel] setMode:AVERAGE];
         else
-            [[SAMAudioModel sharedAudioModel] setMonitor:NO];
+            [[SAMAudioModel sharedAudioModel] setMode:FORWARD];
     }
     else if ([title isEqualToString:@"Tri"])
     {
