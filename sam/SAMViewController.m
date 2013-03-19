@@ -173,18 +173,6 @@
     }
 }
 
-- (IBAction)toolbarButtonDragged:(UIButton *)sender
-{
-    NSString* title = sender.currentTitle;
-    
-    if ([title isEqualToString:@"Square"])
-    {
-        NSLog(@"%u", sender.state);
-        if (sender.state == UIControlStateSelected)
-            [editViewControl addSquare:GLKVector2Make(editView.bounds.size.width - 10, 200)];
-    }
-}
-
 
 #pragma mark - TableView Delegate Methods - 
 

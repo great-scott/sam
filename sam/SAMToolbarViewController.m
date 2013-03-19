@@ -45,14 +45,6 @@
     }
 }
 
-- (IBAction)toolbarButtonDragged:(UIButton *)sender
-{
-    if (delegate && [delegate respondsToSelector:@selector(toolbarButtonDragged:)])
-    {
-        //[delegate toolbarButtonDragged:sender];
-    }
-}
-
 - (IBAction)handlePress:(UILongPressGestureRecognizer *)recognizer
 {
     

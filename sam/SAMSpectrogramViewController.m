@@ -40,7 +40,7 @@ double linearInterp(double valA, double valB, double fract)
         touchTracker = [[SAMTouchTracker alloc] init];
         touchTracker.view = self.view;
         context = parentContext;
-        effect = [[GLKBaseEffect alloc] init];
+        //effect = [[GLKBaseEffect alloc] init];
     }
     return self;
 }
@@ -49,16 +49,16 @@ double linearInterp(double valA, double valB, double fract)
 {
     [super viewDidLoad];
 	
-    context = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES2];
-    if (!context)
-        NSLog(@"Failed to create ES context.");
-    
-    GLKView* view = (GLKView *)self.view;
-    [EAGLContext setCurrentContext:context];
-    view.context = context;
-    view.drawableMultisample = GLKViewDrawableMultisample4X;
-    view.multipleTouchEnabled = YES;
-    //self.preferredFramesPerSecond = 10.0;
+//    context = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES2];
+//    if (!context)
+//        NSLog(@"Failed to create ES context.");
+//    
+//    GLKView* view = (GLKView *)self.view;
+//    [EAGLContext setCurrentContext:context];
+//    view.context = context;
+//    view.drawableMultisample = GLKViewDrawableMultisample4X;
+//    view.multipleTouchEnabled = YES;
+
     
     stft = [[SAMAudioModel sharedAudioModel] stftBuffer];
     
@@ -67,7 +67,7 @@ double linearInterp(double valA, double valB, double fract)
     
     spectrum = [[NSMutableArray alloc] init];
     
-    [self createSpectrum];
+//    [self createSpectrum];
 }
 
 - (void)createSpectrum
@@ -75,7 +75,11 @@ double linearInterp(double valA, double valB, double fract)
     [spectrum removeAllObjects];
     
     int numBins = [[SAMAudioModel sharedAudioModel] windowSize] / 8.0;  // TODO: get this to line up with audio
-    int numFrames = (stft->size - 5) / [[SAMAudioModel sharedAudioModel] overlap]; // TODO: this is ridic
+//    int numFrames = (stft->size - 5) / [[SAMAudioModel sharedAudioModel] overlap]; // TODO: this is ridic
+    
+    int numFrames = stft->size;
+    
+    NSLog(@"Number of Frames: %i", stft->size);
     // x
     for (int i = 0; i < numFrames; i++)
     {
@@ -102,7 +106,7 @@ double linearInterp(double valA, double valB, double fract)
                 if (amt > 0.02)
                     vertColor = GLKVector4Make(amt, 0.0, 0.2, 0.9);
                 else
-                    vertColor = GLKVector4Make(0.95, 0.95, 0.95, 0.4);
+                    vertColor = GLKVector4Make(0.95, 0.95, 0.95, 0.95);
                 
                 s.vertexColors[j] = vertColor;
             }

@@ -24,6 +24,7 @@
 		4254A0FF16A7AB6A00C35BE2 /* GestureView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4254A0FE16A7AB6A00C35BE2 /* GestureView.xib */; };
 		4254A10216A7ABCA00C35BE2 /* SAMGestureViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4254A10116A7ABCA00C35BE2 /* SAMGestureViewController.m */; };
 		4264B7BB16A6E31C00ACCC18 /* SAMTouchTrack.m in Sources */ = {isa = PBXBuildFile; fileRef = 4264B7BA16A6E31C00ACCC18 /* SAMTouchTrack.m */; };
+		4288BC7D16F89E3C0091A0E1 /* SAMLinkedList.m in Sources */ = {isa = PBXBuildFile; fileRef = 4288BC7C16F89E3C0091A0E1 /* SAMLinkedList.m */; };
 		42D4489F16A4BCFF00B7B195 /* RegionPolygon.m in Sources */ = {isa = PBXBuildFile; fileRef = 42D4489E16A4BCFF00B7B195 /* RegionPolygon.m */; };
 		42D448A216A4BFAF00B7B195 /* Vertex.m in Sources */ = {isa = PBXBuildFile; fileRef = 42D448A116A4BFAF00B7B195 /* Vertex.m */; };
 		42EA6B45169B60AE005960F5 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 42EA6B44169B60AE005960F5 /* UIKit.framework */; };
@@ -75,6 +76,8 @@
 		4254A10116A7ABCA00C35BE2 /* SAMGestureViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SAMGestureViewController.m; sourceTree = "<group>"; };
 		4264B7B916A6E31C00ACCC18 /* SAMTouchTrack.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SAMTouchTrack.h; sourceTree = "<group>"; };
 		4264B7BA16A6E31C00ACCC18 /* SAMTouchTrack.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SAMTouchTrack.m; sourceTree = "<group>"; };
+		4288BC7B16F89E3C0091A0E1 /* SAMLinkedList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SAMLinkedList.h; sourceTree = "<group>"; };
+		4288BC7C16F89E3C0091A0E1 /* SAMLinkedList.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SAMLinkedList.m; sourceTree = "<group>"; };
 		42C71EB016BC4E990067E547 /* Constants.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Constants.h; sourceTree = "<group>"; };
 		42D4489D16A4BCFF00B7B195 /* RegionPolygon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RegionPolygon.h; sourceTree = "<group>"; };
 		42D4489E16A4BCFF00B7B195 /* RegionPolygon.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RegionPolygon.m; sourceTree = "<group>"; };
@@ -203,6 +206,8 @@
 				42534143169DDD1F009E53DC /* SAMTouchContainer.m */,
 				4264B7B916A6E31C00ACCC18 /* SAMTouchTrack.h */,
 				4264B7BA16A6E31C00ACCC18 /* SAMTouchTrack.m */,
+				4288BC7B16F89E3C0091A0E1 /* SAMLinkedList.h */,
+				4288BC7C16F89E3C0091A0E1 /* SAMLinkedList.m */,
 				42EA6B4B169B60AE005960F5 /* Supporting Files */,
 			);
 			path = sam;
@@ -343,6 +348,7 @@
 				4254A0F916A7977E00C35BE2 /* SAMSpectrogramViewController.m in Sources */,
 				4254A10216A7ABCA00C35BE2 /* SAMGestureViewController.m in Sources */,
 				420B0A4B16BB4424009A2552 /* SAMAudioModel.m in Sources */,
+				4288BC7D16F89E3C0091A0E1 /* SAMLinkedList.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

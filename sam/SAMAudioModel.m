@@ -41,8 +41,8 @@ void shiftToMod(FFT_FRAME* frame)
     {
         frame->polarWindowMod->buffer[i].mag = frame->polarWindow->buffer[i].mag;
         frame->polarWindowMod->buffer[i].phase = frame->polarWindow->buffer[i].phase;
-        frame->polarWindowMod->oldBuffer[i].mag = frame->polarWindow->oldBuffer[i].mag;
-        frame->polarWindowMod->oldBuffer[i].phase = frame->polarWindow->oldBuffer[i].phase;
+//        frame->polarWindowMod->oldBuffer[i].mag = frame->polarWindow->oldBuffer[i].mag;
+//        frame->polarWindowMod->oldBuffer[i].phase = frame->polarWindow->oldBuffer[i].phase;
     }
 }
 

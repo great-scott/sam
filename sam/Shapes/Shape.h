@@ -48,7 +48,6 @@
 @property(readonly) GLKVector2 *textureCoordinates;
 
 - (void)render;
-- (void)setTextureImage:(UIImage *)imageNamed;
 + (GLKBaseEffect *)getEffect;
 
 @end

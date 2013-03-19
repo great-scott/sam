@@ -103,18 +103,6 @@ static GLKBaseEffect *effect;
     return (GLKVector2 *)[textureCoordinateData mutableBytes];
 }
 
-- (void)setTextureImage:(UIImage *)image
-{
-    NSData* imdata =  UIImageJPEGRepresentation(image, 1.0);
-    NSError *error;
-    //texture = [GLKTextureLoader textureWithContentsOfData:imdata options:nil error:&error];
-    texture = [GLKTextureLoader textureWithCGImage:image.CGImage options:nil error:&error];
-    
-    if (error) {
-        NSLog(@"createTextureFromImagePicker has failed to load picked image: %@",error);
-    }
-}
-
 - (void)render
 {
 
