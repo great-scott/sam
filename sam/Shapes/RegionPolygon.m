@@ -7,6 +7,8 @@
 //
 
 #import "RegionPolygon.h"
+#import "SAMAudioModel.h"
+
 #define PI 3.14159265
 
 @implementation RegionPolygon
@@ -15,43 +17,10 @@
 @synthesize circles;
 @synthesize boundPoints;
 
-int inSegment(float point, GLKVector2 segment)
-{
-    if (segment.x != segment.y)
-    {    // S is not  vertical
-        if (segment.x <= point && point <= segment.y)
-            return 1;
-        if (segment.x >= point && point >= segment.y)
-            return 1;
-    }
+@synthesize stftLength;     // the same as the stft's size
+@synthesize begin;          // scaled bound points
+@synthesize end;
 
-    return 0;
-}
-
-// TODO: ignoring vertical lines probably not the right thing to do
-float getIntersectionPoint(Shape* polygon, int lineNumber, float xPosition)
-{
-    float y2 = polygon.vertices[(lineNumber + 1) % polygon.numVertices].y;
-    float y1 = polygon.vertices[lineNumber].y;
-    
-    float x2 = polygon.vertices[(lineNumber + 1) % polygon.numVertices].x;
-    float x1 = polygon.vertices[lineNumber].x;
-    
-    float m = (y2 - y1) / (x2 - x1);
-    float b = y1 - m * x1;
-    
-    GLKVector2 segment = GLKVector2Make(x1, x2);
-    
-    if (inSegment(xPosition, segment))
-    {
-        float y = m * xPosition + b;
-        y = polygon.bounds.size.height - y;
-        return y;
-    }
-
-    return -1;
-
-}
 
 - (id)initWithRect:(CGRect)boundsRect
 {
@@ -70,6 +39,8 @@ float getIntersectionPoint(Shape* polygon, int lineNumber, float xPosition)
         bounds = boundsRect;
         numVertices = MIN_VERTICES;
         [self setupShapes:numVertices];
+        
+        pointList = [[SAMLinkedList alloc] init];
     }
     
     return self;
@@ -272,6 +243,14 @@ float getIntersectionPoint(Shape* polygon, int lineNumber, float xPosition)
     }
     
     boundPoints = GLKVector4Make(leftMost, rightMost, topMost, bottomMost);
+    
+    if (stftLength > 0)
+    {
+        begin = floor(stftLength / [SAMAudioModel sharedAudioModel].editArea.size.width * leftMost);
+        end = ceil(stftLength / [SAMAudioModel sharedAudioModel].editArea.size.width * rightMost);
+        
+        [self updateIntersectList];
+    }
 }
 
 - (int)isTouchingLine:(GLKVector2)_position
@@ -338,6 +317,106 @@ float getIntersectionPoint(Shape* polygon, int lineNumber, float xPosition)
     
     return GLKVector2Make(xSum / numVertices, ySum / numVertices);
 }
+
+
+# pragma mark - Intersection Methods -
+
+- (void)updateIntersectList
+{
+    float xCoord;
+    
+    if (stftLength > 0)
+    {
+        int length = end - begin;
+        
+        // clear point list
+        [pointList clear];
+        
+        // repopulate it, this is very 'dumb' and brute-force
+        for (int i = 0; i < length; i++)
+        {
+            DATA* pointData = (DATA *)malloc(sizeof(DATA));
+            pointData->x = i + begin;
+            pointData->top = -1;
+            pointData->bottom = 9999;
+            
+            xCoord = (pointData->x) * ([SAMAudioModel sharedAudioModel].editArea.size.width / stftLength);
+            [self findTopAndBottom:xCoord top:&pointData->top bottom:&pointData->bottom];
+            
+            [pointList append:pointData];
+        }
+        
+    }
+}
+
+
+- (void)findTopAndBottom:(float)xPosition top:(float *)top bottom:(float *)bottom
+{
+    float intersect = -1;
+    for (int i = 0; i < numVertices; i++)
+    {
+        //intersect = getIntersectionPoint(model->poly, i, xPosition);
+        intersect = [self getIntersectionPoint:xPosition with:i];
+        if (intersect != -1)
+        {
+            if (intersect >= *top)
+            {
+                *top = intersect;
+            }
+            if (intersect <= *bottom)
+            {
+                *bottom = intersect;
+            }
+        }
+    }
+    
+    if (*top == -1)
+        *top = 0;
+    if (*bottom == 9999)
+        *bottom = 0;
+}
+
+
+- (BOOL)inSegment:(GLKVector2)segment with:(float)point
+{
+    if (segment.x != segment.y)
+    {    // S is not  vertical
+        if (segment.x <= point && point <= segment.y)
+            return YES;
+        if (segment.x >= point && point >= segment.y)
+            return YES;
+    }
+    
+    return NO;
+}
+
+// TODO: ignoring vertical lines probably not the right thing to do
+- (float)getIntersectionPoint:(float)xPosition with:(int)lineNumber
+{
+    float y2 = polygon.vertices[(lineNumber + 1) % polygon.numVertices].y;
+    float y1 = polygon.vertices[lineNumber].y;
+    
+    float x2 = polygon.vertices[(lineNumber + 1) % polygon.numVertices].x;
+    float x1 = polygon.vertices[lineNumber].x;
+    
+    float m = (y2 - y1) / (x2 - x1);
+    float b = y1 - m * x1;
+    
+    GLKVector2 segment = GLKVector2Make(x1, x2);
+    
+    if ([self inSegment:segment with:xPosition])
+    {
+        float y = m * xPosition + b;
+        y = polygon.bounds.size.height - y;
+        return y;
+    }
+    
+    return -1;
+    
+}
+
+
+
 
 # pragma mark - Overidden Methods -
 

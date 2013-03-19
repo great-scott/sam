@@ -29,6 +29,11 @@
 
 - (void)dealloc
 {
+    [self clear];
+}
+
+- (void)clear
+{
     // traverse down and deallocate nodes (data too?)
     struct t_node* current = tail;
     
@@ -44,6 +49,11 @@
         free(current->prevNode);
     }
     
+    
+    head = nil;
+    tail = nil;
+    index = 0;
+    length = 0;
 }
 
 - (void)append:(DATA *)newData

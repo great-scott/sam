@@ -16,6 +16,7 @@
 // Data can be allocated externally, but it is cleaned up internally
 typedef struct t_data
 {
+    float           x;
     float           top;
     float           bottom;
 } DATA;
@@ -40,5 +41,6 @@ struct t_node
 @property int length;
 
 - (void)append:(DATA *)newNode;
+- (void)clear;
 
 @end
