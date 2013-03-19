@@ -36,19 +36,15 @@
 {
     // traverse down and deallocate nodes (data too?)
     struct t_node* current = tail;
+    struct t_node* next = nil;
     
     while (current != nil)
     {
+        next = current->nextNode;
         free(current->data);
-        free(current->prevNode);
-        current = current->nextNode;
+        free(current);
+        current = next;
     }
-    
-    if (current == nil && current->prevNode != nil)     // this is ugly
-    {
-        free(current->prevNode);
-    }
-    
     
     head = nil;
     tail = nil;

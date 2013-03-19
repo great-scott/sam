@@ -344,6 +344,8 @@
             [self findTopAndBottom:xCoord top:&pointData->top bottom:&pointData->bottom];
             
             [pointList append:pointData];
+            
+            NSLog(@"x: %f \ttop: %f \tbottom: %f", pointData->x, pointData->top, pointData->bottom);
         }
         
     }

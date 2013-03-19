@@ -51,7 +51,7 @@ void findTopAndBottom(SAMAudioModel* model, float xPosition, float* top, float* 
     float intersect = -1;
     for (int i = 0; i < model->poly.numVertices; i++)
     {
-        intersect = getIntersectionPoint(model->poly, i, xPosition);
+        //intersect = getIntersectionPoint(model->poly, i, xPosition);
         if (intersect != -1)
         {
             if (intersect >= *top)

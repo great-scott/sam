@@ -16,7 +16,7 @@
 #define CIRCLE_RADIUS 5.0
 #define FACE_LENGTH = 100.0
 
-float getIntersectionPoint(Shape* polygon, int lineNumber, float xPosition);
+//float getIntersectionPoint(Shape* polygon, int lineNumber, float xPosition);
 
 @interface RegionPolygon : Shape
 {

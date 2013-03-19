@@ -132,6 +132,7 @@
     [shapes addObject:poly];
     
     [[SAMAudioModel sharedAudioModel] setPoly:poly];
+    poly.stftLength = 74; //[[SAMAudioModel sharedAudioModel] stftBuffer]->size;      // woo that's messy
     
     return poly;
 }
