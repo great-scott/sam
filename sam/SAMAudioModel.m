@@ -24,11 +24,10 @@
 @synthesize poly;
 @synthesize monitor;
 @synthesize mode;
+@synthesize touchScale;
 
 double changeTouchYScale(double inputPoint, double scale)
 {
-//    return scale * atan(inputPoint / TOUCH_DIVIDE);
-//    return scale * (log(inputPoint) + 4.0);
     return pow(inputPoint, 2.0) / scale;
 }
 
@@ -44,31 +43,6 @@ void shiftToMod(FFT_FRAME* frame)
 //        frame->polarWindowMod->oldBuffer[i].mag = frame->polarWindow->oldBuffer[i].mag;
 //        frame->polarWindowMod->oldBuffer[i].phase = frame->polarWindow->oldBuffer[i].phase;
     }
-}
-
-void findTopAndBottom(SAMAudioModel* model, float xPosition, float* top, float* bottom)
-{
-    float intersect = -1;
-    for (int i = 0; i < model->poly.numVertices; i++)
-    {
-        //intersect = getIntersectionPoint(model->poly, i, xPosition);
-        if (intersect != -1)
-        {
-            if (intersect >= *top)
-            {
-                *top = intersect;
-            }
-            if (intersect <= *bottom)
-            {
-                *bottom = intersect;
-            }
-        }
-    }
-    
-    if (*top == -1)
-        *top = 0;
-    if (*bottom == 9999)
-        *bottom = 0;
 }
 
 double interpolate(double x1, double x0, double x, double y1, double y0)
@@ -162,14 +136,14 @@ void forwardProcessing(SAMAudioModel* model, int begin, int end)
         float xCoord = frameIndex * (model->editArea.size.width / stft->size);                   // TODO: make this div static variable
         float xCoordNext = nextFrameIndex * (model->editArea.size.width / stft->size);
         
-        findTopAndBottom(model, xCoord, &model->top, &model->bottom);
-        findTopAndBottom(model, xCoordNext, &model->topNext, &model->bottomNext);
-        
-        top = changeTouchYScale(model->top, model->touchScale);
-        bottom = changeTouchYScale(model->bottom, model->touchScale);
-        
-        topNext = changeTouchYScale(model->topNext, model->touchScale);
-        bottomNext = changeTouchYScale(model->bottomNext, model->touchScale);
+//        findTopAndBottom(model, xCoord, &model->top, &model->bottom);
+//        findTopAndBottom(model, xCoordNext, &model->topNext, &model->bottomNext);
+//        
+//        top = changeTouchYScale(model->top, model->touchScale);
+//        bottom = changeTouchYScale(model->bottom, model->touchScale);
+//        
+//        topNext = changeTouchYScale(model->topNext, model->touchScale);
+//        bottomNext = changeTouchYScale(model->bottomNext, model->touchScale);
         
         // update mod frames
         shiftToMod(frame);
@@ -209,10 +183,10 @@ void averageAcrossFrames(SAMAudioModel* model, int begin, int end)
         shiftFrame = stft->buffer[frameIndex];
         
         xCoord = frameIndex * (model->editArea.size.width / stft->size);
-        findTopAndBottom(model, xCoord, &model->top, &model->bottom);
-        
-        model->top = changeTouchYScale(model->top, model->touchScale);
-        model->bottom = changeTouchYScale(model->bottom, model->touchScale);
+//        findTopAndBottom(model, xCoord, &model->top, &model->bottom);
+//        
+//        model->top = changeTouchYScale(model->top, model->touchScale);
+//        model->bottom = changeTouchYScale(model->bottom, model->touchScale);
         
         // update mode frames
         shiftToMod(shiftFrame);

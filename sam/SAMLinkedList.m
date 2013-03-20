@@ -9,7 +9,8 @@
 #import "SAMLinkedList.h"
 
 @implementation SAMLinkedList
-@synthesize length;
+@synthesize head;
+@synthesize tail;
 
 
 - (id)init

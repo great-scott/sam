@@ -77,7 +77,7 @@ double changeTouchYScale(double inputPoint, double scale);
     //-------------------------------
     BOOL        fileLoaded;
     CGRect      editArea;
-    float       touchScale;             // scale value used in touch mapping
+//    float       touchScale;             // scale value used in touch mapping
     
     FFT_FRAME*  fftFrameBuffer[2];
     int         whichFrame;
@@ -100,6 +100,7 @@ double changeTouchYScale(double inputPoint, double scale);
 @property CGRect editArea;
 @property BOOL monitor;
 @property enum PLAYBACK_MODE mode;
+@property float touchScale;
 
 @property (nonatomic, weak) RegionPolygon* poly;
 

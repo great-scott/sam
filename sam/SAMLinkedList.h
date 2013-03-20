@@ -17,8 +17,8 @@
 typedef struct t_data
 {
     float           x;
-    float           top;
-    float           bottom;
+    double          top;
+    double          bottom;
 } DATA;
 
 struct t_node
@@ -35,10 +35,12 @@ struct t_node
     struct t_node* tail;
     
     int   index;
+    int   length;
 }
 
 
-@property int length;
+@property struct t_node* head;
+@property struct t_node* tail;
 
 - (void)append:(DATA *)newNode;
 - (void)clear;

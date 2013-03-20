@@ -344,15 +344,20 @@
             [self findTopAndBottom:xCoord top:&pointData->top bottom:&pointData->bottom];
             
             [pointList append:pointData];
-            
-            NSLog(@"x: %f \ttop: %f \tbottom: %f", pointData->x, pointData->top, pointData->bottom);
         }
         
+        // traverse test
+//        struct t_node* current = pointList.tail;
+//        while (current != nil)
+//        {
+//            NSLog(@"x: %f \ttop: %f \tbottom: %f", current->data->x, current->data->top, current->data->bottom);
+//            current = current->nextNode;
+//        }
     }
 }
 
 
-- (void)findTopAndBottom:(float)xPosition top:(float *)top bottom:(float *)bottom
+- (void)findTopAndBottom:(float)xPosition top:(double *)top bottom:(double *)bottom
 {
     float intersect = -1;
     for (int i = 0; i < numVertices; i++)
@@ -376,6 +381,10 @@
         *top = 0;
     if (*bottom == 9999)
         *bottom = 0;
+    
+    
+    [self changeTouchYScale:top];
+    [self changeTouchYScale:bottom];
 }
 
 
@@ -417,7 +426,10 @@
     
 }
 
-
+- (double)changeTouchYScale:(double *)inputPoint
+{
+    return pow(*inputPoint, 2.0) / [SAMAudioModel sharedAudioModel].touchScale;
+}
 
 
 # pragma mark - Overidden Methods -

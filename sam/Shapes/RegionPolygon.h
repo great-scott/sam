@@ -36,6 +36,7 @@
 @property int stftLength;           // set this property when instantiated
 @property int begin;
 @property int end;
+@property (nonatomic, strong) SAMLinkedList* pointList;
 
 - (id)initWithRect:(CGRect)bounds;
 - (void)addVertex:(GLKVector2)newPosition;
@@ -45,11 +46,9 @@
 
 // intersection methods
 - (void)updateIntersectList;
-
-// given x position find the top and bottom values
-- (void)findTopAndBottom:(float)xPosition top:(float *)top bottom:(float *)bottom;
+- (void)findTopAndBottom:(float)xPosition top:(double *)top bottom:(double *)bottom;
 - (BOOL)inSegment:(GLKVector2)segment with:(float)point;
 - (float)getIntersectionPoint:(float)xPosition with:(int)lineNumber;
-
+- (double)changeTouchYScale:(double *)inputPoint;
 
 @end
