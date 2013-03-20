@@ -278,60 +278,56 @@ static OSStatus renderCallback(void *inRefCon,
     SAMAudioModel* this = (__bridge SAMAudioModel *)inRefCon;
     Float32 *buffer = (Float32 *)ioData->mBuffers[0].mData;
     
-    // Reference to STFT buffer
-    STFT_BUFFER* stft = this->stftBuffer;
-    
     // Wait till file loaded
     if (this->fileLoaded == YES)
     {
         // time to process
         if (this->dspTick == 0)
         {
-            // This section only needs to happen every time counter increases
-            // Get beginning and endpoints
-            int begin = floor(stft->size / this->editArea.size.width * this->poly.boundPoints.x);
-            int end = ceil(stft->size / this->editArea.size.width * this->poly.boundPoints.y);
             
-            FFT_FRAME* playbackFrame = this->fftFrameBuffer[0];
-            
-            switch (this->mode)
+            for (int voice = 0; voice < this->numberOfVoices; voice++)
             {
-                case FORWARD:
-                    forwardProcessing(this, begin, end);
-                    interpolateBetweenFrames(this, this->polarWindows[0], this->polarWindows[1], this->polarWindows[2]);
-                    break;
+                FFT_FRAME* playbackFrame = this->fftFrameBuffer[0];
+            
+                switch (this->mode)
+                {
+                    case FORWARD:
+                        filterMode(this, voice);
+                        interpolateBetweenFrames(this, this->polarWindows[0], this->polarWindows[1], this->polarWindows[2]);
+                        break;
                     
-                case AVERAGE:
-                    averageAcrossFrames(this, begin, end);
-                    break;
+                    case AVERAGE:
+                        //averageAcrossFrames(this, begin, end);
+                        break;
                     
-                default:
-                    break;
+                    default:
+                        break;
+                }
+            
+                // this is every rateCounter tick
+                pvUnwrapPhase(this->polarWindows[2]);
+            
+                if (this->pastWindow != nil)
+                    pvFixPhase(this->pastWindow, this->polarWindows[2], 0.25);
+            
+                //------------------- inverse and overlap + add
+                inverseFFT(this->fftManager, playbackFrame, this->circleBuffer[0]);
+            
+                // assign remaining values to playback buffer
+                // shift and overlap add new buffer
+                int diff = this->windowSize - this->hopSize;
+                for (int i = 0; i < diff; i++)
+                    this->circleBuffer[1][i] = (this->circleBuffer[1][this->hopSize + i] + this->circleBuffer[0][i]) * 0.5;
+            
+                for (int i = 0; i < this->hopSize; i++)
+                    this->circleBuffer[1][diff + i] = this->circleBuffer[0][diff + i];
+                //--------------------------------------------------------------------
+            
+                //------------------- summing bus
+                summingBus(this);
+            
+                this->pastWindow = this->polarWindows[2];
             }
-            
-            // this is every rateCounter tick
-            pvUnwrapPhase(this->polarWindows[2]);
-            
-            if (this->pastWindow != nil)
-                pvFixPhase(this->pastWindow, this->polarWindows[2], 0.25);
-            
-            //------------------- inverse and overlap + add
-            inverseFFT(this->fftManager, playbackFrame, this->circleBuffer[0]);
-            
-            // assign remaining values to playback buffer
-            // shift and overlap add new buffer
-            int diff = this->windowSize - this->hopSize;
-            for (int i = 0; i < diff; i++)
-                this->circleBuffer[1][i] = (this->circleBuffer[1][this->hopSize + i] + this->circleBuffer[0][i]) * 0.5;
-            
-            for (int i = 0; i < this->hopSize; i++)
-                this->circleBuffer[1][diff + i] = this->circleBuffer[0][diff + i];
-            //--------------------------------------------------------------------
-            
-            //------------------- summing bus
-            //summingBus(this);
-            
-            this->pastWindow = this->polarWindows[2];
             
             // progress time
             if (this->mode == FORWARD)
@@ -345,8 +341,8 @@ static OSStatus renderCallback(void *inRefCon,
                 this->rateCounter = 0;
             }
             
-            if (this->counter >= end || this->counter < begin)          // TODO: this needs to act more like, matt wright's buffer shuffler thingy
-                this->counter = begin + 1;
+//            if (this->counter >= end || this->counter < begin)          // TODO: this needs to act more like, matt wright's buffer shuffler thingy
+//                this->counter = begin + 1;
 
         }
         
