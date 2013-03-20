@@ -7,6 +7,8 @@
 //
 
 #import "SAMAudioModel.h"
+#import "SAMLinkedList.h"
+
 #define PI 3.14159265359
 #define TWO_PI (2 * PI)
 #define FILTER_SLOPE_LENGTH 10
@@ -86,6 +88,7 @@ void filter(POLAR_WINDOW* window, float top, float bottom, int length)
 
 void interpolateBetweenFrames(SAMAudioModel* model, POLAR_WINDOW* current, POLAR_WINDOW* next, POLAR_WINDOW* playback)
 {
+    // betweenFrameAmt corresponds with rateCounter
     float betweenFrameAmt = (float)model->rateCounter / (float)(model->rate * model->overlap);
     double newMag, newPhase;
     
@@ -201,6 +204,8 @@ void filterMode(SAMAudioModel* model, int voiceIndex)
         
         filter(model->polarWindows[0], top, bottom, FILTER_SLOPE_LENGTH);
         filter(model->polarWindows[1], topNext, bottomNext, FILTER_SLOPE_LENGTH);
+     
+        moveListForward(list);
     }
     
 }
@@ -324,7 +329,7 @@ static OSStatus renderCallback(void *inRefCon,
                 //--------------------------------------------------------------------
             
                 //------------------- summing bus
-                summingBus(this);
+                //summingBus(this);
             
                 this->pastWindow = this->polarWindows[2];
             }
@@ -349,6 +354,7 @@ static OSStatus renderCallback(void *inRefCon,
         for (int frameCounter = 0; frameCounter < inNumberFrames; frameCounter++)
         {
             buffer[frameCounter] = this->circleBuffer[1][frameCounter + this->dspTick];     // TODO: change this to circleBuffer[2]
+            // buffer[frameCounter] = this->circleBuffer[2][frameCounter + this->dspTick];
         }
         
         // Deal with progressing time / dsp ticks

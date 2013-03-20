@@ -8,6 +8,23 @@
 
 #import "SAMLinkedList.h"
 
+void moveListForward(SAMLinkedList* list)
+{
+    if (list.current->nextNode != nil)
+        list.current = list.current->nextNode;
+    else
+        list.current = list.tail;
+}
+
+void moveListBackward(SAMLinkedList* list)
+{
+    if (list.current->prevNode != nil)
+        list.current = list.current->prevNode;
+    else
+        list.current = list.head;
+}
+
+
 @implementation SAMLinkedList
 @synthesize head;
 @synthesize tail;
@@ -78,6 +95,22 @@
         
     index++;
     length++;
+}
+
+- (void)forward
+{
+    if (current->nextNode != nil)
+        current = current->nextNode;
+    else
+        current = tail;
+}
+
+- (void)backward
+{
+    if (current->prevNode != nil)
+        current = current->prevNode;
+    else
+        current = head;
 }
 
 @end

@@ -34,7 +34,6 @@
     [self setupFileDirectory];
     
     audioStatus = NO;
-    //audioModel = [[SAMAudioModel alloc] init];
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation

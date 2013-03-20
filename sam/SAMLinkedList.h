@@ -44,7 +44,11 @@ struct t_node
 
 - (void)append:(DATA *)newNode;
 - (void)clear;
-// - (void)forward;                     // TODO: consider having utility methods for moving/wrapping current pointer
-// - (void)backward;
+- (void)forward;                     // TODO: consider having utility methods for moving/wrapping current pointer
+- (void)backward;
 
 @end
+
+void moveListForward(SAMLinkedList* list);
+void moveListBackward(SAMLinkedList* list);
+

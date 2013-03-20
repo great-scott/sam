@@ -383,7 +383,6 @@
     if (*bottom == 9999)
         *bottom = 0;
     
-    
     [self changeTouchYScale:top];
     [self changeTouchYScale:bottom];
 }
