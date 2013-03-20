@@ -38,11 +38,13 @@ struct t_node
     int   length;
 }
 
-
 @property struct t_node* head;
 @property struct t_node* tail;
+@property struct t_node* current;       // this is different from other situations, this pointer acts as the 'playhead' in a way
 
 - (void)append:(DATA *)newNode;
 - (void)clear;
+// - (void)forward;                     // TODO: consider having utility methods for moving/wrapping current pointer
+// - (void)backward;
 
 @end

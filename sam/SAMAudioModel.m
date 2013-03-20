@@ -25,11 +25,8 @@
 @synthesize monitor;
 @synthesize mode;
 @synthesize touchScale;
+@synthesize numberOfVoices;
 
-double changeTouchYScale(double inputPoint, double scale)
-{
-    return pow(inputPoint, 2.0) / scale;
-}
 
 void shiftToMod(FFT_FRAME* frame)
 {
@@ -104,38 +101,38 @@ void interpolateBetweenFrames(SAMAudioModel* model, POLAR_WINDOW* current, POLAR
 
 void forwardProcessing(SAMAudioModel* model, int begin, int end)
 {
-    // Determine the next frame's index
-    int nextFrameIndex;
-    int frameIndex = model->counter;
-    if (model->counter + 1 >= end)
-        nextFrameIndex = begin  + 1;
-    else
-    {
-        nextFrameIndex = model->counter + 1;
-        if (nextFrameIndex >= end)
-            nextFrameIndex = frameIndex;
-    }
-    
-    
-    STFT_BUFFER* stft = model->stftBuffer;
-    
-    // Assign pointers to frames
-    FFT_FRAME* frame = stft->buffer[frameIndex];
-    FFT_FRAME* nextFrame = stft->buffer[nextFrameIndex];
-    FFT_FRAME* playbackFrame = model->fftFrameBuffer[0];
-    
-    float top, topNext, bottom, bottomNext;
-    
-    if (model->rateCounter == 0)
-    {
-        model->top = -1;
-        model->topNext = -1;
-        model->bottom = 9999;
-        model->bottomNext = 9999;
-        
-        float xCoord = frameIndex * (model->editArea.size.width / stft->size);                   // TODO: make this div static variable
-        float xCoordNext = nextFrameIndex * (model->editArea.size.width / stft->size);
-        
+//    // Determine the next frame's index
+//    int nextFrameIndex;
+//    int frameIndex = model->counter;
+//    if (model->counter + 1 >= end)
+//        nextFrameIndex = begin  + 1;
+//    else
+//    {
+//        nextFrameIndex = model->counter + 1;
+//        if (nextFrameIndex >= end)
+//            nextFrameIndex = frameIndex;
+//    }
+//    
+//    
+//    STFT_BUFFER* stft = model->stftBuffer;
+//    
+//    // Assign pointers to frames
+//    FFT_FRAME* frame = stft->buffer[frameIndex];
+//    FFT_FRAME* nextFrame = stft->buffer[nextFrameIndex];
+//    FFT_FRAME* playbackFrame = model->fftFrameBuffer[0];
+//    
+//    float top, topNext, bottom, bottomNext;
+//    
+//    if (model->rateCounter == 0)
+//    {
+//        model->top = -1;
+//        model->topNext = -1;
+//        model->bottom = 9999;
+//        model->bottomNext = 9999;
+//        
+//        float xCoord = frameIndex * (model->editArea.size.width / stft->size);                
+//        float xCoordNext = nextFrameIndex * (model->editArea.size.width / stft->size);
+//        
 //        findTopAndBottom(model, xCoord, &model->top, &model->bottom);
 //        findTopAndBottom(model, xCoordNext, &model->topNext, &model->bottomNext);
 //        
@@ -144,21 +141,74 @@ void forwardProcessing(SAMAudioModel* model, int begin, int end)
 //        
 //        topNext = changeTouchYScale(model->topNext, model->touchScale);
 //        bottomNext = changeTouchYScale(model->bottomNext, model->touchScale);
-        
-        // update mod frames
+//        
+//        // update mod frames
+//        shiftToMod(frame);
+//        shiftToMod(nextFrame);
+//        
+//        // assign pointers to array of pointers (easier to track down in my head)
+//        model->polarWindows[0] = frame->polarWindowMod;
+//        model->polarWindows[1] = nextFrame->polarWindowMod;
+//        model->polarWindows[2] = playbackFrame->polarWindowMod;
+//        
+//        // filter our current and next frame
+//        filter(model->polarWindows[0], top, bottom, FILTER_SLOPE_LENGTH);            // TODO: won't need to shift and filter 2nd time through
+//        filter(model->polarWindows[1], topNext, bottomNext, FILTER_SLOPE_LENGTH);
+//        //-----------
+//    }
+}
+
+void filterMode(SAMAudioModel* model, int voiceIndex)
+{
+    float top, topNext, bottom, bottomNext;
+    int frameIndex, nextFrameIndex;
+    
+    SAMLinkedList* list = model->shapeReferences[voiceIndex].pointList;
+    frameIndex = list.current->data->x;
+    top = list.current->data->top;
+    bottom = list.current->data->bottom;
+    
+    if (list.current->nextNode == nil)
+    {
+        nextFrameIndex = list.tail->data->x;
+        topNext = list.tail->data->top;
+        bottomNext = list.tail->data->bottom;
+    }
+    else
+    {
+        nextFrameIndex = list.current->nextNode->data->x;
+        topNext = list.current->nextNode->data->top;
+        bottomNext = list.current->nextNode->data->top;
+    }
+    
+    STFT_BUFFER* stft = model->stftBuffer;
+    
+    // assign pointers to frames
+    FFT_FRAME* frame = stft->buffer[frameIndex];
+    FFT_FRAME* nextFrame = stft->buffer[nextFrameIndex];
+    FFT_FRAME* playbackFrame = model->fftFrameBuffer[0];
+    
+    
+    if (model->rateCounter == 0)
+    {
+        // TODO: think about this step more
         shiftToMod(frame);
         shiftToMod(nextFrame);
         
-        // assign pointers to array of pointers (easier to track down in my head)
         model->polarWindows[0] = frame->polarWindowMod;
         model->polarWindows[1] = nextFrame->polarWindowMod;
         model->polarWindows[2] = playbackFrame->polarWindowMod;
         
-        // filter our current and next frame
-        filter(model->polarWindows[0], top, bottom, FILTER_SLOPE_LENGTH);            // TODO: won't need to shift and filter 2nd time through
+        filter(model->polarWindows[0], top, bottom, FILTER_SLOPE_LENGTH);
         filter(model->polarWindows[1], topNext, bottomNext, FILTER_SLOPE_LENGTH);
-        //-----------
     }
+    
+}
+
+void summingBus(SAMAudioModel* model)
+{
+    float scale = 1 / model->numberOfVoices;
+    vDSP_vsma(model->circleBuffer[1], 1, &scale, model->circleBuffer[2], 1, model->circleBuffer[2], 1, model->windowSize);
 }
 
 void averageAcrossFrames(SAMAudioModel* model, int begin, int end)
@@ -265,7 +315,7 @@ static OSStatus renderCallback(void *inRefCon,
             if (this->pastWindow != nil)
                 pvFixPhase(this->pastWindow, this->polarWindows[2], 0.25);
             
-            //------------------- don't change this
+            //------------------- inverse and overlap + add
             inverseFFT(this->fftManager, playbackFrame, this->circleBuffer[0]);
             
             // assign remaining values to playback buffer
@@ -277,6 +327,9 @@ static OSStatus renderCallback(void *inRefCon,
             for (int i = 0; i < this->hopSize; i++)
                 this->circleBuffer[1][diff + i] = this->circleBuffer[0][diff + i];
             //--------------------------------------------------------------------
+            
+            //------------------- summing bus
+            //summingBus(this);
             
             this->pastWindow = this->polarWindows[2];
             
@@ -299,9 +352,8 @@ static OSStatus renderCallback(void *inRefCon,
         
         for (int frameCounter = 0; frameCounter < inNumberFrames; frameCounter++)
         {
-            buffer[frameCounter] = this->circleBuffer[1][frameCounter + this->dspTick];
+            buffer[frameCounter] = this->circleBuffer[1][frameCounter + this->dspTick];     // TODO: change this to circleBuffer[2]
         }
-        
         
         // Deal with progressing time / dsp ticks
         this->dspTick += inNumberFrames;
@@ -389,7 +441,6 @@ static OSStatus renderCallback(void *inRefCon,
         
         //-----------------------------------------------
         fileLoaded = NO;
-        shapeReferences = nil;
         touchScale = [self findTouchScale];
         
         fftFrameBuffer[0] = newFFTFrame(windowSize);
@@ -399,19 +450,15 @@ static OSStatus renderCallback(void *inRefCon,
         hopPosition = 0;
         monitor = NO;
         
-        top = -1;
-        bottom = 9999;
-        topNext = -1;
-        bottomNext = 9999;
-        
-//        top = 50;
-//        bottom = 0;
-//        topNext = 70;
-//        bottomNext = 0;
-        
         pastWindow = nil;
         
         mode = FORWARD;
+        numberOfVoices = 0;
+        
+        // make sure all these shape references are nil
+        for (int i = 0; i < MAX_VOICES; i++)
+            shapeReferences[i] = nil;
+        
     }
     
     return self;
@@ -729,9 +776,13 @@ static OSStatus renderCallback(void *inRefCon,
     computeSTFT(fftManager, stftBuffer, audioBuffer);
 }
 
-- (void)setShapeReference:(NSMutableArray *)shapeRef
+- (void)addShape:(RegionPolygon *)shapeReference
 {
-    shapeReferences = shapeRef;
+    if (numberOfVoices < MAX_VOICES)
+    {
+        shapeReferences[numberOfVoices] = shapeReference;
+        numberOfVoices++;
+    }
 }
 
 - (void)startAudioPlayback

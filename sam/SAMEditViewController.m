@@ -51,7 +51,6 @@
     self.view.backgroundColor = [UIColor clearColor];
     
     shapes = [[NSMutableArray alloc] init];
-    [[SAMAudioModel sharedAudioModel] setShapeReference:shapes];
     [[SAMAudioModel sharedAudioModel] setEditArea:self.view.bounds];
     
     spectroViewControl = nil;
@@ -131,7 +130,7 @@
     [poly setPosition:location withSubShape:poly];
     [shapes addObject:poly];
     
-    [[SAMAudioModel sharedAudioModel] setPoly:poly];
+    [[SAMAudioModel sharedAudioModel] addShape:poly];
     poly.stftLength = 74; //[[SAMAudioModel sharedAudioModel] stftBuffer]->size;      // woo that's messy
     
     return poly;
@@ -143,6 +142,7 @@
     RegionPolygon* poly = [[RegionPolygon alloc] initWithRect:self.view.bounds];
     [poly setPosition:location withSubShape:poly];
     [shapes addObject:poly];
+    [[SAMAudioModel sharedAudioModel] addShape:poly];
     
     return poly;
 }

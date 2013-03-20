@@ -20,6 +20,7 @@
 @synthesize stftLength;     // the same as the stft's size
 @synthesize begin;          // scaled bound points
 @synthesize end;
+@synthesize pointList;
 
 
 - (id)initWithRect:(CGRect)boundsRect

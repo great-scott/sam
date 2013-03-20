@@ -11,7 +11,7 @@
 @implementation SAMLinkedList
 @synthesize head;
 @synthesize tail;
-
+@synthesize current;
 
 - (id)init
 {
@@ -36,15 +36,15 @@
 - (void)clear
 {
     // traverse down and deallocate nodes (data too?)
-    struct t_node* current = tail;
+    struct t_node* c = tail;
     struct t_node* next = nil;
     
-    while (current != nil)
+    while (c != nil)
     {
-        next = current->nextNode;
-        free(current->data);
-        free(current);
-        current = next;
+        next = c->nextNode;
+        free(c->data);
+        free(c);
+        c = next;
     }
     
     head = nil;
@@ -63,7 +63,8 @@
     // if this is the first node
     if (length == 0)
     {
-        tail = newNode;     // beginning 
+        tail = newNode;     // beginning
+        current = tail;     // set current to the beginning
     }
     
     if (head != nil)

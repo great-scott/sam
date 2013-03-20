@@ -13,11 +13,11 @@
 #import "SAMEditViewController.h"
 
 #include "FFTManager.h"
-//#include "PhaseVocoder.h"
 #include <stdlib.h>
 
 #define TOUCH_DIVIDE 100                // this is used in a scaling operation
 #define TOUCH_HIGHEND_CUT 1
+#define MAX_VOICES 10                   // 10 is probably too many, but keep it there for now
 
 # pragma mark - C Functions -
 
@@ -66,8 +66,6 @@ double changeTouchYScale(double inputPoint, double scale);
     int rate;
     int rateCounter;
     
-    NSMutableArray* shapeReferences;
-    
     // Polar window buffers
     POLAR_WINDOW* polarWindows[3];
     int currentPolar;
@@ -90,6 +88,8 @@ double changeTouchYScale(double inputPoint, double scale);
     float bottom, bottomNext;
     
     enum PLAYBACK_MODE mode;
+    
+    RegionPolygon* shapeReferences[MAX_VOICES];         // numberOfVoices corresponds to which slots are filled in
 }
 
 @property int windowSize;
@@ -101,9 +101,9 @@ double changeTouchYScale(double inputPoint, double scale);
 @property BOOL monitor;
 @property enum PLAYBACK_MODE mode;
 @property float touchScale;
+@property int numberOfVoices;
 
 @property (nonatomic, weak) RegionPolygon* poly;
-
 @property (readonly) STFT_BUFFER* stftBuffer;
 
 + (SAMAudioModel *)sharedAudioModel;
@@ -111,7 +111,7 @@ double changeTouchYScale(double inputPoint, double scale);
 - (void)calculateSTFT;
 
 //
-- (void)setShapeReference:(NSMutableArray *)shapeRef;
+- (void)addShape:(RegionPolygon *)shapeReference;
 
 // Audio Playback (aka DAC) On/Off
 - (void)startAudioPlayback;
