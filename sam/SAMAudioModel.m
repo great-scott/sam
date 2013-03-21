@@ -720,9 +720,12 @@ static OSStatus renderCallback(void *inRefCon,
 }
 
 
-- (void)calculateSTFT
+- (BOOL)calculateSTFT
 {
     computeSTFT(fftManager, stftBuffer, audioBuffer);
+    
+    // returns YES when finished
+    return YES;
 }
 
 - (void)addShape:(RegionPolygon *)shapeReference

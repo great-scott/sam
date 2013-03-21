@@ -110,7 +110,7 @@ double changeTouchYScale(double inputPoint, double scale);
 
 + (SAMAudioModel *)sharedAudioModel;
 - (void)openAudioFile:(CFURLRef)fileToOpen;
-- (void)calculateSTFT;
+- (BOOL)calculateSTFT;
 
 //
 - (void)addShape:(RegionPolygon *)shapeReference;

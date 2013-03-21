@@ -26,6 +26,8 @@
 @synthesize spectroView;
 @synthesize gestureView;
 
+@synthesize calculatingView;
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
@@ -82,6 +84,9 @@
     [fileView setHidden:YES];
     
     [self.view addSubview:fileView];
+    
+    [calculatingView setHidden:YES];
+    
 }
 
 
@@ -111,10 +116,33 @@
 {
     if (fileSelected)
     {
+        BOOL finished;
+
+        [calculatingView performSelectorOnMainThread:@selector(setHidden:)
+                                          withObject:NO
+                                       waitUntilDone:YES];
+        
+        [calculatingView performSelectorOnMainThread:@selector(startAnimating)
+                                          withObject:nil
+                                       waitUntilDone:YES];
+        
+        
         [[SAMAudioModel sharedAudioModel] openAudioFile:fileUrl];
-        [[SAMAudioModel sharedAudioModel] calculateSTFT];
-        [editViewControl addSpectrogramView];
+        finished = [[SAMAudioModel sharedAudioModel] calculateSTFT];
+        if (finished)
+        {
+//            [calculatingView performSelectorOnMainThread:@selector(setHidden:)
+//                                              withObject:YES
+//                                           waitUntilDone:YES];
+            
+            [calculatingView performSelectorOnMainThread:@selector(stopAnimating)
+                                              withObject:nil
+                                           waitUntilDone:YES];
+            
+        }
+        
         [self animateFileView:NO];
+        [editViewControl addSpectrogramView];
     }
 }
 
