@@ -39,8 +39,8 @@ void shiftToMod(FFT_FRAME* frame)
     {
         frame->polarWindowMod->buffer[i].mag = frame->polarWindow->buffer[i].mag;
         frame->polarWindowMod->buffer[i].phase = frame->polarWindow->buffer[i].phase;
-//        frame->polarWindowMod->oldBuffer[i].mag = frame->polarWindow->oldBuffer[i].mag;
-//        frame->polarWindowMod->oldBuffer[i].phase = frame->polarWindow->oldBuffer[i].phase;
+        frame->polarWindowMod->oldBuffer[i].mag = frame->polarWindow->oldBuffer[i].mag;
+        frame->polarWindowMod->oldBuffer[i].phase = frame->polarWindow->oldBuffer[i].phase;
     }
 }
 
@@ -102,110 +102,54 @@ void interpolateBetweenFrames(SAMAudioModel* model, POLAR_WINDOW* current, POLAR
     }
 }
 
-void forwardProcessing(SAMAudioModel* model, int begin, int end)
-{
-//    // Determine the next frame's index
-//    int nextFrameIndex;
-//    int frameIndex = model->counter;
-//    if (model->counter + 1 >= end)
-//        nextFrameIndex = begin  + 1;
-//    else
-//    {
-//        nextFrameIndex = model->counter + 1;
-//        if (nextFrameIndex >= end)
-//            nextFrameIndex = frameIndex;
-//    }
-//    
-//    
-//    STFT_BUFFER* stft = model->stftBuffer;
-//    
-//    // Assign pointers to frames
-//    FFT_FRAME* frame = stft->buffer[frameIndex];
-//    FFT_FRAME* nextFrame = stft->buffer[nextFrameIndex];
-//    FFT_FRAME* playbackFrame = model->fftFrameBuffer[0];
-//    
-//    float top, topNext, bottom, bottomNext;
-//    
-//    if (model->rateCounter == 0)
-//    {
-//        model->top = -1;
-//        model->topNext = -1;
-//        model->bottom = 9999;
-//        model->bottomNext = 9999;
-//        
-//        float xCoord = frameIndex * (model->editArea.size.width / stft->size);                
-//        float xCoordNext = nextFrameIndex * (model->editArea.size.width / stft->size);
-//        
-//        findTopAndBottom(model, xCoord, &model->top, &model->bottom);
-//        findTopAndBottom(model, xCoordNext, &model->topNext, &model->bottomNext);
-//        
-//        top = changeTouchYScale(model->top, model->touchScale);
-//        bottom = changeTouchYScale(model->bottom, model->touchScale);
-//        
-//        topNext = changeTouchYScale(model->topNext, model->touchScale);
-//        bottomNext = changeTouchYScale(model->bottomNext, model->touchScale);
-//        
-//        // update mod frames
-//        shiftToMod(frame);
-//        shiftToMod(nextFrame);
-//        
-//        // assign pointers to array of pointers (easier to track down in my head)
-//        model->polarWindows[0] = frame->polarWindowMod;
-//        model->polarWindows[1] = nextFrame->polarWindowMod;
-//        model->polarWindows[2] = playbackFrame->polarWindowMod;
-//        
-//        // filter our current and next frame
-//        filter(model->polarWindows[0], top, bottom, FILTER_SLOPE_LENGTH);            // TODO: won't need to shift and filter 2nd time through
-//        filter(model->polarWindows[1], topNext, bottomNext, FILTER_SLOPE_LENGTH);
-//        //-----------
-//    }
-}
-
 void filterMode(SAMAudioModel* model, int voiceIndex)
 {
     float top, topNext, bottom, bottomNext;
     int frameIndex, nextFrameIndex;
     
     SAMLinkedList* list = model->shapeReferences[voiceIndex].pointList;
-    frameIndex = list.current->data->x;
-    top = list.current->data->top;
-    bottom = list.current->data->bottom;
     
-    if (list.current->nextNode == nil)
+    if (list.length > 0)
     {
-        nextFrameIndex = list.tail->data->x;
-        topNext = list.tail->data->top;
-        bottomNext = list.tail->data->bottom;
-    }
-    else
-    {
-        nextFrameIndex = list.current->nextNode->data->x;
-        topNext = list.current->nextNode->data->top;
-        bottomNext = list.current->nextNode->data->top;
-    }
+        frameIndex = list.current->data->x;
+        top = list.current->data->top;
+        bottom = list.current->data->bottom;
     
-    STFT_BUFFER* stft = model->stftBuffer;
+        if (list.current->nextNode == nil)
+        {
+            nextFrameIndex = list.tail->data->x;
+            topNext = list.tail->data->top;
+            bottomNext = list.tail->data->bottom;
+        }
+        else
+        {
+            nextFrameIndex = list.current->nextNode->data->x;
+            topNext = list.current->nextNode->data->top;
+            bottomNext = list.current->nextNode->data->top;
+        }
     
-    // assign pointers to frames
-    FFT_FRAME* frame = stft->buffer[frameIndex];
-    FFT_FRAME* nextFrame = stft->buffer[nextFrameIndex];
-    FFT_FRAME* playbackFrame = model->fftFrameBuffer[0];
+        STFT_BUFFER* stft = model->stftBuffer;
     
+        // assign pointers to frames
+        FFT_FRAME* frame = stft->buffer[frameIndex];
+        FFT_FRAME* nextFrame = stft->buffer[nextFrameIndex];
+        FFT_FRAME* playbackFrame = model->fftFrameBuffer[0];
     
-    if (model->rateCounter == 0)
-    {
-        // TODO: think about this step more
-        shiftToMod(frame);
-        shiftToMod(nextFrame);
+        if (model->rateCounter == 0)
+        {
+            // TODO: think about this step more
+            shiftToMod(frame);
+            shiftToMod(nextFrame);
         
-        model->polarWindows[0] = frame->polarWindowMod;
-        model->polarWindows[1] = nextFrame->polarWindowMod;
-        model->polarWindows[2] = playbackFrame->polarWindowMod;
+            model->polarWindows[0] = frame->polarWindowMod;
+            model->polarWindows[1] = nextFrame->polarWindowMod;
+            model->polarWindows[2] = playbackFrame->polarWindowMod;
         
-        filter(model->polarWindows[0], top, bottom, FILTER_SLOPE_LENGTH);
-        filter(model->polarWindows[1], topNext, bottomNext, FILTER_SLOPE_LENGTH);
+            filter(model->polarWindows[0], top, bottom, FILTER_SLOPE_LENGTH);
+            filter(model->polarWindows[1], topNext, bottomNext, FILTER_SLOPE_LENGTH);
      
-        moveListForward(list);
+            moveListForward(list);
+        }
     }
     
 }
@@ -289,6 +233,8 @@ static OSStatus renderCallback(void *inRefCon,
         // time to process
         if (this->dspTick == 0)
         {
+            // zero out buffer
+            memset(this->circleBuffer[2], 0.0, this->windowSize);
             
             for (int voice = 0; voice < this->numberOfVoices; voice++)
             {
@@ -329,7 +275,7 @@ static OSStatus renderCallback(void *inRefCon,
                 //--------------------------------------------------------------------
             
                 //------------------- summing bus
-                //summingBus(this);
+                summingBus(this);
             
                 this->pastWindow = this->polarWindows[2];
             }
@@ -342,24 +288,19 @@ static OSStatus renderCallback(void *inRefCon,
             
             if (this->rateCounter % (this->rate * this->overlap) == 0)
             {
-                this->counter++;
+                //this->counter++;
                 this->rateCounter = 0;
             }
-            
-//            if (this->counter >= end || this->counter < begin)          // TODO: this needs to act more like, matt wright's buffer shuffler thingy
-//                this->counter = begin + 1;
-
         }
         
         for (int frameCounter = 0; frameCounter < inNumberFrames; frameCounter++)
         {
             buffer[frameCounter] = this->circleBuffer[1][frameCounter + this->dspTick];     // TODO: change this to circleBuffer[2]
-            // buffer[frameCounter] = this->circleBuffer[2][frameCounter + this->dspTick];
+            //buffer[frameCounter] = this->circleBuffer[2][frameCounter + this->dspTick];
         }
         
         // Deal with progressing time / dsp ticks
         this->dspTick += inNumberFrames;
-        
         if (this->dspTick >= this->hopSize)
             this->dspTick = 0;
         
@@ -401,7 +342,7 @@ static OSStatus renderCallback(void *inRefCon,
         audioBuffer = nil;        
         normalizationFactor = 0.0;
         counter = 0;
-        rate = 4;
+        rate = 1;
         rateCounter = 0;
         
         // Appwide AU settings

@@ -11,17 +11,29 @@
 void moveListForward(SAMLinkedList* list)
 {
     if (list.current->nextNode != nil)
+    {
         list.current = list.current->nextNode;
+        list.cursor++;
+    }
     else
+    {
         list.current = list.tail;
+        list.cursor = 0;
+    }
 }
 
 void moveListBackward(SAMLinkedList* list)
 {
     if (list.current->prevNode != nil)
+    {
         list.current = list.current->prevNode;
+        list.cursor--;
+    }
     else
+    {
         list.current = list.head;
+        list.cursor = list.length - 1;
+    }
 }
 
 
@@ -29,6 +41,8 @@ void moveListBackward(SAMLinkedList* list)
 @synthesize head;
 @synthesize tail;
 @synthesize current;
+@synthesize length;
+@synthesize cursor;
 
 - (id)init
 {
@@ -40,6 +54,7 @@ void moveListBackward(SAMLinkedList* list)
         tail = nil;
         index = 0;
         length = 0;
+        cursor = 0;
     }
     
     return self;
@@ -81,12 +96,17 @@ void moveListBackward(SAMLinkedList* list)
     if (length == 0)
     {
         tail = newNode;     // beginning
-        current = tail;     // set current to the beginning
+        //current = tail;     // set current to the beginning
     }
     
     if (head != nil)
     {
         head->nextNode = newNode;
+    }
+    
+    if (index == cursor)
+    {
+        current = newNode;
     }
     
     newNode->prevNode = head;
@@ -111,6 +131,15 @@ void moveListBackward(SAMLinkedList* list)
         current = current->prevNode;
     else
         current = head;
+}
+
+- (void)cursorCheck
+{
+    if (cursor >= length || cursor <= 0)
+    {
+        cursor = 0;
+        current = tail;
+    }
 }
 
 @end

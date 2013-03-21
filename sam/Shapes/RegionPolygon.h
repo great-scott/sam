@@ -49,6 +49,6 @@
 - (void)findTopAndBottom:(float)xPosition top:(double *)top bottom:(double *)bottom;
 - (BOOL)inSegment:(GLKVector2)segment with:(float)point;
 - (float)getIntersectionPoint:(float)xPosition with:(int)lineNumber;
-- (double)changeTouchYScale:(double *)inputPoint;
+- (void)changeTouchYScale:(double *)inputPoint;
 
 @end

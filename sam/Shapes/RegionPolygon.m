@@ -105,6 +105,8 @@
         
         [lines addObject:line];
     }
+    
+    [self findBoundPoints];
 }
 
 - (void)updateLines
@@ -344,8 +346,14 @@
             xCoord = (pointData->x) * ([SAMAudioModel sharedAudioModel].editArea.size.width / stftLength);
             [self findTopAndBottom:xCoord top:&pointData->top bottom:&pointData->bottom];
             
-            [pointList append:pointData];
+            if (pointData->top == 0 && pointData->bottom == 0)
+                free(pointData);
+            else
+                [pointList append:pointData];
         }
+        
+        // check if the cursor is out of bounds, then reset if it is.
+        [pointList cursorCheck];
         
         // traverse test
 //        struct t_node* current = pointList.tail;
@@ -426,9 +434,9 @@
     
 }
 
-- (double)changeTouchYScale:(double *)inputPoint
+- (void)changeTouchYScale:(double *)inputPoint
 {
-    return pow(*inputPoint, 2.0) / [SAMAudioModel sharedAudioModel].touchScale;
+    *inputPoint = pow(*inputPoint, 2.0) / [SAMAudioModel sharedAudioModel].touchScale;
 }
 
 
