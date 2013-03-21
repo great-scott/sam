@@ -154,10 +154,18 @@ void filterMode(SAMAudioModel* model, int voiceIndex)
     
 }
 
-void summingBus(SAMAudioModel* model)
+// 
+float summingBus(SAMAudioModel* model, int index)
 {
-    float scale = 1 / model->numberOfVoices;
-    vDSP_vsma(model->circleBuffer[1], 1, &scale, model->circleBuffer[2], 1, model->circleBuffer[2], 1, model->windowSize);
+    float scale = 1.0 / (float)model->numberOfVoices;
+    float output = 0.0;
+    
+    for (int i = 0; i < model->numberOfVoices; i++)
+    {
+        output = output + (model->voiceReferences[i]->output[index] * scale);
+    }
+    
+    return output;
 }
 
 void averageAcrossFrames(SAMAudioModel* model, int begin, int end)
@@ -228,7 +236,7 @@ static OSStatus renderCallback(void *inRefCon,
     Float32 *buffer = (Float32 *)ioData->mBuffers[0].mData;
     
     // Wait till file loaded
-    if (this->fileLoaded == YES)
+    if (this->fileLoaded == YES && this->numberOfVoices > 0)
     {
         // time to process
         if (this->dspTick == 0)
@@ -261,23 +269,17 @@ static OSStatus renderCallback(void *inRefCon,
                 if (this->pastWindow != nil)
                     pvFixPhase(this->pastWindow, this->polarWindows[2], 0.25);
             
-                //------------------- inverse and overlap + add
-                inverseFFT(this->fftManager, playbackFrame, this->circleBuffer[0]);
-            
-                // assign remaining values to playback buffer
-                // shift and overlap add new buffer
+                //------------------- inverse and overlap + add                
+                inverseFFT(this->fftManager, playbackFrame, this->voiceReferences[voice]->transform);
+                
                 int diff = this->windowSize - this->hopSize;
                 for (int i = 0; i < diff; i++)
-                    this->circleBuffer[1][i] = (this->circleBuffer[1][this->hopSize + i] + this->circleBuffer[0][i]) * 0.5;
-            
+                    this->voiceReferences[voice]->output[i] = (this->voiceReferences[voice]->output[this->hopSize + i] + this->voiceReferences[voice]->transform[i]);
+                
                 for (int i = 0; i < this->hopSize; i++)
-                    this->circleBuffer[1][diff + i] = this->circleBuffer[0][diff + i];
-                //--------------------------------------------------------------------
+                    this->voiceReferences[voice]->output[diff + i] = this->voiceReferences[voice]->transform[diff + i];
             
-                //------------------- summing bus
-                summingBus(this);
-            
-                this->pastWindow = this->polarWindows[2];
+                this->pastWindow = this->polarWindows[2];                   // consider putting this in VOICE
             }
             
             // progress time
@@ -295,8 +297,8 @@ static OSStatus renderCallback(void *inRefCon,
         
         for (int frameCounter = 0; frameCounter < inNumberFrames; frameCounter++)
         {
-            buffer[frameCounter] = this->circleBuffer[1][frameCounter + this->dspTick];     // TODO: change this to circleBuffer[2]
-            //buffer[frameCounter] = this->circleBuffer[2][frameCounter + this->dspTick];
+            //buffer[frameCounter] = this->circleBuffer[1][frameCounter + this->dspTick];     // TODO: change this to circleBuffer[2]
+            buffer[frameCounter] = summingBus(this, frameCounter + this->dspTick);
         }
         
         // Deal with progressing time / dsp ticks
@@ -437,6 +439,10 @@ static OSStatus renderCallback(void *inRefCon,
     
     // Free fft stuff and instance
     freeFFT(fftManager);
+    
+    // Free voices
+    for (int i = 0; i < numberOfVoices; i++)
+        freeVoice(voiceReferences[i]);
 }
 
 
@@ -723,7 +729,13 @@ static OSStatus renderCallback(void *inRefCon,
 {
     if (numberOfVoices < MAX_VOICES)
     {
+        // store reference to shape object
         shapeReferences[numberOfVoices] = shapeReference;
+        
+        // create voice
+        VOICE* voice = newVoice(numberOfVoices, windowSize);
+        voiceReferences[numberOfVoices] = voice;
+        
         numberOfVoices++;
     }
 }

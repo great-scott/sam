@@ -13,6 +13,7 @@
 #import "SAMEditViewController.h"
 
 #include "FFTManager.h"
+#include "Voice.h"
 #include <stdlib.h>
 
 #define TOUCH_DIVIDE 100                // this is used in a scaling operation
@@ -90,6 +91,7 @@ double changeTouchYScale(double inputPoint, double scale);
     enum PLAYBACK_MODE mode;
     
     RegionPolygon* shapeReferences[MAX_VOICES];         // numberOfVoices corresponds to which slots are filled in
+    VOICE* voiceReferences[MAX_VOICES];
 }
 
 @property int windowSize;
