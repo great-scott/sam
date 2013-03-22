@@ -230,18 +230,30 @@
     for (int i = 0; i < numVertices; i++)
     {
         if (leftMost == -1 || self.vertices[i].x < leftMost)
+        {
             leftMost = self.vertices[i].x;
+            if (leftMost < 0)
+                leftMost = 0;
+        }
         if (rightMost == -1 || self.vertices[i].x > rightMost)
+        {
             rightMost = self.vertices[i].x;
+            if (rightMost > bounds.size.width)
+                rightMost = bounds.size.width;
+        }
         if (topMost == -1 || bounds.size.height - self.vertices[i].y > topMost)
         {
             // Need to invert values
             topMost = bounds.size.height - self.vertices[i].y;
+            if (topMost > bounds.size.height)
+                topMost = bounds.size.height;
         }
         if (bottomMost == -1 || bounds.size.height - self.vertices[i].y < bottomMost)
         {
             // Need to invert values
             bottomMost = bounds.size.height - self.vertices[i].y;
+            if (bottomMost < 0)
+                bottomMost = 0;
         }
     }
     
@@ -330,7 +342,7 @@
     float xCoord;
     
     // just do this the first time
-    if (stftLength > 0 && pointList.length == 0)
+    if (pointList.length == 0)
     {
         // clear point list
         //[pointList clear];
@@ -343,7 +355,7 @@
         }
         
         // check if the cursor is out of bounds, then reset if it is.
-        [pointList cursorCheck];
+        // [pointList cursorCheck];
     }
     else
     {

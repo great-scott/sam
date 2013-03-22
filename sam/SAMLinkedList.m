@@ -10,7 +10,7 @@
 
 void moveListForward(SAMLinkedList* list)
 {
-    if (list.current->nextNode != nil && list.current->nextNode != list.end)
+    if (list.current->nextNode != nil && list.current->data->x != list.end->data->x)
     {
         list.current = list.current->nextNode;
         list.cursor++;

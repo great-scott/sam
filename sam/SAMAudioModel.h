@@ -104,6 +104,7 @@ double changeTouchYScale(double inputPoint, double scale);
 @property enum PLAYBACK_MODE mode;
 @property float touchScale;
 @property int numberOfVoices;
+@property int stftBufferSize;
 
 @property (nonatomic, weak) RegionPolygon* poly;
 @property (readonly) STFT_BUFFER* stftBuffer;

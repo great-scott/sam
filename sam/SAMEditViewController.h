@@ -27,12 +27,12 @@
 
 @property (nonatomic, strong) SAMSpectrogramViewController* spectroViewControl;
 @property (strong, nonatomic) EAGLContext* context;
-
 @property (nonatomic, strong) UIView* spectroView;
 
 - (RegionPolygon *)addSquare:(GLKVector2)location;
 - (RegionPolygon *)addTriangle:(GLKVector2)location;
 - (void)reinit;
 - (void)addSpectrogramView;
+
 
 @end

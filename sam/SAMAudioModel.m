@@ -17,7 +17,7 @@
 
 @synthesize windowSize;
 @synthesize overlap;
-//@synthesize frequencyBuffer;
+@synthesize stftBufferSize;
 @synthesize stftBuffer;
 @synthesize numFFTFrames;
 
@@ -33,7 +33,7 @@
 void shiftToMod(FFT_FRAME* frame)
 {
     frame->polarWindowMod->length = frame->windowSize/2;
-    int length = frame->polarWindowMod->length;
+    int length = frame->polarWindow->length;
     
     for (int i = 0; i < length; i++)
     {
@@ -92,7 +92,7 @@ void interpolateBetweenFrames(SAMAudioModel* model, POLAR_WINDOW* current, POLAR
     float betweenFrameAmt = (float)model->rateCounter / (float)(model->rate * model->overlap);
     double newMag, newPhase;
     
-    for (int bin = 0; bin < current->length; bin++)
+    for (int bin = 0; bin < model->halfWindowSize; bin++)
     {
         newMag = interpolate(0.0, 1.0, betweenFrameAmt, current->buffer[bin].mag, next->buffer[bin].mag);
         playback->buffer[bin].mag = newMag;
@@ -116,9 +116,6 @@ void filterMode(SAMAudioModel* model, int voiceIndex)
         //frameIndex = list.current->data->x;
         top = list.current->data->top;
         bottom = list.current->data->bottom;
-        
-//        memcpy(&top, &list.current->data->top, sizeof(top));
-//        memcpy(&bottom, &list.current->data->bottom, sizeof(bottom));
     
         if (list.current->nextNode == nil)
         {
@@ -155,6 +152,8 @@ void filterMode(SAMAudioModel* model, int voiceIndex)
      
             moveListForward(list);
         }
+        
+        interpolateBetweenFrames(model, model->polarWindows[0], model->polarWindows[1], model->polarWindows[2]);
     }
     
 }
@@ -243,6 +242,9 @@ static OSStatus renderCallback(void *inRefCon,
     // Wait till file loaded
     if (this->fileLoaded == YES && this->numberOfVoices > 0)
     {
+        SAMLinkedList* list = this->shapeReferences[0].pointList;
+        if (list.length > 0)
+        {
         // time to process
         if (this->dspTick == 0)
         {
@@ -257,7 +259,6 @@ static OSStatus renderCallback(void *inRefCon,
                 {
                     case FORWARD:
                         filterMode(this, voice);
-                        interpolateBetweenFrames(this, this->polarWindows[0], this->polarWindows[1], this->polarWindows[2]);
                         break;
                     
                     case AVERAGE:
@@ -310,6 +311,7 @@ static OSStatus renderCallback(void *inRefCon,
         this->dspTick += inNumberFrames;
         if (this->dspTick >= this->hopSize)
             this->dspTick = 0;
+        }
         
     }
     else    // set the output to 0.0
@@ -409,6 +411,7 @@ static OSStatus renderCallback(void *inRefCon,
         for (int i = 0; i < MAX_VOICES; i++)
             shapeReferences[i] = nil;
         
+        stftBufferSize = 0;
     }
     
     return self;
@@ -728,6 +731,13 @@ static OSStatus renderCallback(void *inRefCon,
 - (BOOL)calculateSTFT
 {
     computeSTFT(fftManager, stftBuffer, audioBuffer);
+    stftBufferSize = stftBuffer->size;
+    
+    NSNumber *size = [NSNumber numberWithFloat:stftBufferSize];
+    NSDictionary *dict = [NSDictionary dictionaryWithObjectsAndKeys: size, @"size", nil];
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"setStftSize"
+                                                        object:self
+                                                      userInfo:dict];
     
     // returns YES when finished
     return YES;

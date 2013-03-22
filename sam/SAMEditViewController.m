@@ -56,10 +56,21 @@
     spectroViewControl = nil;
     newMovingShape = nil;
     
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(addNewSquare:) name:@"addNewSquare" object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(moveSquare:) name:@"moveSquare" object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(dropSquare:) name:@"dropSquare" object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(addNewSquare:)
+                                                 name:@"addNewSquare" object:nil];
     
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(moveSquare:)
+                                                 name:@"moveSquare" object:nil];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(dropSquare:)
+                                                 name:@"dropSquare" object:nil];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(setStftSize:)
+                                                 name:@"setStftSize" object:nil];
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
@@ -105,6 +116,13 @@
     newMovingShape = nil;
 }
 
+- (void)setStftSize:(NSNotification *)notification
+{
+    NSNumber* size = [[notification userInfo] valueForKey:@"size"];
+    
+    for (RegionPolygon* poly in shapes)
+        poly.stftLength = [size intValue];
+}
 
 #pragma mark - View Drawing Callback -
 
@@ -131,7 +149,7 @@
     [shapes addObject:poly];
     
     [[SAMAudioModel sharedAudioModel] addShape:poly];
-    poly.stftLength = 74; //[[SAMAudioModel sharedAudioModel] stftBuffer]->size;      // woo that's messy
+    poly.stftLength = [SAMAudioModel sharedAudioModel].stftBufferSize;
     
     return poly;
 }
@@ -143,6 +161,8 @@
     [poly setPosition:location withSubShape:poly];
     [shapes addObject:poly];
     [[SAMAudioModel sharedAudioModel] addShape:poly];
+    
+    poly.stftLength = [SAMAudioModel sharedAudioModel].stftBufferSize;
     
     return poly;
 }
