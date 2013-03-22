@@ -356,6 +356,9 @@
         
         // check if the cursor is out of bounds, then reset if it is.
         // [pointList cursorCheck];
+        
+        // only happens the first time we're adding points
+        [SAMAudioModel sharedAudioModel].numberOfVoices++;
     }
     else
     {

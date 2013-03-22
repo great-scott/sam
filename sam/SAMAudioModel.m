@@ -754,7 +754,7 @@ static OSStatus renderCallback(void *inRefCon,
         VOICE* voice = newVoice(numberOfVoices, windowSize);
         voiceReferences[numberOfVoices] = voice;
         
-        numberOfVoices++;
+        //numberOfVoices++;
     }
 }
 
