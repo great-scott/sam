@@ -16,7 +16,7 @@
 // Data can be allocated externally, but it is cleaned up internally
 typedef struct t_data
 {
-    float           x;
+    int             x;
     double          top;
     double          bottom;
 } DATA;
@@ -33,9 +33,14 @@ struct t_node
 {
     struct t_node* head;
     struct t_node* tail;
+    struct t_node* current;
+    
+    struct t_node* begin;
+    struct t_node* end;
     
     int   index;
     int   length;
+    int   cursor;
 }
 
 @property struct t_node* head;
@@ -44,7 +49,12 @@ struct t_node
 @property int length;
 @property int cursor;                   // somewhat silly, but tries to keep position state after clear
 
+@property struct t_node* begin;
+@property struct t_node* end;
+
 - (void)append:(DATA *)newNode;
+- (void)insert:(DATA *)newData at:(int)xPosition;
+- (void)update:(DATA *)node top:(float)top bottom:(float)bottom;
 - (void)clear;
 - (void)forward;                     // TODO: consider having utility methods for moving/wrapping current pointer
 - (void)backward;

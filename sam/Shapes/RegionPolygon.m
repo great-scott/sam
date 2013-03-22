@@ -326,35 +326,68 @@
 
 - (void)updateIntersectList
 {
+    int length = end - begin;
     float xCoord;
     
-    if (stftLength > 0)
+    // just do this the first time
+    if (stftLength > 0 && pointList.length == 0)
     {
-        int length = end - begin;
-        
         // clear point list
-        [pointList clear];
+        //[pointList clear];
         
         // repopulate it, this is very 'dumb' and brute-force
         for (int i = 0; i < length; i++)
         {
-            DATA* pointData = (DATA *)malloc(sizeof(DATA));
-            pointData->x = i + begin;
-            pointData->top = -1;
-            pointData->bottom = 9999;
-            
-            xCoord = (pointData->x) * ([SAMAudioModel sharedAudioModel].editArea.size.width / stftLength);
-            [self findTopAndBottom:xCoord top:&pointData->top bottom:&pointData->bottom];
-            
-            if (pointData->top == 0 && pointData->bottom == 0)
-                free(pointData);
-            else
-                [pointList append:pointData];
+            DATA* pointData = [self createAndFindPointData:i];
+            [pointList append:pointData];
         }
         
         // check if the cursor is out of bounds, then reset if it is.
         [pointList cursorCheck];
+    }
+    else
+    {
+        // do we have points before tail now?
+        if (begin < pointList.tail->data->x)
+        {
+            int diff = pointList.tail->data->x - begin;
+            for (int i = diff - 1; i >= 0; i--)
+            {
+                DATA* pointData = [self createAndFindPointData:i];
+                [pointList insert:pointData at:i];
+            }
+        }
         
+        if (end > pointList.head->data->x)
+        {
+            int diff = end - pointList.head->data->x;
+            for (int i = pointList.head->data->x; i < diff + 1; i++)
+            {
+                DATA* pointData = [self createAndFindPointData:i];
+                [pointList append:pointData];
+            }
+        }
+        
+    }
+    
+    
+    struct t_node* c = pointList.tail;
+    while (c != nil)
+    {
+        c->data->top = -1;
+        c->data->bottom = 9999;
+        
+        xCoord = (c->data->x) * ([SAMAudioModel sharedAudioModel].editArea.size.width / stftLength);
+        [self findTopAndBottom:xCoord top:&c->data->top bottom:&c->data->bottom];
+        
+        if (c->data->x == begin)
+            pointList.begin = c;
+        if (c->data->x == end)
+            pointList.end = c;
+        
+        c = c->nextNode;
+    }
+    
         // traverse test
 //        struct t_node* current = pointList.tail;
 //        while (current != nil)
@@ -362,7 +395,20 @@
 //            NSLog(@"x: %f \ttop: %f \tbottom: %f", current->data->x, current->data->top, current->data->bottom);
 //            current = current->nextNode;
 //        }
-    }
+}
+
+- (DATA *)createAndFindPointData:(int)index
+{
+    float xCoord;
+    DATA* pointData = (DATA *)malloc(sizeof(DATA));
+    pointData->x = index + begin;
+    pointData->top = -1;
+    pointData->bottom = 9999;
+    
+    xCoord = (pointData->x) * ([SAMAudioModel sharedAudioModel].editArea.size.width / stftLength);
+    [self findTopAndBottom:xCoord top:&pointData->top bottom:&pointData->bottom];
+    
+    return pointData;
 }
 
 

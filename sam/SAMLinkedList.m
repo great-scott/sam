@@ -10,14 +10,15 @@
 
 void moveListForward(SAMLinkedList* list)
 {
-    if (list.current->nextNode != nil)
+    if (list.current->nextNode != nil && list.current->nextNode != list.end)
     {
         list.current = list.current->nextNode;
         list.cursor++;
     }
     else
     {
-        list.current = list.tail;
+        //list.current = list.tail;
+        list.current = list.begin;
         list.cursor = 0;
     }
 }
@@ -43,13 +44,14 @@ void moveListBackward(SAMLinkedList* list)
 @synthesize current;
 @synthesize length;
 @synthesize cursor;
+@synthesize begin;
+@synthesize end;
 
 - (id)init
 {
     self = [super init];
     
-    if (self)
-    {
+     {
         head = nil;
         tail = nil;
         index = 0;
@@ -81,6 +83,7 @@ void moveListBackward(SAMLinkedList* list)
     
     head = nil;
     tail = nil;
+    current = nil;
     index = 0;
     length = 0;
 }
@@ -96,7 +99,7 @@ void moveListBackward(SAMLinkedList* list)
     if (length == 0)
     {
         tail = newNode;     // beginning
-        //current = tail;     // set current to the beginning
+        begin = tail;       // set current to the beginning
     }
     
     if (head != nil)
@@ -104,7 +107,7 @@ void moveListBackward(SAMLinkedList* list)
         head->nextNode = newNode;
     }
     
-    if (index == cursor)
+    if (index == cursor)            // TODO: this is kind of unnecessary 
     {
         current = newNode;
     }
@@ -112,17 +115,43 @@ void moveListBackward(SAMLinkedList* list)
     newNode->prevNode = head;
     newNode->nextNode = nil;
     head = newNode;
+    end = head;
         
     index++;
     length++;
 }
 
+// I think this will mainly be used for inserting at the tail of a list, so this is fine
+- (void)insert:(DATA *)newData at:(int)xPosition
+{    
+    struct t_node* newNode = (struct t_node *)malloc(sizeof(struct t_node));
+    newNode->index = xPosition;
+    newNode->data = newData;
+    
+    newNode->prevNode = nil;
+    newNode->nextNode = tail;
+    tail->prevNode = newNode;
+    
+    tail = newNode;
+}
+
+- (void)update:(DATA *)data top:(float)top bottom:(float)bottom
+{
+    data->top = top;
+    data->bottom = bottom;
+}
+
+
 - (void)forward
 {
-    if (current->nextNode != nil)
+    if (current->nextNode != nil && current->nextNode != end)
+    {
         current = current->nextNode;
+    }
     else
-        current = tail;
+    {
+        current = begin;
+    }
 }
 
 - (void)backward

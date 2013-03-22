@@ -109,11 +109,16 @@ void filterMode(SAMAudioModel* model, int voiceIndex)
     
     SAMLinkedList* list = model->shapeReferences[voiceIndex].pointList;
     
-    if (list.length > 0)
+    if (list.length > 0 && list.current != nil)
     {
-        frameIndex = list.current->data->x;
+        // crazy memory align error, explained here: http://www.galloway.me.uk/2010/10/arm-hacking-exc_arm_da_align-exception/
+        memcpy(&frameIndex, &list.current->data->x, sizeof(frameIndex));
+        //frameIndex = list.current->data->x;
         top = list.current->data->top;
         bottom = list.current->data->bottom;
+        
+//        memcpy(&top, &list.current->data->top, sizeof(top));
+//        memcpy(&bottom, &list.current->data->bottom, sizeof(bottom));
     
         if (list.current->nextNode == nil)
         {
