@@ -200,10 +200,11 @@
     if ([SAMAudioModel sharedAudioModel].numberOfVoices < MAX_VOICES)
     {
         RegionPolygon* poly = [[RegionPolygon alloc] initWithRect:self.view.bounds];
+        poly.numVertices = 3;
         [poly setPosition:location withSubShape:poly];
         [shapes addObject:poly];
+        
         [[SAMAudioModel sharedAudioModel] addShape:poly];
-    
         poly.stftLength = [SAMAudioModel sharedAudioModel].stftBufferSize;
     
         return poly;

@@ -33,6 +33,7 @@ double linearInterp(double valA, double valB, double fract);
 
 @property BOOL editMode;
 @property float redAmt;
+@property float gain;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil context:(EAGLContext *) parentContext;
 - (void)glkView:(GLKView *)view drawInRect:(CGRect)rect;

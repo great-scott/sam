@@ -28,8 +28,6 @@ enum PLAYBACK_MODE
     AVERAGE = 1
 };
 
-double changeTouchYScale(double inputPoint, double scale);
-
 
 # pragma mark - Main Interface -
 

@@ -40,9 +40,15 @@
         
         bounds = boundsRect;
         numVertices = MIN_VERTICES;
-        [self setupShapes:numVertices];
+        //[self setupShapes:numVertices];
         
         pointList = [[SAMLinkedList alloc] init];
+        
+        kDefaultColor = GLKVector4Make(0.5, 0.5, 0.5, 0.6);
+        kSelectColor = GLKVector4Make(0.5, 0.5, 0.5, 0.8);
+        
+        kCircleDefaultColor = GLKVector4Make(0.35, 0.35, 0.55, 1.0);
+        kLineDefaultColor = GLKVector4Make(0.35, 0.35, 0.55, 1.0);
     }
     
     return self;
@@ -61,7 +67,7 @@
         polygon = [[Shape alloc] init];
     
     polygon.bounds = bounds;
-    polygon.color = GLKVector4Make(0.5, 0.5, 0.5, 0.7);     //TODO: make this dynamic
+    polygon.color = kDefaultColor;    
     polygon.numVertices = numberVertices;
     polygon.useConstantColor = YES;
     // Setup polygon vertex positions
@@ -79,7 +85,7 @@
         circle.radiusY = CIRCLE_RADIUS;
         circle.number = i;
         circle.position = initPositions[i];
-        circle.color = GLKVector4Make(0.4, 0.4, 0.4, 1.0);
+        circle.color = kCircleDefaultColor;
         circle.bounds = bounds;
         circle.useConstantColor = YES;
         [circles addObject:circle];
@@ -100,9 +106,10 @@
         line.endPoint = initPositions[lineWrap];
         lineWrap += 1;
         
-        line.color = GLKVector4Make(0.4, 0.4, 0.4, 1.0);
+        line.color = kLineDefaultColor;
         line.bounds = bounds;
         line.useConstantColor = YES;
+        line.lineWidth = LINE_WIDTH;
         
         [lines addObject:line];
     }
@@ -230,9 +237,9 @@
 {
     selected = selectedValue;
     if (selected == YES)
-        polygon.color = GLKVector4Make(0.5, 0.5, 0.5, 0.9);
+        polygon.color = kSelectColor;
     else
-        polygon.color = GLKVector4Make(0.5, 0.5, 0.5, 0.7);
+        polygon.color = kDefaultColor;
 }
 
 - (BOOL)selected
@@ -471,8 +478,8 @@
     if (*bottom == 9999)
         *bottom = 0;
     
-    [self changeTouchYScale:top];
-    [self changeTouchYScale:bottom];
+    [RegionPolygon changeTouchYScale:top];
+    [RegionPolygon changeTouchYScale:bottom];
 }
 
 
@@ -514,7 +521,7 @@
     
 }
 
-- (void)changeTouchYScale:(double *)inputPoint
++ (void)changeTouchYScale:(double *)inputPoint
 {
     *inputPoint = pow(*inputPoint, 2.0) / [SAMAudioModel sharedAudioModel].touchScale;
 }

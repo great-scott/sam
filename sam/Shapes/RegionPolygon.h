@@ -13,8 +13,9 @@
 #import "SAMLinkedList.h"
 
 #define MIN_VERTICES 3
-#define CIRCLE_RADIUS 5.0
-#define FACE_LENGTH = 100.0
+#define CIRCLE_RADIUS 6.0
+#define FACE_LENGTH 100.0
+#define LINE_WIDTH 4.0
 
 //float getIntersectionPoint(Shape* polygon, int lineNumber, float xPosition);
 
@@ -27,6 +28,11 @@
     GLKVector2 initPositions[4];
     
     SAMLinkedList*   pointList;     //
+    
+    GLKVector4 kDefaultColor;
+    GLKVector4 kSelectColor;
+    GLKVector4 kCircleDefaultColor;
+    GLKVector4 kLineDefaultColor;
 }
 
 @property int numVertices;
@@ -50,6 +56,6 @@
 - (void)findTopAndBottom:(float)xPosition top:(double *)top bottom:(double *)bottom;
 - (BOOL)inSegment:(GLKVector2)segment with:(float)point;
 - (float)getIntersectionPoint:(float)xPosition with:(int)lineNumber;
-- (void)changeTouchYScale:(double *)inputPoint;
++ (void)changeTouchYScale:(double *)inputPoint;
 
 @end
