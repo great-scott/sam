@@ -25,6 +25,8 @@
     NSMutableArray* circles;        // all the circles on the vertices
     Shape*          polygon;        // general polygon
     
+    Line*           playHead;       // line to show the playhead
+    
     GLKVector2 initPositions[4];
     
     SAMLinkedList*   pointList;     //
@@ -33,6 +35,7 @@
     GLKVector4 kSelectColor;
     GLKVector4 kCircleDefaultColor;
     GLKVector4 kLineDefaultColor;
+    GLKVector4 kPlayheadDefaultColor;
 }
 
 @property int numVertices;

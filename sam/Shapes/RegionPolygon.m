@@ -40,7 +40,7 @@
         
         bounds = boundsRect;
         numVertices = MIN_VERTICES;
-        //[self setupShapes:numVertices];
+        playHead = nil;
         
         pointList = [[SAMLinkedList alloc] init];
         
@@ -49,6 +49,7 @@
         
         kCircleDefaultColor = GLKVector4Make(0.35, 0.35, 0.55, 1.0);
         kLineDefaultColor = GLKVector4Make(0.35, 0.35, 0.55, 1.0);
+        kPlayheadDefaultColor = GLKVector4Make(0.45, 0.45, 0.55, 1.0);
     }
     
     return self;
@@ -376,7 +377,7 @@
         // repopulate it, this is very 'dumb' and brute-force
         for (int i = 0; i < length; i++)
         {
-            DATA* pointData = [self createAndFindPointData:i];
+            DATA* pointData = [self createAndFindPointData:i + begin];
             [pointList append:pointData];
         }
         
@@ -385,24 +386,45 @@
         
         // only happens the first time we're adding points
         [SAMAudioModel sharedAudioModel].numberOfVoices++;
+        
+        
+        if (playHead == nil)
+        {
+            struct t_node* c = [pointList current];
+            
+            playHead = [[Line alloc] init];
+            playHead.startPoint = GLKVector2Make((c->data->x) * ([SAMAudioModel sharedAudioModel].editArea.size.width / stftLength), bounds.size.height - c->data->bottom);
+            
+            playHead.endPoint = GLKVector2Make((c->data->x) * ([SAMAudioModel sharedAudioModel].editArea.size.width / stftLength), bounds.size.height - c->data->top);
+            
+            playHead.color = kPlayheadDefaultColor;
+            playHead.bounds = bounds;
+            playHead.useConstantColor = YES;
+            playHead.lineWidth = LINE_WIDTH;
+            
+        }
     }
     else
     {
         // do we have points before tail now?
-        if (begin < pointList.tail->data->x)
+        int firstPoint = pointList.tail->data->x;
+        if (begin < firstPoint)
         {
-            int diff = pointList.tail->data->x - begin;
+            int diff = firstPoint - begin;
             for (int i = diff - 1; i >= 0; i--)
             {
-                DATA* pointData = [self createAndFindPointData:i];
-                [pointList insert:pointData at:i];
+                DATA* pointData = [self createAndFindPointData:begin + i];
+                [pointList insert:pointData at:begin + i];
             }
         }
         
-        if (end > pointList.head->data->x)
+        int lastPoint = pointList.head->data->x;
+        if (end > lastPoint)
         {
             int diff = end - pointList.head->data->x;
-            for (int i = pointList.head->data->x; i < diff + 1; i++)
+            
+            //for (int i = pointList.head->data->x + 1; i < pointList.head->data->x + diff + 1; i++)
+            for (int i = lastPoint + 1; i < lastPoint + diff + 1; i++)
             {
                 DATA* pointData = [self createAndFindPointData:i];
                 [pointList append:pointData];
@@ -429,20 +451,13 @@
         c = c->nextNode;
     }
     
-        // traverse test
-//        struct t_node* current = pointList.tail;
-//        while (current != nil)
-//        {
-//            NSLog(@"x: %f \ttop: %f \tbottom: %f", current->data->x, current->data->top, current->data->bottom);
-//            current = current->nextNode;
-//        }
 }
 
 - (DATA *)createAndFindPointData:(int)index
 {
     float xCoord;
     DATA* pointData = (DATA *)malloc(sizeof(DATA));
-    pointData->x = index + begin;
+    pointData->x = index;
     pointData->top = -1;
     pointData->bottom = 9999;
     
@@ -526,6 +541,11 @@
     *inputPoint = pow(*inputPoint, 2.0) / [SAMAudioModel sharedAudioModel].touchScale;
 }
 
++ (void)reverseTouchYScale:(double *)inputPoint
+{
+    *inputPoint = pow(*inputPoint * [SAMAudioModel sharedAudioModel].touchScale, 0.5);
+}
+
 
 # pragma mark - Overidden Methods -
 
@@ -582,10 +602,33 @@
 }
 
 #pragma mark - Render -
+
+- (void)playheadUpdate
+{
+    struct t_node* c = [pointList current];
+    double top = c->data->top;
+    double bottom = c->data->bottom;
+    
+    [RegionPolygon reverseTouchYScale:&top];
+    [RegionPolygon reverseTouchYScale:&bottom];
+    
+    playHead.startPoint = GLKVector2Make((c->data->x) * ([SAMAudioModel sharedAudioModel].editArea.size.width / stftLength), bounds.size.height - bottom);
+    
+    playHead.endPoint = GLKVector2Make((c->data->x) * ([SAMAudioModel sharedAudioModel].editArea.size.width / stftLength), bounds.size.height - top);
+    
+}
+
 - (void)render
 {
     [polygon render];
     [lines makeObjectsPerformSelector:@selector(render)];
+    
+    if (pointList.length > 0)
+    {
+        [self playheadUpdate];
+        [playHead render];
+    }
+    
     [circles makeObjectsPerformSelector:@selector(render)];
 }
 
