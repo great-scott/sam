@@ -17,7 +17,13 @@
 #define FACE_LENGTH 100.0
 #define LINE_WIDTH 4.0
 
-//float getIntersectionPoint(Shape* polygon, int lineNumber, float xPosition);
+enum PLAYHEAD_MODE
+{
+    FORWARD = 0,
+    REVERSE = 1,
+    UPDOWN = 2,
+    RANDOM = 3
+};
 
 @interface RegionPolygon : Shape
 {
@@ -46,6 +52,7 @@
 @property int begin;
 @property int end;
 @property BOOL selected;
+@property enum PLAYHEAD_MODE playMode;
 @property (nonatomic, strong) SAMLinkedList* pointList;
 
 - (id)initWithRect:(CGRect)bounds;

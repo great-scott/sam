@@ -176,6 +176,34 @@
     }
 }
 
+- (IBAction)handleForwardSwipe:(UISwipeGestureRecognizer *)sender
+{
+    if (sender.state == UIGestureRecognizerStateEnded)
+    {
+        for (RegionPolygon* poly in shapes)
+        {
+            if (poly.selected == YES)
+            {
+                poly.playMode = FORWARD;
+            }
+        }
+    }
+}
+
+- (IBAction)handleBackwardSwipe:(UISwipeGestureRecognizer *)sender
+{
+    if (sender.state == UIGestureRecognizerStateEnded)
+    {
+        for (RegionPolygon* poly in shapes)
+        {
+            if (poly.selected == YES)
+            {
+                poly.playMode = REVERSE;
+            }
+        }
+    }
+}
+
 - (RegionPolygon *)addSquare:(GLKVector2)location
 {
     if ([SAMAudioModel sharedAudioModel].numberOfVoices < MAX_VOICES)

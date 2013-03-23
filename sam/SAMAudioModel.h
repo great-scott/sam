@@ -24,8 +24,8 @@
 
 enum PLAYBACK_MODE
 {
-    FORWARD = 0,
-    AVERAGE = 1
+    FORWARD_MODE = 0,
+    AVERAGE_MODE = 1
 };
 
 

@@ -158,9 +158,17 @@ void filterMode(SAMAudioModel* model, int voiceIndex)
             filter(model->polarWindows[0], top, bottom, FILTER_SLOPE_LENGTH);
             filter(model->polarWindows[1], topNext, bottomNext, FILTER_SLOPE_LENGTH);
      
-            moveListForward(list);
-            
-            //printf("click: %i\n", frameIndex);
+            switch (model->shapeReferences[voiceIndex].playMode)
+            {
+                case FORWARD:
+                    moveListForward(list);
+                    break;
+                case REVERSE:
+                    moveListBackward(list);
+                    break;
+                default:
+                    break;
+            }
         }
 
         interpolateBetweenFrames(model, model->polarWindows[0], model->polarWindows[1], model->polarWindows[2]);
@@ -264,11 +272,11 @@ static OSStatus renderCallback(void *inRefCon,
             
                 switch (this->mode)
                 {
-                    case FORWARD:
+                    case FORWARD_MODE:
                         filterMode(this, voice);
                         break;
                     
-                    case AVERAGE:
+                    case AVERAGE_MODE:
                         //averageAcrossFrames(this, begin, end);
                         break;
                     
@@ -419,7 +427,7 @@ static OSStatus renderCallback(void *inRefCon,
         
         pastWindow = nil;
         
-        mode = FORWARD;
+        mode = FORWARD_MODE;
         numberOfVoices = 0;
         
         // make sure all these shape references are nil

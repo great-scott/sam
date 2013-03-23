@@ -174,9 +174,9 @@
     else if ([title isEqualToString:@"Play"])
     {
         if ([[SAMAudioModel sharedAudioModel] mode] == FORWARD)
-            [[SAMAudioModel sharedAudioModel] setMode:AVERAGE];
+            [[SAMAudioModel sharedAudioModel] setMode:AVERAGE_MODE];
         else
-            [[SAMAudioModel sharedAudioModel] setMode:FORWARD];
+            [[SAMAudioModel sharedAudioModel] setMode:FORWARD_MODE];
     }
     else if ([title isEqualToString:@"Tri"])
     {

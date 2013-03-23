@@ -25,14 +25,15 @@ void moveListForward(SAMLinkedList* list)
 
 void moveListBackward(SAMLinkedList* list)
 {
-    if (list.current->prevNode != nil)
+    if (list.current->prevNode != nil && list.current->data->x != list.begin->data->x)
     {
         list.current = list.current->prevNode;
         list.cursor--;
     }
     else
     {
-        list.current = list.head;
+        //list.current = list.head;
+        list.current = list.end;
         list.cursor = list.length - 1;
     }
 }

@@ -31,6 +31,8 @@
 
 - (IBAction)handleTap:(UITapGestureRecognizer *)sender;
 - (IBAction)handleSwipe:(UISwipeGestureRecognizer *)sender;
+- (IBAction)handleForwardSwipe:(UISwipeGestureRecognizer *)sender;
+- (IBAction)handleBackwardSwipe:(UISwipeGestureRecognizer *)sender;
 
 - (RegionPolygon *)addSquare:(GLKVector2)location;
 - (RegionPolygon *)addTriangle:(GLKVector2)location;
