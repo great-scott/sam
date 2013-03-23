@@ -9,7 +9,10 @@
 #import "SAMSpectrogramViewController.h"
 #import "SAMAudioModel.h"
 
-#define SPECTRUM_BAR_WIDTH 4
+#define SPECTRUM_BAR_WIDTH 20
+#define MAX_LINES 120
+#define LINE_OFFSET 5.0
+#define LINE_SPACING 8.0
 
 @interface SAMSpectrogramViewController ()
 
@@ -74,48 +77,90 @@ double linearInterp(double valA, double valB, double fract)
 {
     [spectrum removeAllObjects];
     
-    int numBins = [[SAMAudioModel sharedAudioModel] windowSize] / 8.0;  // TODO: get this to line up with audio
-//    int numFrames = (stft->size - 5) / [[SAMAudioModel sharedAudioModel] overlap]; // TODO: this is ridic
-    
+    int numBins = [[SAMAudioModel sharedAudioModel] windowSize] / 10.0;  // TODO: get this to line up with audio
     int numFrames = stft->size;
     
     NSLog(@"Number of Frames: %i", stft->size);
+    NSLog(@"Width: %f\tHeight: %f", self.view.bounds.size.width, self.view.bounds.size.height);
     // x
-    for (int i = 0; i < numFrames; i++)
+    
+    int numLines;
+    
+    if (numFrames < MAX_LINES)
+        numLines = numFrames;
+    else
+        numLines = MAX_LINES;
+    
+    for (int timeIndex = 0; timeIndex < numLines; timeIndex++)
     {
+        Shape* s = [[Shape alloc] init];
+        s.bounds = self.view.bounds;
+        s.numVertices = numBins;
+        s.useConstantColor = NO;
         
-        for (int step = 0; step < 1; step++)
+        int xpos = timeIndex * LINE_SPACING + LINE_OFFSET;
+        
+        
+        FFT_FRAME* frame = stft->buffer[timeIndex];
+        
+        // y
+        for (int j = 0; j < numBins; j++)
         {
-            Shape* s = [[Shape alloc] init];
-            s.bounds = self.view.bounds;
-            s.numVertices = numBins;            // number of vertical bins
-            s.useConstantColor = NO;
+            float ypos = s.bounds.size.height - (j * (s.bounds.size.height / numBins));
             
-            FFT_FRAME* frame = stft->buffer[i];
+            s.vertices[j] = GLKVector2Make(xpos, ypos);
+            float amt = (frame->polarWindow->buffer[j].mag) * 200;
+            GLKVector4 vertColor;
             
-            // y
-            for (int j = 0; j < numBins; j++)
-            {
-                float ypos = s.bounds.size.height - (j * (s.bounds.size.height / numBins));
-                float xpos = i * (s.bounds.size.width / numFrames) + (step * 10);
-                
-                s.vertices[j] = GLKVector2Make(xpos, ypos);
-                float amt = (frame->polarWindow->buffer[j].mag) * 200;
-                GLKVector4 vertColor;
-                
-                if (amt > 0.02)
-                    vertColor = GLKVector4Make(amt, 0.0, 0.2, 0.9);
-                else
-                    vertColor = GLKVector4Make(0.95, 0.95, 0.95, 0.95);
-                
-                s.vertexColors[j] = vertColor;
-            }
+            if (amt > 0.02)
+                vertColor = GLKVector4Make(amt, 0.0, 0.2, 0.9);
+            else
+                vertColor = GLKVector4Make(0.95, 0.95, 0.95, 0.95);
             
-            s.lineWidth = 40.0;
-            s.drawingStyle = GL_LINE_STRIP;
-            [spectrum addObject:s];
+            s.vertexColors[j] = vertColor;
         }
+
+        
+        s.lineWidth = 20.0;
+        s.drawingStyle = GL_LINE_STRIP;
+        [spectrum addObject:s];
     }
+    
+//    for (int i = 0; i < numFrames; i++)
+//    {
+//        
+//        for (int step = 0; step < 1; step++)
+//        {
+//            Shape* s = [[Shape alloc] init];
+//            s.bounds = self.view.bounds;
+//            s.numVertices = numBins;            // number of vertical bins
+//            s.useConstantColor = NO;
+//            
+//            FFT_FRAME* frame = stft->buffer[i];
+//            
+//            // y
+//            for (int j = 0; j < numBins; j++)
+//            {
+//                float ypos = s.bounds.size.height - (j * (s.bounds.size.height / numBins));
+//                float xpos = i * (s.bounds.size.width / numFrames) + (step * 10);
+//                
+//                s.vertices[j] = GLKVector2Make(xpos, ypos);
+//                float amt = (frame->polarWindow->buffer[j].mag) * 200;
+//                GLKVector4 vertColor;
+//                
+//                if (amt > 0.02)
+//                    vertColor = GLKVector4Make(amt, 0.0, 0.2, 0.9);
+//                else
+//                    vertColor = GLKVector4Make(0.95, 0.95, 0.95, 0.95);
+//                
+//                s.vertexColors[j] = vertColor;
+//            }
+//            
+//            s.lineWidth = 20.0;
+//            s.drawingStyle = GL_LINE_STRIP;
+//            [spectrum addObject:s];
+//        }
+//    }
 }
 
 - (void)didReceiveMemoryWarning
