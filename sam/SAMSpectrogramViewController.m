@@ -75,14 +75,20 @@
     NSLog(@"Width: %f\tHeight: %f", self.view.bounds.size.width, self.view.bounds.size.height);
     // x
     
-    int numLines;
+    //int numLines;
+    float resampleFactor;
+    int resampleIndex = 0;
     
     if (numFrames < MAX_LINES)
-        numLines = numFrames;
+    {
+        resampleFactor = ceil((float)MAX_LINES / (float)numFrames);
+    }
     else
-        numLines = MAX_LINES;
+    {
+        resampleFactor = (float)MAX_LINES / (float)numFrames;
+    }
     
-    for (int timeIndex = 0; timeIndex < numLines; timeIndex++)
+    for (int timeIndex = 0; timeIndex < MAX_LINES; timeIndex++)
     {
         Shape* s = [[Shape alloc] init];
         s.bounds = self.view.bounds;
@@ -92,7 +98,25 @@
         int xpos = timeIndex * LINE_SPACING + LINE_OFFSET;
         double ypos;
         
-        FFT_FRAME* frame = stft->buffer[timeIndex];
+        // use resample factor to determine index into stftbuffer
+        // factor > 1 -> recall same index;
+        // factor < 1 -> remove indices
+        if (resampleFactor >= 1)
+        {
+            if ((int)timeIndex % (int)resampleFactor == 0)
+                resampleIndex++;
+            
+            if (resampleIndex >= stft->size)
+                resampleIndex = stft->size - 1;
+        }
+        else
+        {
+            resampleIndex = (int)(timeIndex / resampleFactor);
+            if (resampleIndex >= stft->size)
+                resampleIndex = stft->size - 1;
+        }
+        
+        FFT_FRAME* frame = stft->buffer[resampleIndex];
         
         // y
         for (int j = 0; j < numBins; j++)
