@@ -11,7 +11,7 @@
 
 #define PI 3.14159265359
 #define TWO_PI (2 * PI)
-#define FILTER_SLOPE_LENGTH 10
+#define FILTER_SLOPE_LENGTH 20
 
 @implementation SAMAudioModel
 
@@ -97,8 +97,12 @@ void interpolateBetweenFrames(SAMAudioModel* model, POLAR_WINDOW* current, POLAR
         newMag = interpolate(0.0, 1.0, betweenFrameAmt, current->buffer[bin].mag, next->buffer[bin].mag);
         playback->buffer[bin].mag = newMag;
         
+        //playback->buffer[bin].mag = current->buffer[bin].mag;
+        
         newPhase = interpolate(0.0, 1.0, betweenFrameAmt, current->buffer[bin].phase, next->buffer[bin].phase);
         playback->buffer[bin].phase = newPhase;
+        
+        //playback->buffer[bin].phase = current->buffer[bin].phase;
     }
 }
 
@@ -129,6 +133,10 @@ void filterMode(SAMAudioModel* model, int voiceIndex)
             topNext = list.current->nextNode->data->top;
             bottomNext = list.current->nextNode->data->top;
         }
+        
+        
+//        frameIndex = model->counter;
+//        nextFrameIndex = frameIndex + 1;
     
         STFT_BUFFER* stft = model->stftBuffer;
     
@@ -151,14 +159,16 @@ void filterMode(SAMAudioModel* model, int voiceIndex)
             filter(model->polarWindows[1], topNext, bottomNext, FILTER_SLOPE_LENGTH);
      
             moveListForward(list);
+            
+            //printf("click: %i\n", frameIndex);
         }
-        
+
         interpolateBetweenFrames(model, model->polarWindows[0], model->polarWindows[1], model->polarWindows[2]);
     }
     
 }
 
-// 
+
 float summingBus(SAMAudioModel* model, int index)
 {
     float scale = 1.0 / (float)model->numberOfVoices;
@@ -172,58 +182,54 @@ float summingBus(SAMAudioModel* model, int index)
     return output;
 }
 
-void averageAcrossFrames(SAMAudioModel* model, int begin, int end)
+void averageAcrossFrames(SAMAudioModel* model, int voiceIndex)
 {
-    STFT_BUFFER* stft = model->stftBuffer;
-    int numFrames = end - begin;
-    float invNumFrames = 1.0 / numFrames;
-    
-    int frameIndex;
-    float xCoord;
-    float newMag, newPhase;
-    
-    FFT_FRAME* avgFrame = model->fftFrameBuffer[0];
-    shiftToMod(avgFrame);
-    model->polarWindows[2] = avgFrame->polarWindowMod;
-    
-    FFT_FRAME* shiftFrame;
-    
-    for (int i = 0; i < numFrames; i++)
-    {
-        frameIndex = (begin + i);
-        shiftFrame = stft->buffer[frameIndex];
-        
-        xCoord = frameIndex * (model->editArea.size.width / stft->size);
-//        findTopAndBottom(model, xCoord, &model->top, &model->bottom);
+//    STFT_BUFFER* stft = model->stftBuffer;
+//    int numFrames = end - begin;
+//    float invNumFrames = 1.0 / numFrames;
+//    
+//    int frameIndex;
+//    float xCoord;
+//    float newMag, newPhase;
+//    
+//    FFT_FRAME* avgFrame = model->fftFrameBuffer[0];
+//    shiftToMod(avgFrame);
+//    model->polarWindows[2] = avgFrame->polarWindowMod;
+//    
+//    FFT_FRAME* shiftFrame;
+//    
+//    for (int i = 0; i < numFrames; i++)
+//    {
+//        frameIndex = (begin + i);
+//        shiftFrame = stft->buffer[frameIndex];
 //        
-//        model->top = changeTouchYScale(model->top, model->touchScale);
-//        model->bottom = changeTouchYScale(model->bottom, model->touchScale);
-        
-        // update mode frames
-        shiftToMod(shiftFrame);
-        
-        //
-        model->polarWindows[0] = shiftFrame->polarWindowMod;
-        
-        // filter
-        filter(model->polarWindows[0], model->top, model->bottom, FILTER_SLOPE_LENGTH);
-        
-        // sum and divide
-        for (int j = 0; j < avgFrame->nOver2; j++)
-        {
-            float currentMag = model->polarWindows[2]->buffer[j].mag;
-            float added = (model->polarWindows[0]->buffer[j].mag * invNumFrames);
-            newMag = currentMag + added;
-            //newPhase = model->polarWindows[2]->buffer[j].phase + (model->polarWindows[0]->buffer[j].phase * invNumFrames);
-            model->polarWindows[2]->buffer[j].mag = newMag;
-            //model->polarWindows[2]->buffer[j].phase = newPhase;
-        }
-    
-        
-        model->top = -1;
-        model->bottom = 9999;
-
-    }
+//        xCoord = frameIndex * (model->editArea.size.width / stft->size);
+////        findTopAndBottom(model, xCoord, &model->top, &model->bottom);
+////        
+////        model->top = changeTouchYScale(model->top, model->touchScale);
+////        model->bottom = changeTouchYScale(model->bottom, model->touchScale);
+//        
+//        // update mode frames
+//        shiftToMod(shiftFrame);
+//        
+//        //
+//        model->polarWindows[0] = shiftFrame->polarWindowMod;
+//        
+//        // filter
+//        filter(model->polarWindows[0], model->top, model->bottom, FILTER_SLOPE_LENGTH);
+//        
+//        // sum and divide
+//        for (int j = 0; j < avgFrame->nOver2; j++)
+//        {
+//            float currentMag = model->polarWindows[2]->buffer[j].mag;
+//            float added = (model->polarWindows[0]->buffer[j].mag * invNumFrames);
+//            newMag = currentMag + added;
+//            //newPhase = model->polarWindows[2]->buffer[j].phase + (model->polarWindows[0]->buffer[j].phase * invNumFrames);
+//            model->polarWindows[2]->buffer[j].mag = newMag;
+//            //model->polarWindows[2]->buffer[j].phase = newPhase;
+//        }
+//
+//    }
 }
 
 #pragma mark - Render Callback -
@@ -285,7 +291,7 @@ static OSStatus renderCallback(void *inRefCon,
                 for (int i = 0; i < this->hopSize; i++)
                     this->voiceReferences[voice]->output[diff + i] = this->voiceReferences[voice]->transform[diff + i];
             
-                this->pastWindow = this->polarWindows[2];                   // consider putting this in VOICE
+                this->pastWindow = this->polarWindows[0];                   // consider putting this in VOICE
             }
             
             // progress time
@@ -296,8 +302,11 @@ static OSStatus renderCallback(void *inRefCon,
             
             if (this->rateCounter % (this->rate * this->overlap) == 0)
             {
-                //this->counter++;
+                this->counter++;
                 this->rateCounter = 0;
+                
+                if (this->counter == 50)
+                    this->counter = 0;
             }
         }
         
@@ -305,6 +314,8 @@ static OSStatus renderCallback(void *inRefCon,
         {
             //buffer[frameCounter] = this->circleBuffer[1][frameCounter + this->dspTick];     // TODO: change this to circleBuffer[2]
             buffer[frameCounter] = summingBus(this, frameCounter + this->dspTick);
+            
+            //printf("%f\n", buffer[frameCounter]);
         }
         
         // Deal with progressing time / dsp ticks
@@ -351,7 +362,7 @@ static OSStatus renderCallback(void *inRefCon,
         audioBuffer = nil;        
         normalizationFactor = 0.0;
         counter = 0;
-        rate = 1;
+        rate = 1.5;
         rateCounter = 0;
         
         // Appwide AU settings
@@ -725,6 +736,8 @@ static OSStatus renderCallback(void *inRefCon,
     
     // Finally set the file loaded flag
     fileLoaded = YES;
+    
+    NSLog(@"File Loaded");
 }
 
 
@@ -740,6 +753,7 @@ static OSStatus renderCallback(void *inRefCon,
                                                       userInfo:dict];
     
     // returns YES when finished
+    NSLog(@"STFT Calculated");
     return YES;
 }
 

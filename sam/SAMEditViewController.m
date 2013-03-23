@@ -121,7 +121,9 @@
     NSNumber* size = [[notification userInfo] valueForKey:@"size"];
     
     for (RegionPolygon* poly in shapes)
-        poly.stftLength = [size intValue];
+    {
+        [poly setStftLength:[size intValue]];
+    }
 }
 
 #pragma mark - View Drawing Callback -
@@ -140,6 +142,23 @@
 
 
 #pragma mark - View Methods -
+
+- (IBAction)handleTap:(UITapGestureRecognizer *)sender
+{
+    CGPoint p = [sender locationInView:self.view];    
+    GLKVector2 tapPoint = GLKVector2Make(p.x, p.y);
+    
+    for (RegionPolygon* poly in shapes)
+    {
+        if ([poly isTouchInside:tapPoint])
+        {
+            if (poly.selected == NO)
+                [poly setSelected:YES];
+            else
+                [poly setSelected:NO];
+        }
+    }
+}
 
 - (RegionPolygon *)addSquare:(GLKVector2)location
 {

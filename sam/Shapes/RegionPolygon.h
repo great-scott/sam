@@ -36,6 +36,7 @@
 @property int stftLength;           // set this property when instantiated
 @property int begin;
 @property int end;
+@property BOOL selected;
 @property (nonatomic, strong) SAMLinkedList* pointList;
 
 - (id)initWithRect:(CGRect)bounds;

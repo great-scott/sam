@@ -25,6 +25,7 @@
     
     GLKTextureInfo* texture;
     NSMutableData *textureCoordinateData;
+    
 }
 
 @property int numVertices;

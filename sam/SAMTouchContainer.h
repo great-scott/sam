@@ -14,7 +14,7 @@
 #import <Foundation/Foundation.h>
 #import "SAMTouchTrack.h"
 
-#define MAX_TOUCHES 5
+#define MAX_TOUCHES 10
 
 @interface SAMTouchContainer : NSObject
 {

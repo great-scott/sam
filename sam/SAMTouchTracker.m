@@ -41,7 +41,10 @@
             {
                 id obj = [shape isTouchInside:press];               // returns the object (aka part of regionPolygon that we touch
                 if (obj != nil)
+                {
                     [touchContainer addTouch:touch forParent:shape with:obj];
+                    //[shape setSelected:YES];
+                }
             }
         }   
     }
@@ -83,6 +86,10 @@
 //                GLKVector2 press = GLKVector2Make(touchLocation.x, touchLocation.y);
 //                [polygon addVertex:press];
 //            }
+            
+            //SAMTouchTrack* shapeTrack = [touchContainer getTouchClassArray:touch];
+            //RegionPolygon* polygon = shapeTrack.parent;
+            //[polygon setSelected:NO];
             
             [touchContainer removeTouch:touch];
         }

@@ -21,6 +21,7 @@
 @synthesize begin;          // scaled bound points
 @synthesize end;
 @synthesize pointList;
+@synthesize selected;
 
 
 - (id)initWithRect:(CGRect)boundsRect
@@ -216,9 +217,27 @@
     }
     
     if ([self isInsidePolygon:press])
+    {
         return polygon;
+    }
     else
+    {
         return nil;
+    }
+}
+
+- (void)setSelected:(BOOL)selectedValue
+{
+    selected = selectedValue;
+    if (selected == YES)
+        polygon.color = GLKVector4Make(0.5, 0.5, 0.5, 0.9);
+    else
+        polygon.color = GLKVector4Make(0.5, 0.5, 0.5, 0.7);
+}
+
+- (BOOL)selected
+{
+    return selected;
 }
 
 - (void)findBoundPoints

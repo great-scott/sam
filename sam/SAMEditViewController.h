@@ -29,6 +29,8 @@
 @property (strong, nonatomic) EAGLContext* context;
 @property (nonatomic, strong) UIView* spectroView;
 
+- (IBAction)handleTap:(UITapGestureRecognizer *)sender;
+
 - (RegionPolygon *)addSquare:(GLKVector2)location;
 - (RegionPolygon *)addTriangle:(GLKVector2)location;
 - (void)reinit;

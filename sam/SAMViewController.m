@@ -118,13 +118,13 @@
     {
         BOOL finished;
 
-        [calculatingView performSelectorOnMainThread:@selector(setHidden:)
-                                          withObject:NO
-                                       waitUntilDone:YES];
-        
-        [calculatingView performSelectorOnMainThread:@selector(startAnimating)
-                                          withObject:nil
-                                       waitUntilDone:YES];
+//        [calculatingView performSelectorOnMainThread:@selector(setHidden:)
+//                                          withObject:NO
+//                                       waitUntilDone:YES];
+//        
+//        [calculatingView performSelectorOnMainThread:@selector(startAnimating)
+//                                          withObject:nil
+//                                       waitUntilDone:YES];
         
         
         [[SAMAudioModel sharedAudioModel] openAudioFile:fileUrl];
@@ -135,9 +135,9 @@
 //                                              withObject:YES
 //                                           waitUntilDone:YES];
             
-            [calculatingView performSelectorOnMainThread:@selector(stopAnimating)
-                                              withObject:nil
-                                           waitUntilDone:YES];
+//            [calculatingView performSelectorOnMainThread:@selector(stopAnimating)
+//                                              withObject:nil
+//                                           waitUntilDone:YES];
             
         }
         
