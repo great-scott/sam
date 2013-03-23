@@ -73,24 +73,7 @@
     for (UITouch* touch in endTouches)
     {
         if ([touchContainer isInContainer:touch])
-        {
-//            timeStamp = touch.timestamp - prevTimeStamp;
-//            prevTimeStamp = touch.timestamp;
-            
-//            if (timeStamp < 0.5)
-//            {
-//                SAMTouchTrack* shapeTrack = [touchContainer getTouchClassArray:touch];
-//                RegionPolygon* polygon = shapeTrack.parent;
-//                
-//                CGPoint touchLocation = [touch locationInView:view];
-//                GLKVector2 press = GLKVector2Make(touchLocation.x, touchLocation.y);
-//                [polygon addVertex:press];
-//            }
-            
-            //SAMTouchTrack* shapeTrack = [touchContainer getTouchClassArray:touch];
-            //RegionPolygon* polygon = shapeTrack.parent;
-            //[polygon setSelected:NO];
-            
+        {            
             [touchContainer removeTouch:touch];
         }
     }

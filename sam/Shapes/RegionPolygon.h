@@ -54,6 +54,7 @@ enum PLAYHEAD_MODE
 @property BOOL selected;
 @property enum PLAYHEAD_MODE playMode;
 @property (nonatomic, strong) SAMLinkedList* pointList;
+@property float rate;
 
 - (id)initWithRect:(CGRect)bounds;
 - (void)addVertex:(GLKVector2)newPosition;
@@ -67,5 +68,6 @@ enum PLAYHEAD_MODE
 - (BOOL)inSegment:(GLKVector2)segment with:(float)point;
 - (float)getIntersectionPoint:(float)xPosition with:(int)lineNumber;
 + (void)changeTouchYScale:(double *)inputPoint;
++ (void)reverseTouchYScale:(double *)inputPoint;
 
 @end

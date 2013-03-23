@@ -21,6 +21,7 @@
 @synthesize gestureViewControl;
 
 @synthesize fileView;
+@synthesize optionsView;
 @synthesize toolbarView;
 @synthesize editView;
 @synthesize spectroView;
@@ -28,14 +29,18 @@
 
 @synthesize calculatingView;
 
+@synthesize optionsViewOpen;
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
 	[self setupView];
     [self setupFileView];
+    [self setupOptionsView];
     [self setupFileDirectory];
     
     audioStatus = NO;
+    optionsViewOpen = NO;
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
@@ -89,6 +94,52 @@
     
 }
 
+- (void)setupOptionsView
+{
+    NSArray* subviewArray = [[NSBundle mainBundle] loadNibNamed:@"OptionsView" owner:self options:nil];
+    optionsView = [subviewArray objectAtIndex:0];
+    
+    float fileViewX = editView.bounds.size.width - optionsView.bounds.size.width - 10.0;
+    float fileViewY = editView.bounds.size.height - optionsView.bounds.size.height - 10.0;
+    
+    CGRect rect = CGRectMake(fileViewX, fileViewY, optionsView.bounds.size.width, optionsView.bounds.size.height);
+    [optionsView setFrame:rect];
+    [optionsView setAlpha:0];
+    [optionsView setHidden:YES];
+    
+    rect = CGRectMake(20, 153, 310, 44);
+    NSArray* segments = [[NSArray alloc] initWithObjects:@"1.0", @"0.5", @"0.25", @"0.125", nil];
+    UISegmentedControl* segmentControl = [[UISegmentedControl alloc] initWithItems:segments];
+    [segmentControl setFrame:rect];
+    [segmentControl setSegmentedControlStyle:UISegmentedControlStyleBar];
+    [segmentControl setTintColor:[UIColor whiteColor]];
+    
+    NSDictionary* styleDictNormal = [NSDictionary dictionaryWithObjectsAndKeys:
+                                     [UIColor lightGrayColor], UITextAttributeTextColor,
+                                     [UIFont fontWithName:@"Courier" size:15.0], UITextAttributeFont,
+                                     nil];
+    
+    NSDictionary* styleDictSelect = [NSDictionary dictionaryWithObjectsAndKeys:
+                                     [UIColor lightGrayColor], UITextAttributeTextColor,
+                                     [UIFont fontWithName:@"Courier" size:15.0], UITextAttributeFont,
+                                     nil];
+    
+    [segmentControl setTitleTextAttributes:styleDictNormal forState:UIControlStateNormal];
+    [segmentControl setTitleTextAttributes:styleDictSelect forState:UIControlStateSelected];
+    [optionsView addSubview:segmentControl];
+    
+    rect = CGRectMake(18, 292, 314, 23);
+    UISlider* gainSlider = [[UISlider alloc] initWithFrame:rect];
+    [gainSlider setBackgroundColor:[UIColor clearColor]];
+    [gainSlider setMinimumTrackTintColor:[UIColor clearColor]];
+    [gainSlider setMaximumTrackTintColor:[UIColor whiteColor]];
+    [optionsView addSubview:gainSlider];
+    
+    
+    [self.view addSubview:optionsView];
+    
+}
+
 
 - (void)animateFileView:(BOOL)inTrueOutFalse
 {
@@ -112,34 +163,36 @@
     }
 }
 
+
+- (void)animateOptionsView:(BOOL)inTrueOutFalse
+{
+    switch ([[NSNumber numberWithBool:inTrueOutFalse] integerValue])
+    {
+        case TRUE: //Fade In
+        {
+            [optionsView setHidden:NO];
+            [UIView animateWithDuration: 0.4
+                             animations:^{[optionsView setAlpha:1.0];}
+                             completion:^(BOOL finished){;}];
+            break;
+        }
+        case FALSE: //Fade Out
+        {
+            [UIView animateWithDuration: 0.4
+                             animations:^{[optionsView setAlpha:0.0];}
+                             completion:^(BOOL finished){[optionsView setHidden:YES];}];
+            break;
+        }
+    }
+}
+
 - (IBAction)openPressed:(UIButton *)sender
 {
     if (fileSelected)
     {
         BOOL finished;
-
-//        [calculatingView performSelectorOnMainThread:@selector(setHidden:)
-//                                          withObject:NO
-//                                       waitUntilDone:YES];
-//        
-//        [calculatingView performSelectorOnMainThread:@selector(startAnimating)
-//                                          withObject:nil
-//                                       waitUntilDone:YES];
-        
-        
         [[SAMAudioModel sharedAudioModel] openAudioFile:fileUrl];
         finished = [[SAMAudioModel sharedAudioModel] calculateSTFT];
-        if (finished)
-        {
-//            [calculatingView performSelectorOnMainThread:@selector(setHidden:)
-//                                              withObject:YES
-//                                           waitUntilDone:YES];
-            
-//            [calculatingView performSelectorOnMainThread:@selector(stopAnimating)
-//                                              withObject:nil
-//                                           waitUntilDone:YES];
-            
-        }
         
         [self animateFileView:NO];
         [editViewControl addSpectrogramView];
@@ -181,6 +234,19 @@
     else if ([title isEqualToString:@"Tri"])
     {
         [editViewControl addTriangle:GLKVector2Make(100, 100)];
+    }
+    else if ([title isEqualToString:@"Options"])
+    {
+        if (optionsViewOpen == NO)
+        {
+            [self animateOptionsView:YES];
+            optionsViewOpen = YES;
+        }
+        else
+        {
+            [self animateOptionsView:NO];
+            optionsViewOpen = NO;
+        }
     }
     else if ([title isEqualToString:@"DAC"])
     {

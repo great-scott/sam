@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		420B0A4B16BB4424009A2552 /* SAMAudioModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 420B0A4A16BB4424009A2552 /* SAMAudioModel.m */; };
 		423D1F58169CD64B000074E3 /* FileView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 423D1F57169CD64B000074E3 /* FileView.xib */; };
+		423EE8BE16FE542C0085A8D6 /* OptionsView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 423EE8BD16FE542C0085A8D6 /* OptionsView.xib */; };
 		42534139169D0156009E53DC /* Ellipse.m in Sources */ = {isa = PBXBuildFile; fileRef = 42534130169D0156009E53DC /* Ellipse.m */; };
 		4253413A169D0156009E53DC /* Line.m in Sources */ = {isa = PBXBuildFile; fileRef = 42534132169D0156009E53DC /* Line.m */; };
 		4253413B169D0156009E53DC /* Rectangle.m in Sources */ = {isa = PBXBuildFile; fileRef = 42534134169D0156009E53DC /* Rectangle.m */; };
@@ -50,6 +51,7 @@
 /* Begin PBXFileReference section */
 		420B0A4A16BB4424009A2552 /* SAMAudioModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SAMAudioModel.m; sourceTree = "<group>"; };
 		423D1F57169CD64B000074E3 /* FileView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = FileView.xib; sourceTree = "<group>"; };
+		423EE8BD16FE542C0085A8D6 /* OptionsView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = OptionsView.xib; sourceTree = "<group>"; };
 		4253412F169D0156009E53DC /* Ellipse.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Ellipse.h; sourceTree = "<group>"; };
 		42534130169D0156009E53DC /* Ellipse.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Ellipse.m; sourceTree = "<group>"; };
 		42534131169D0156009E53DC /* Line.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Line.h; sourceTree = "<group>"; };
@@ -258,6 +260,7 @@
 				423D1F57169CD64B000074E3 /* FileView.xib */,
 				4254A0F416A796C100C35BE2 /* SpectrogramView.xib */,
 				4254A0FE16A7AB6A00C35BE2 /* GestureView.xib */,
+				423EE8BD16FE542C0085A8D6 /* OptionsView.xib */,
 			);
 			name = Views;
 			sourceTree = "<group>";
@@ -324,6 +327,7 @@
 				423D1F58169CD64B000074E3 /* FileView.xib in Resources */,
 				4254A0F516A796C100C35BE2 /* SpectrogramView.xib in Resources */,
 				4254A0FF16A7AB6A00C35BE2 /* GestureView.xib in Resources */,
+				423EE8BE16FE542C0085A8D6 /* OptionsView.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

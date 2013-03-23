@@ -321,10 +321,7 @@ static OSStatus renderCallback(void *inRefCon,
         
         for (int frameCounter = 0; frameCounter < inNumberFrames; frameCounter++)
         {
-            //buffer[frameCounter] = this->circleBuffer[1][frameCounter + this->dspTick];     // TODO: change this to circleBuffer[2]
             buffer[frameCounter] = summingBus(this, frameCounter + this->dspTick);
-            
-            //printf("%f\n", buffer[frameCounter]);
         }
         
         // Deal with progressing time / dsp ticks

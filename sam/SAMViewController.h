@@ -24,8 +24,6 @@
     BOOL audioStatus;   // whether the audio is on or off (YES = on, NO = off);
     
     SAMAudioModel* audioModel;
-    
-    //IBOutlet UIActivityIndicatorView* calculatingView;
 }
 
 @property (nonatomic, strong) SAMEditViewController* editViewControl;
@@ -34,12 +32,15 @@
 @property (nonatomic, strong) SAMGestureViewController* gestureViewControl;
 
 @property (nonatomic, strong) UIView* fileView;
+@property (nonatomic, strong) UIView* optionsView;
 @property (nonatomic, strong) UIView* editView;
 @property (nonatomic, strong) UIView* toolbarView;
 @property (nonatomic, strong) UIView* spectroView;
 @property (nonatomic, strong) UIView* gestureView;
 
 @property (nonatomic, strong) IBOutlet UIActivityIndicatorView *calculatingView;
+
+@property BOOL optionsViewOpen;
 
 // File Browser Callbacks
 - (IBAction)openPressed:(UIButton *)sender;

@@ -122,7 +122,6 @@
         for (int j = 0; j < numBins; j++)
         {
             ypos = s.bounds.size.height - (j * (s.bounds.size.height / numBins));
-            //ypos = j;
             [RegionPolygon changeTouchYScale:&ypos];
             
             s.vertices[j] = GLKVector2Make(xpos, ypos);

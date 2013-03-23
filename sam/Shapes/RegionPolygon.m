@@ -22,6 +22,7 @@
 @synthesize end;
 @synthesize pointList;
 @synthesize selected;
+@synthesize rate;
 
 
 - (id)initWithRect:(CGRect)boundsRect
