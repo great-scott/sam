@@ -13,8 +13,8 @@
 
 @required
 - (IBAction)toolbarButtonPressed:(UIButton *)sender;
-- (IBAction)toolbarButtonDragged:(UIButton *)sender;
 
+@optional
 - (IBAction)handlePress:(UILongPressGestureRecognizer *)recognizer;
 
 @end

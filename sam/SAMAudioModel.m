@@ -248,6 +248,7 @@ static OSStatus renderCallback(void *inRefCon,
     // Wait till file loaded
     if (this->fileLoaded == YES && this->numberOfVoices > 0)
     {
+        this->inProcessingLoop = YES;
         SAMLinkedList* list = this->shapeReferences[0].pointList;
         if (list.length > 0)
         {
@@ -324,10 +325,13 @@ static OSStatus renderCallback(void *inRefCon,
             this->dspTick = 0;
         }
         
+        this->inProcessingLoop = NO;
     }
     else    // set the output to 0.0
     {
-        memset(buffer, 0.0, inNumberFrames);
+        //memset(buffer, 0.0, inNumberFrames);
+        for (int i = 0; i < inNumberFrames; i++)
+            buffer[i] = 0.0;
     }
     
     return noErr;
@@ -759,17 +763,46 @@ static OSStatus renderCallback(void *inRefCon,
 
 - (void)addShape:(RegionPolygon *)shapeReference
 {
+    // where does number of voices get set?
     if (numberOfVoices < MAX_VOICES)
     {
+        // find open space for voice
+        int index = 0;
+        while (shapeReferences[index] != nil && index < MAX_VOICES)
+            index++;
+        
         // store reference to shape object
-        shapeReferences[numberOfVoices] = shapeReference;
+        shapeReferences[index] = shapeReference;
         
         // create voice
-        VOICE* voice = newVoice(numberOfVoices, windowSize);
-        voiceReferences[numberOfVoices] = voice;
-        
-        //numberOfVoices++;
+        VOICE* voice = newVoice(index, windowSize);
+        voiceReferences[index] = voice;
     }
+}
+
+- (void)removeShape:(RegionPolygon *)shapeReference
+{
+    // remove shape
+    for (int i = 0; i < MAX_VOICES; i++)
+    {
+        if (shapeReferences[i] == shapeReference)
+        {
+            // spin here until we're done with current dsp process
+            while (inProcessingLoop == YES);
+            
+            // get reference to voice and free it
+            VOICE* voice = voiceReferences[i];
+            freeVoice(voice);
+            
+            // nil out shape and voice array stuff
+            shapeReferences[i] = nil;
+            voiceReferences[i] = nil;
+            
+            // decrease number of voices
+            numberOfVoices--;
+        }
+    }
+    
 }
 
 - (void)startAudioPlayback

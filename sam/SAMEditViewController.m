@@ -19,7 +19,6 @@
 @synthesize spectroViewControl;
 @synthesize spectroView;
 
-
 #pragma mark - View Initialization -
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
@@ -129,8 +128,7 @@
 #pragma mark - View Drawing Callback -
 
 - (void)glkView:(GLKView *)view drawInRect:(CGRect)rect
-{
-//    glClearColor(0.95, 0.95, 0.95, 0.0);
+{    
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 
@@ -160,30 +158,58 @@
     }
 }
 
+- (IBAction)handleSwipe:(UISwipeGestureRecognizer *)sender
+{
+    if (sender.state == UIGestureRecognizerStateEnded)
+    {
+        NSMutableArray *toDelete = [NSMutableArray array];
+        for (RegionPolygon* poly in shapes)
+        {
+            if (poly.selected == YES)
+            {
+                [toDelete addObject:poly];
+                [[SAMAudioModel sharedAudioModel] removeShape:poly];
+            }
+        }
+        
+        [shapes removeObjectsInArray:toDelete];
+    }
+}
+
 - (RegionPolygon *)addSquare:(GLKVector2)location
 {
-    RegionPolygon* poly = [[RegionPolygon alloc] initWithRect:self.view.bounds];
-    poly.numVertices = 4;
-    [poly setPosition:location withSubShape:poly];
-    [shapes addObject:poly];
+    if ([SAMAudioModel sharedAudioModel].numberOfVoices < MAX_VOICES)
+    {
+        RegionPolygon* poly = [[RegionPolygon alloc] initWithRect:self.view.bounds];
+        poly.numVertices = 4;
+        [poly setPosition:location withSubShape:poly];
+        [shapes addObject:poly];
     
-    [[SAMAudioModel sharedAudioModel] addShape:poly];
-    poly.stftLength = [SAMAudioModel sharedAudioModel].stftBufferSize;
+        [[SAMAudioModel sharedAudioModel] addShape:poly];
+        poly.stftLength = [SAMAudioModel sharedAudioModel].stftBufferSize;
     
-    return poly;
+        return poly;
+    }
+    
+    return nil;
 }
 
 - (RegionPolygon *)addTriangle:(GLKVector2)location
 {
     // The default is 3 vertices for a region polygon, so we don't need to specify the number of them
-    RegionPolygon* poly = [[RegionPolygon alloc] initWithRect:self.view.bounds];
-    [poly setPosition:location withSubShape:poly];
-    [shapes addObject:poly];
-    [[SAMAudioModel sharedAudioModel] addShape:poly];
+    if ([SAMAudioModel sharedAudioModel].numberOfVoices < MAX_VOICES)
+    {
+        RegionPolygon* poly = [[RegionPolygon alloc] initWithRect:self.view.bounds];
+        [poly setPosition:location withSubShape:poly];
+        [shapes addObject:poly];
+        [[SAMAudioModel sharedAudioModel] addShape:poly];
     
-    poly.stftLength = [SAMAudioModel sharedAudioModel].stftBufferSize;
+        poly.stftLength = [SAMAudioModel sharedAudioModel].stftBufferSize;
     
-    return poly;
+        return poly;
+    }
+    
+    return nil;
 }
 
 

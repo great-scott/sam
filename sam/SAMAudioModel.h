@@ -92,6 +92,8 @@ double changeTouchYScale(double inputPoint, double scale);
     
     RegionPolygon* shapeReferences[MAX_VOICES];         // numberOfVoices corresponds to which slots are filled in
     VOICE* voiceReferences[MAX_VOICES];
+    
+    BOOL inProcessingLoop;
 }
 
 @property int windowSize;
@@ -115,6 +117,7 @@ double changeTouchYScale(double inputPoint, double scale);
 
 //
 - (void)addShape:(RegionPolygon *)shapeReference;
+- (void)removeShape:(RegionPolygon *)shapeReference;
 
 // Audio Playback (aka DAC) On/Off
 - (void)startAudioPlayback;

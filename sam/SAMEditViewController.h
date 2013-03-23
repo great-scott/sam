@@ -30,10 +30,10 @@
 @property (nonatomic, strong) UIView* spectroView;
 
 - (IBAction)handleTap:(UITapGestureRecognizer *)sender;
+- (IBAction)handleSwipe:(UISwipeGestureRecognizer *)sender;
 
 - (RegionPolygon *)addSquare:(GLKVector2)location;
 - (RegionPolygon *)addTriangle:(GLKVector2)location;
-- (void)reinit;
 - (void)addSpectrogramView;
 
 
