@@ -7,11 +7,13 @@
 //
 
 #import "SAMTouchTracker.h"
+#import "SAMAudioModel.h"
 
 
 @implementation SAMTouchTracker
 @synthesize touchContainer;
 @synthesize view;
+@synthesize tapRecognizer;
 
 - (id)init
 {
@@ -26,11 +28,26 @@
 }
 
 
+- (id)initWithRecogizer:(UITapGestureRecognizer *)recognizer
+{
+    self = [super init];
+    
+    if (self)
+    {
+        touchContainer = [[SAMTouchContainer alloc] init];
+        tapRecognizer = recognizer;
+    }
+    
+    return self;
+}
+
+
 #pragma mark - Touch Tracker Methods -
 
 - (void)startTouches:(NSSet *)touches withEvent:(UIEvent *)event withShapes:(NSMutableArray *)shapes
 {
-    NSSet* beginTouches = [event allTouches];    
+
+    NSSet* beginTouches = [event allTouches];
     for (UITouch* touch in beginTouches)
     {
         CGPoint touchLocation = [touch locationInView:view];
@@ -43,7 +60,6 @@
                 if (obj != nil)
                 {
                     [touchContainer addTouch:touch forParent:shape with:obj];
-                    //[shape setSelected:YES];
                 }
             }
         }   
@@ -69,6 +85,16 @@
 
 - (void)endTouches:(NSSet *)touches withEvent:(UIEvent *)event withShapes:(NSMutableArray *)shapes
 {
+    if ([[event touchesForGestureRecognizer:tapRecognizer] count] > 0)
+    {
+        NSSet* endTouches = [event touchesForGestureRecognizer:tapRecognizer];
+        for (UITouch* touch in endTouches)
+        {
+            if ([touchContainer isInContainer:touch])
+                [touchContainer removeTouch:touch];
+        }
+    }
+    
     NSSet* endTouches = [event allTouches];
     for (UITouch* touch in endTouches)
     {
@@ -80,125 +106,97 @@
 }
 
 
-# pragma mark - Shape Object Checking -
+# pragma mark - Gesture Callbacks -
 
-- (BOOL)isTouch:(UITouch *)touch inside:(RegionPolygon *)shape
+- (void)removeTap:(UITouch *)touch
 {
-    CGPoint touchLocation = [touch locationInView:view];
-    GLKVector2 press = GLKVector2Make(touchLocation.x, touchLocation.y);
+    [touchContainer removeTouch:touch];
+}
+
+- (void)handleTap:(UITapGestureRecognizer *)sender withShapes:(NSMutableArray *)shapes
+{
+    CGPoint p = [sender locationInView:self.view];
+    GLKVector2 tapPoint = GLKVector2Make(p.x, p.y);
     
-    // Check if it's inside a circle first, then return if it is
-    for (Ellipse *circle in shape.circles)
+    for (RegionPolygon* poly in shapes)
     {
-        if ([circle isInside:press])
+        if ([poly isTouchInside:tapPoint])
         {
-            NSLog(@"Touched Circle");
-            return YES;
+            if (poly.selected == NO)
+                [poly setSelected:YES];
+            else
+                [poly setSelected:NO];
         }
     }
-    
-    if ([self isInside:press shape:shape])
-    {
-        NSLog(@"Touched Inside Square");
-        return YES;
-    }
-
-    return NO;
-    
-    //    int touchingLine = [self isTouchingLine:press];
-    //    if (touchingLine >= 0)
-    //    {
-    //        insideLine = YES;
-    //        const void *cfTouch = (__bridge const void *)_touch;
-    //        const void *cfLine = (__bridge const void *)[lines objectAtIndex:touchingLine];
-    //
-    //        CFDictionarySetValue(_lineDict, cfTouch, cfLine);
-    //        self.stillInside = YES;
-    //        return YES;
-    //    }
-    
 }
 
-- (BOOL)isInside:(GLKVector2)newPosition shape:(RegionPolygon *)shape
+- (void)handleSwipe:(UISwipeGestureRecognizer *)sender withShapes:(NSMutableArray *)shapes
 {
-    int i = 0;
-    int j = shape.numVertices - 1;
-    int inside = 0;
-
-    for (i = 0, j = shape.numVertices - 1; i < shape.numVertices; j = i++)
+    if (sender.state == UIGestureRecognizerStateEnded)
     {
-        if ((((shape.vertices[i].y <= newPosition.y) &&
-              (newPosition.y < shape.vertices[j].y)) ||
-             ((shape.vertices[j].y <= newPosition.y) &&
-              (newPosition.y < shape.vertices[i].y))) &&
-            (newPosition.x < (shape.vertices[j].x - shape.vertices[i].x)
-             * (newPosition.y - shape.vertices[i].y) / (shape.vertices[j].y - shape.vertices[i].y) + shape.vertices[i].x))
-
-            inside = !inside;
-    };
-
-    if (inside == 1)
-    {
-        shape.grabPoint = newPosition;
-        return YES;
-    }
-    else
-    {
-        return NO;
+        NSMutableArray *toDelete = [NSMutableArray array];
+        for (RegionPolygon* poly in shapes)
+        {
+            if (poly.selected == YES)
+            {
+                [toDelete addObject:poly];
+                [[SAMAudioModel sharedAudioModel] removeShape:poly];
+            }
+        }
+        
+        [shapes removeObjectsInArray:toDelete];
     }
 }
 
-//- (int)isTouchingLine:(GLKVector2)_position
-//{
-//    BOOL equal = NO;
-//    int numLines = [lines count];
-//    
-//    for (int i = 0; i < numLines; i++)
-//    {
-//        Line* l = [lines objectAtIndex:i];
-//        
-//        float e_y = l.endPoint.y;
-//        float s_y = l.startPoint.y;
-//        float diffY = e_y - s_y;
-//        
-//        float e_x = l.endPoint.x;
-//        float s_x = l.startPoint.x;
-//        float diffX = e_x - s_x;
-//        
-//        if (diffY == 0)
-//        {
-//            if (_position.y <= e_y + 10 && _position.y >= e_y - 10)
-//            {
-//                grabPoint = _position;
-//                return i;
-//            }
-//        }
-//        else if (diffX == 0)
-//        {
-//            if (_position.x <= e_x + 10 && _position.x >= e_x - 10)
-//            {
-//                grabPoint = _position;
-//                return i;
-//            }
-//        }
-//        else
-//        {
-//            float m = diffY / diffX;
-//            float b = l.startPoint.y - m * l.startPoint.x;
-//            
-//            float newPoint = _position.y - m * _position.x;
-//            
-//            if (newPoint <= b + 25 && newPoint >= b - 25)
-//            {
-//                equal = YES;
-//                grabPoint = _position;
-//                return i;
-//            }
-//        }
-//    }
-//    
-//    return -1;
-//}
+
+- (void)handleUpwardSwipe:(UISwipeGestureRecognizer *)sender withShapes:(NSMutableArray *)shapes
+{
+    if (sender.state == UIGestureRecognizerStateEnded)
+    {
+        for (RegionPolygon* poly in shapes)
+        {
+            if (poly.selected == YES)
+            {
+                poly.playMode = UPDOWN;
+            }
+        }
+    }
+}
+
+- (void)handleBackwardSwipe:(UISwipeGestureRecognizer *)sender withShapes:(NSMutableArray *)shapes
+{
+    if (sender.state == UIGestureRecognizerStateEnded)
+    {
+        for (RegionPolygon* poly in shapes)
+        {
+            if (poly.selected == YES)
+            {
+                poly.playMode = REVERSE;
+            }
+        }
+    }
+}
+
+- (void)handleForwardSwipe:(UISwipeGestureRecognizer *)sender withShapes:(NSMutableArray *)shapes
+{
+    if (sender.state == UIGestureRecognizerStateEnded)
+    {
+        for (RegionPolygon* poly in shapes)
+        {
+            if (poly.selected == YES)
+            {
+                poly.playMode = FORWARD;
+            }
+        }
+    }
+}
+
 
 
 @end
+
+
+
+
+
+

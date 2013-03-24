@@ -18,6 +18,7 @@
 @synthesize context;// = _context;
 @synthesize spectroViewControl;
 @synthesize spectroView;
+@synthesize tapRecognizer;
 
 #pragma mark - View Initialization -
 
@@ -26,6 +27,17 @@
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self)
     {
+        //touchTracker = [[SAMTouchTracker alloc] init];
+        self.view.userInteractionEnabled = YES;
+        
+        tapRecognizer = [[SAMTapGestureRecognizer alloc]
+                         initWithTarget:self
+                        action:@selector(handleTap:)];
+        
+        [tapRecognizer setNumberOfTapsRequired:2];
+        tapRecognizer.delegate = self;
+        [self.view addGestureRecognizer:tapRecognizer];
+        
         touchTracker = [[SAMTouchTracker alloc] init];
         touchTracker.view = self.view;                      // set the touch tracker's view to this view for easy reference
     }
@@ -141,83 +153,6 @@
 
 #pragma mark - View Methods -
 
-- (IBAction)handleTap:(UITapGestureRecognizer *)sender
-{
-    CGPoint p = [sender locationInView:self.view];    
-    GLKVector2 tapPoint = GLKVector2Make(p.x, p.y);
-    
-    for (RegionPolygon* poly in shapes)
-    {
-        if ([poly isTouchInside:tapPoint])
-        {
-            if (poly.selected == NO)
-                [poly setSelected:YES];
-            else
-                [poly setSelected:NO];
-        }
-    }
-}
-
-- (IBAction)handleSwipe:(UISwipeGestureRecognizer *)sender
-{
-    if (sender.state == UIGestureRecognizerStateEnded)
-    {
-        NSMutableArray *toDelete = [NSMutableArray array];
-        for (RegionPolygon* poly in shapes)
-        {
-            if (poly.selected == YES)
-            {
-                [toDelete addObject:poly];
-                [[SAMAudioModel sharedAudioModel] removeShape:poly];
-            }
-        }
-        
-        [shapes removeObjectsInArray:toDelete];
-    }
-}
-
-- (IBAction)handleForwardSwipe:(UISwipeGestureRecognizer *)sender
-{
-    if (sender.state == UIGestureRecognizerStateEnded)
-    {
-        for (RegionPolygon* poly in shapes)
-        {
-            if (poly.selected == YES)
-            {
-                poly.playMode = FORWARD;
-            }
-        }
-    }
-}
-
-- (IBAction)handleBackwardSwipe:(UISwipeGestureRecognizer *)sender
-{
-    if (sender.state == UIGestureRecognizerStateEnded)
-    {
-        for (RegionPolygon* poly in shapes)
-        {
-            if (poly.selected == YES)
-            {
-                poly.playMode = REVERSE;
-            }
-        }
-    }
-}
-
-- (IBAction)handleUpwardSwipe:(UISwipeGestureRecognizer *)sender
-{
-    if (sender.state == UIGestureRecognizerStateEnded)
-    {
-        for (RegionPolygon* poly in shapes)
-        {
-            if (poly.selected == YES)
-            {
-                poly.playMode = UPDOWN;
-            }
-        }
-    }
-}
-
 - (RegionPolygon *)addSquare:(GLKVector2)location
 {
     if ([SAMAudioModel sharedAudioModel].numberOfVoices < MAX_VOICES)
@@ -271,6 +206,40 @@
 - (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
 {
     [touchTracker endTouches:touches withEvent:event withShapes:shapes];
+}
+
+
+#pragma mark - Gesture Callbacks -
+
+- (void)removeTap:(UITouch *)touch
+{
+    [touchTracker removeTap:touch];
+    tapRecognizer.firstTouch = nil;
+}
+
+- (void)handleTap:(UITapGestureRecognizer *)sender
+{
+    [touchTracker handleTap:sender withShapes:shapes];
+}
+
+- (IBAction)handleSwipe:(UISwipeGestureRecognizer *)sender
+{
+    [touchTracker handleSwipe:sender withShapes:shapes];
+}
+
+- (IBAction)handleForwardSwipe:(UISwipeGestureRecognizer *)sender
+{
+    [touchTracker handleForwardSwipe:sender withShapes:shapes];
+}
+
+- (IBAction)handleBackwardSwipe:(UISwipeGestureRecognizer *)sender
+{
+    [touchTracker handleBackwardSwipe:sender withShapes:shapes];
+}
+
+- (IBAction)handleUpwardSwipe:(UISwipeGestureRecognizer *)sender
+{
+    [touchTracker handleUpwardSwipe:sender withShapes:shapes];
 }
 
 

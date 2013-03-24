@@ -13,9 +13,10 @@
 #import "RegionPolygon.h"
 #import "SAMAudioModel.h"
 #import "SAMSpectrogramViewController.h"
-#import "SAMGestureViewController.h"
+#import "SAMGestureRecognizers.h"
 
-@interface SAMEditViewController : GLKViewController
+
+@interface SAMEditViewController : GLKViewController <SAMTapGestureRecognizerDelegate>
 {
     NSMutableArray* shapes;
     SAMTouchTracker* touchTracker;
@@ -26,10 +27,13 @@
 }
 
 @property (nonatomic, strong) SAMSpectrogramViewController* spectroViewControl;
-@property (strong, nonatomic) EAGLContext* context;
+@property (nonatomic, strong) EAGLContext* context;
 @property (nonatomic, strong) UIView* spectroView;
+@property (nonatomic, strong) SAMTapGestureRecognizer* tapRecognizer;
 
-- (IBAction)handleTap:(UITapGestureRecognizer *)sender;
+
+- (void)handleTap:(UITapGestureRecognizer *)sender;
+- (void)removeTap:(UITouch *)touch;
 - (IBAction)handleSwipe:(UISwipeGestureRecognizer *)sender;
 - (IBAction)handleForwardSwipe:(UISwipeGestureRecognizer *)sender;
 - (IBAction)handleBackwardSwipe:(UISwipeGestureRecognizer *)sender;
