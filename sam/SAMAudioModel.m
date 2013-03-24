@@ -133,10 +133,6 @@ void filterMode(SAMAudioModel* model, int voiceIndex)
             topNext = list.current->nextNode->data->top;
             bottomNext = list.current->nextNode->data->top;
         }
-        
-        
-//        frameIndex = model->counter;
-//        nextFrameIndex = frameIndex + 1;
     
         STFT_BUFFER* stft = model->stftBuffer;
     
@@ -188,9 +184,10 @@ float summingBus(SAMAudioModel* model, int index)
     float scale = 1.0 / (float)model->numberOfVoices;
     float output = 0.0;
     
-    for (int i = 0; i < model->numberOfVoices; i++)
+    for (int i = 0; i < MAX_VOICES; i++)
     {
-        output = output + (model->voiceReferences[i]->output[index] * scale);
+        if (model->voiceReferences[i] != nil)   // TODO: fix all of these checks, shouldn't have to do this here
+            output = output + (model->voiceReferences[i]->output[index] * scale);
     }
     
     return output;
@@ -263,7 +260,13 @@ static OSStatus renderCallback(void *inRefCon,
     if (this->fileLoaded == YES && this->numberOfVoices > 0)
     {
         this->inProcessingLoop = YES;
-        SAMLinkedList* list = this->shapeReferences[0].pointList;
+        SAMLinkedList* list;
+        for (int l = 0; l < MAX_VOICES; l++)
+        {
+            list = this->shapeReferences[l].pointList;
+            if (list != nil)
+                break;
+        }
         if (list.length > 0)
         {
         // time to process
@@ -272,41 +275,45 @@ static OSStatus renderCallback(void *inRefCon,
             // zero out buffer
             memset(this->circleBuffer[2], 0.0, this->windowSize);
             
-            for (int voice = 0; voice < this->numberOfVoices; voice++)
+            //for (int voice = 0; voice < this->numberOfVoices; voice++)      //TODO: I don't like this, but I'm doing it anyways
+            for (int voice = 0; voice < MAX_VOICES; voice++)
             {
-                FFT_FRAME* playbackFrame = this->fftFrameBuffer[0];
-            
-                switch (this->mode)
+                if (this->voiceReferences[voice] != nil)
                 {
-                    case FORWARD_MODE:
-                        filterMode(this, voice);
-                        break;
+                    FFT_FRAME* playbackFrame = this->fftFrameBuffer[0];
+            
+                    switch (this->mode)
+                    {
+                        case FORWARD_MODE:
+                            filterMode(this, voice);
+                            break;
                     
-                    case AVERAGE_MODE:
-                        //averageAcrossFrames(this, begin, end);
-                        break;
+                        case AVERAGE_MODE:
+                            //averageAcrossFrames(this, begin, end);
+                            break;
                     
-                    default:
-                        break;
+                        default:
+                            break;
+                    }
+            
+                    // this is every rateCounter tick
+                    pvUnwrapPhase(this->polarWindows[2]);
+            
+                    if (this->pastWindow != nil)
+                        pvFixPhase(this->pastWindow, this->polarWindows[2], 0.25);
+            
+                    //------------------- inverse and overlap + add                
+                    inverseFFT(this->fftManager, playbackFrame, this->voiceReferences[voice]->transform);
+                
+                    int diff = this->windowSize - this->hopSize;
+                    for (int i = 0; i < diff; i++)
+                        this->voiceReferences[voice]->output[i] = (this->voiceReferences[voice]->output[this->hopSize + i] + this->voiceReferences[voice]->transform[i]);
+                
+                    for (int i = 0; i < this->hopSize; i++)
+                        this->voiceReferences[voice]->output[diff + i] = this->voiceReferences[voice]->transform[diff + i];
+            
+                    this->pastWindow = this->polarWindows[0];                   // consider putting this in VOICE
                 }
-            
-                // this is every rateCounter tick
-                pvUnwrapPhase(this->polarWindows[2]);
-            
-                if (this->pastWindow != nil)
-                    pvFixPhase(this->pastWindow, this->polarWindows[2], 0.25);
-            
-                //------------------- inverse and overlap + add                
-                inverseFFT(this->fftManager, playbackFrame, this->voiceReferences[voice]->transform);
-                
-                int diff = this->windowSize - this->hopSize;
-                for (int i = 0; i < diff; i++)
-                    this->voiceReferences[voice]->output[i] = (this->voiceReferences[voice]->output[this->hopSize + i] + this->voiceReferences[voice]->transform[i]);
-                
-                for (int i = 0; i < this->hopSize; i++)
-                    this->voiceReferences[voice]->output[diff + i] = this->voiceReferences[voice]->transform[diff + i];
-            
-                this->pastWindow = this->polarWindows[0];                   // consider putting this in VOICE
             }
             
             // progress time

@@ -17,6 +17,12 @@ VOICE* newVoice(short number, int windowSize)
     voice->transform = (float*)malloc(windowSize * sizeof(float));
     voice->output= (float*)malloc(windowSize * sizeof(float));
     
+    for (int i = 0; i < windowSize; i++)
+    {
+        voice->transform[i] = 0.0;
+        voice->output[i] = 0.0;
+    }
+    
     return voice;
 }
 
