@@ -53,7 +53,7 @@
 //    view.multipleTouchEnabled = YES;
 
     
-    stft = [[SAMAudioModel sharedAudioModel] stftBuffer];
+//    stft = [[SAMAudioModel sharedAudioModel] stftBuffer];
     
     redAmt = 0.9;
     editMode = NO;
@@ -68,6 +68,7 @@
 {
     [spectrum removeAllObjects];
     
+    stft = [[SAMAudioModel sharedAudioModel] stftBuffer];
     int numBins = [[SAMAudioModel sharedAudioModel] windowSize] / 16.0;  // TODO: get this to line up with audio
     int numFrames = stft->size;
     

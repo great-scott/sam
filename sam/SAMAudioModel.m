@@ -482,8 +482,11 @@ static OSStatus renderCallback(void *inRefCon,
     freeFFT(fftManager);
     
     // Free voices
-    for (int i = 0; i < numberOfVoices; i++)
-        freeVoice(voiceReferences[i]);
+    for (int i = 0; i < MAX_VOICES; i++)
+    {
+        if (voiceReferences[i] != nil)
+            freeVoice(voiceReferences[i]);
+    }
 }
 
 
