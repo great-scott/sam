@@ -10,6 +10,7 @@
 
 void moveListForward(SAMLinkedList* list)
 {
+    list.movingForward = YES;
     if (list.current->nextNode != nil && list.current->data->x != list.end->data->x)
     {
         list.current = list.current->nextNode;
@@ -25,6 +26,7 @@ void moveListForward(SAMLinkedList* list)
 
 void moveListBackward(SAMLinkedList* list)
 {
+    list.movingForward = NO;
     if (list.current->prevNode != nil && list.current->data->x != list.begin->data->x)
     {
         list.current = list.current->prevNode;
@@ -35,6 +37,28 @@ void moveListBackward(SAMLinkedList* list)
         //list.current = list.head;
         list.current = list.end;
         list.cursor = list.length - 1;
+    }
+}
+
+void moveListForwardReverse(SAMLinkedList* list)
+{
+    // check bounds first to see if it equals end points, hopefully doesn't reach end nodes in moveListForward/Backward
+    if (list.current->data->x == list.end->data->x)
+    {
+        list.movingForward = NO;                    // tell it to move backwards now
+    }
+    else if (list.current->data->x == list.begin->data->x)
+    {
+        list.movingForward = YES;                   // tell it to move forwards now
+    }
+    
+    if (list.movingForward == YES)
+    {
+        moveListForward(list);
+    }
+    else
+    {
+        moveListBackward(list);
     }
 }
 

@@ -55,13 +55,17 @@
 			</object>
 			<object class="IBUISwipeGestureRecognizer" id="219836666">
 				<int key="IBUIDirection">8</int>
-				<int key="IBUINumberOfTouchesRequired">2</int>
+				<int key="IBUINumberOfTouchesRequired">3</int>
 			</object>
 			<object class="IBUISwipeGestureRecognizer" id="581991961">
 				<int key="IBUINumberOfTouchesRequired">2</int>
 			</object>
 			<object class="IBUISwipeGestureRecognizer" id="234151334">
 				<int key="IBUIDirection">2</int>
+				<int key="IBUINumberOfTouchesRequired">2</int>
+			</object>
+			<object class="IBUISwipeGestureRecognizer" id="193922761">
+				<int key="IBUIDirection">4</int>
 				<int key="IBUINumberOfTouchesRequired">2</int>
 			</object>
 		</array>
@@ -116,6 +120,16 @@
 					<int key="connectionID">37</int>
 				</object>
 				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchOutletCollectionConnection" key="connection">
+						<string key="label">gestureRecognizers</string>
+						<reference key="source" ref="864292779"/>
+						<reference key="destination" ref="193922761"/>
+						<string key="cachedDesigntimeCollectionClassName">NSArray</string>
+						<bool key="addsContentToExistingCollection">YES</bool>
+					</object>
+					<int key="connectionID">39</int>
+				</object>
+				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchEventConnection" key="connection">
 						<string key="label">handleTap:</string>
 						<reference key="source" ref="3047540"/>
@@ -146,6 +160,14 @@
 						<reference key="destination" ref="372490531"/>
 					</object>
 					<int key="connectionID">36</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchEventConnection" key="connection">
+						<string key="label">handleUpwardSwipe:</string>
+						<reference key="source" ref="193922761"/>
+						<reference key="destination" ref="372490531"/>
+					</object>
+					<int key="connectionID">40</int>
 				</object>
 			</array>
 			<object class="IBMutableOrderedSet" key="objectRecords">
@@ -193,6 +215,11 @@
 						<reference key="object" ref="234151334"/>
 						<reference key="parent" ref="0"/>
 					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">38</int>
+						<reference key="object" ref="193922761"/>
+						<reference key="parent" ref="0"/>
+					</object>
 				</array>
 			</object>
 			<dictionary class="NSMutableDictionary" key="flattenedProperties">
@@ -204,13 +231,14 @@
 				<string key="29.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="32.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="33.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
+				<string key="38.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="4.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 			</dictionary>
 			<dictionary class="NSMutableDictionary" key="unlocalizedProperties"/>
 			<nil key="activeLocalization"/>
 			<dictionary class="NSMutableDictionary" key="localizations"/>
 			<nil key="sourceID"/>
-			<int key="maxID">37</int>
+			<int key="maxID">40</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<array class="NSMutableArray" key="referencedPartialClassDescriptions">

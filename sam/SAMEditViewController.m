@@ -204,6 +204,20 @@
     }
 }
 
+- (IBAction)handleUpwardSwipe:(UISwipeGestureRecognizer *)sender
+{
+    if (sender.state == UIGestureRecognizerStateEnded)
+    {
+        for (RegionPolygon* poly in shapes)
+        {
+            if (poly.selected == YES)
+            {
+                poly.playMode = UPDOWN;
+            }
+        }
+    }
+}
+
 - (RegionPolygon *)addSquare:(GLKVector2)location
 {
     if ([SAMAudioModel sharedAudioModel].numberOfVoices < MAX_VOICES)

@@ -48,6 +48,7 @@ struct t_node
 @property struct t_node* current;       // this is different from other situations, this pointer acts as the 'playhead' in a way
 @property int length;
 @property int cursor;                   // somewhat silly, but tries to keep position state after clear
+@property BOOL  movingForward;          // YES = forward, NO = reverse
 
 @property struct t_node* begin;
 @property struct t_node* end;
@@ -64,4 +65,5 @@ struct t_node
 
 void moveListForward(SAMLinkedList* list);
 void moveListBackward(SAMLinkedList* list);
+void moveListForwardReverse(SAMLinkedList* list);
 

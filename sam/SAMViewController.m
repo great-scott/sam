@@ -99,8 +99,8 @@
     NSArray* subviewArray = [[NSBundle mainBundle] loadNibNamed:@"OptionsView" owner:self options:nil];
     optionsView = [subviewArray objectAtIndex:0];
     
-    float fileViewX = editView.bounds.size.width - optionsView.bounds.size.width - 10.0;
-    float fileViewY = editView.bounds.size.height - optionsView.bounds.size.height - 10.0;
+    float fileViewX = editView.bounds.size.width - optionsView.bounds.size.width - 5.0;
+    float fileViewY = editView.bounds.size.height - optionsView.bounds.size.height - 5.0;
     
     CGRect rect = CGRectMake(fileViewX, fileViewY, optionsView.bounds.size.width, optionsView.bounds.size.height);
     [optionsView setFrame:rect];
@@ -116,12 +116,12 @@
     
     NSDictionary* styleDictNormal = [NSDictionary dictionaryWithObjectsAndKeys:
                                      [UIColor lightGrayColor], UITextAttributeTextColor,
-                                     [UIFont fontWithName:@"Courier" size:15.0], UITextAttributeFont,
+                                     [UIFont fontWithName:@"Courier" size:17.0], UITextAttributeFont,
                                      nil];
     
     NSDictionary* styleDictSelect = [NSDictionary dictionaryWithObjectsAndKeys:
-                                     [UIColor lightGrayColor], UITextAttributeTextColor,
-                                     [UIFont fontWithName:@"Courier" size:15.0], UITextAttributeFont,
+                                     [UIColor blackColor], UITextAttributeTextColor,
+                                     [UIFont fontWithName:@"Courier" size:17.0], UITextAttributeFont,
                                      nil];
     
     [segmentControl setTitleTextAttributes:styleDictNormal forState:UIControlStateNormal];
@@ -133,10 +133,20 @@
     [gainSlider setBackgroundColor:[UIColor clearColor]];
     [gainSlider setMinimumTrackTintColor:[UIColor clearColor]];
     [gainSlider setMaximumTrackTintColor:[UIColor whiteColor]];
+    
+    [gainSlider addTarget:self action:@selector(gainChanged:) forControlEvents:UIControlEventValueChanged];
+    
     [optionsView addSubview:gainSlider];
     
     
     [self.view addSubview:optionsView];
+    
+}
+
+
+- (void)gainChanged:(id)sender
+{
+    
     
 }
 

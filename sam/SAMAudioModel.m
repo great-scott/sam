@@ -163,9 +163,15 @@ void filterMode(SAMAudioModel* model, int voiceIndex)
                 case FORWARD:
                     moveListForward(list);
                     break;
+                    
                 case REVERSE:
                     moveListBackward(list);
                     break;
+                    
+                case UPDOWN:
+                    moveListForwardReverse(list);
+                    break;
+                    
                 default:
                     break;
             }
