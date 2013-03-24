@@ -11,6 +11,7 @@
 		423D1F58169CD64B000074E3 /* FileView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 423D1F57169CD64B000074E3 /* FileView.xib */; };
 		423EE8BE16FE542C0085A8D6 /* OptionsView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 423EE8BD16FE542C0085A8D6 /* OptionsView.xib */; };
 		423EE8C516FF43610085A8D6 /* SAMGestureRecognizers.m in Sources */ = {isa = PBXBuildFile; fileRef = 423EE8C416FF43610085A8D6 /* SAMGestureRecognizers.m */; };
+		423EE8C816FF95660085A8D6 /* SAMRecord.m in Sources */ = {isa = PBXBuildFile; fileRef = 423EE8C716FF95660085A8D6 /* SAMRecord.m */; };
 		42534139169D0156009E53DC /* Ellipse.m in Sources */ = {isa = PBXBuildFile; fileRef = 42534130169D0156009E53DC /* Ellipse.m */; };
 		4253413A169D0156009E53DC /* Line.m in Sources */ = {isa = PBXBuildFile; fileRef = 42534132169D0156009E53DC /* Line.m */; };
 		4253413B169D0156009E53DC /* Rectangle.m in Sources */ = {isa = PBXBuildFile; fileRef = 42534134169D0156009E53DC /* Rectangle.m */; };
@@ -55,6 +56,8 @@
 		423EE8BD16FE542C0085A8D6 /* OptionsView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = OptionsView.xib; sourceTree = "<group>"; };
 		423EE8C316FF43610085A8D6 /* SAMGestureRecognizers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SAMGestureRecognizers.h; sourceTree = "<group>"; };
 		423EE8C416FF43610085A8D6 /* SAMGestureRecognizers.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SAMGestureRecognizers.m; sourceTree = "<group>"; };
+		423EE8C616FF95660085A8D6 /* SAMRecord.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SAMRecord.h; sourceTree = "<group>"; };
+		423EE8C716FF95660085A8D6 /* SAMRecord.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SAMRecord.m; sourceTree = "<group>"; };
 		4253412F169D0156009E53DC /* Ellipse.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Ellipse.h; sourceTree = "<group>"; };
 		42534130169D0156009E53DC /* Ellipse.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Ellipse.m; sourceTree = "<group>"; };
 		42534131169D0156009E53DC /* Line.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Line.h; sourceTree = "<group>"; };
@@ -228,6 +231,8 @@
 				4264B7BA16A6E31C00ACCC18 /* SAMTouchTrack.m */,
 				4288BC7B16F89E3C0091A0E1 /* SAMLinkedList.h */,
 				4288BC7C16F89E3C0091A0E1 /* SAMLinkedList.m */,
+				423EE8C616FF95660085A8D6 /* SAMRecord.h */,
+				423EE8C716FF95660085A8D6 /* SAMRecord.m */,
 				42EA6B4B169B60AE005960F5 /* Supporting Files */,
 			);
 			path = sam;
@@ -373,6 +378,7 @@
 				4288BC7D16F89E3C0091A0E1 /* SAMLinkedList.m in Sources */,
 				4288DAEA16FB3EBD00FAE9FF /* Voice.c in Sources */,
 				423EE8C516FF43610085A8D6 /* SAMGestureRecognizers.m in Sources */,
+				423EE8C816FF95660085A8D6 /* SAMRecord.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

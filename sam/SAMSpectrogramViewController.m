@@ -51,17 +51,12 @@
 //    view.context = context;
 //    view.drawableMultisample = GLKViewDrawableMultisample4X;
 //    view.multipleTouchEnabled = YES;
-
-    
-//    stft = [[SAMAudioModel sharedAudioModel] stftBuffer];
     
     redAmt = 0.9;
     editMode = NO;
     
     spectrum = [[NSMutableArray alloc] init];
     gain = 400;
-    
-//    [self createSpectrum];
 }
 
 - (void)createSpectrum
@@ -72,11 +67,6 @@
     int numBins = [[SAMAudioModel sharedAudioModel] windowSize] / 16.0;  // TODO: get this to line up with audio
     int numFrames = stft->size;
     
-    NSLog(@"Number of Frames: %i", stft->size);
-    NSLog(@"Width: %f\tHeight: %f", self.view.bounds.size.width, self.view.bounds.size.height);
-    // x
-    
-    //int numLines;
     float resampleFactor;
     int resampleIndex = 0;
     

@@ -28,6 +28,7 @@
 @synthesize mode;
 @synthesize touchScale;
 @synthesize numberOfVoices;
+@synthesize isRecording;
 
 
 void shiftToMod(FFT_FRAME* frame)
@@ -352,6 +353,9 @@ static OSStatus renderCallback(void *inRefCon,
             buffer[i] = 0.0;
     }
     
+    if (this->isRecording)
+        ExtAudioFileWriteAsync(this->recordingAudioFileRef, inNumberFrames, ioData);
+    
     return noErr;
 }
 
@@ -445,6 +449,7 @@ static OSStatus renderCallback(void *inRefCon,
             shapeReferences[i] = nil;
         
         stftBufferSize = 0;
+        isRecording = NO;
     }
     
     return self;
@@ -495,7 +500,7 @@ static OSStatus renderCallback(void *inRefCon,
 - (void)setupAudioSession
 {
     OSStatus status;
-    Float32 bufferDuration = (blockSize + 0.5) / sampleRate;           // TODO: add 0.5 to blockSize?
+    Float32 bufferDuration = (blockSize + 0.5) / sampleRate;
     UInt32 category = kAudioSessionCategory_MediaPlayback;
     
     status = AudioSessionInitialize(NULL, NULL, NULL, (__bridge void *)self);
@@ -606,6 +611,57 @@ static OSStatus renderCallback(void *inRefCon,
         free(stftBuffer);
     
     stftBuffer = newSTFTBuffer(windowSize, overlap, &numFFTFrames, numFramesInAudioFile);
+}
+
+
+#pragma mark - Private Methods - 
+
+-(void)startRecording
+
+{
+    NSArray* paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    
+    documentsDirectory = [paths objectAtIndex:0];
+    
+    NSString *destinationFilePath = [[NSString alloc] initWithFormat: @"%@/testrecording.wav", documentsDirectory];
+    
+    fileUrl = CFURLCreateWithFileSystemPath(kCFAllocatorDefault, (CFStringRef)destinationFilePath, kCFURLPOSIXPathStyle, false);
+    
+    OSStatus status;
+    
+    // prepare a 16-bit int file format, sample channel count and sample rate
+    AudioStreamBasicDescription dstFormat;
+    dstFormat.mSampleRate=44100.0;
+    dstFormat.mFormatID=kAudioFormatLinearPCM;
+    dstFormat.mFormatFlags=kAudioFormatFlagsNativeEndian|kAudioFormatFlagIsSignedInteger|kAudioFormatFlagIsPacked;
+    dstFormat.mBytesPerPacket=4;
+    dstFormat.mBytesPerFrame=4;
+    dstFormat.mFramesPerPacket=1;
+    dstFormat.mChannelsPerFrame=1;      // mono right?
+    dstFormat.mBitsPerChannel=16;
+    dstFormat.mReserved=0;
+    
+    // create the capture file
+    status = ExtAudioFileCreateWithURL(fileUrl, kAudioFileWAVEType, &dstFormat, NULL, kAudioFileFlags_EraseFile, &recordingAudioFileRef);
+    
+    
+    NSAssert1(status == noErr, @"Error starting unit: %ld", status);
+    
+    
+    // set the capture file's client format to be the canonical format from the queue
+    status = ExtAudioFileSetProperty(recordingAudioFileRef, kExtAudioFileProperty_ClientDataFormat, sizeof(AudioStreamBasicDescription), &dstFormat);
+    
+    NSAssert1(status == noErr, @"couldnt set input format: %ld", status);
+    
+    ExtAudioFileSeek(recordingAudioFileRef, 0);
+    
+    isRecording = YES;
+    
+}
+
+- (void)stopRecording
+{
+    ExtAudioFileDispose(recordingAudioFileRef);
 }
 
 

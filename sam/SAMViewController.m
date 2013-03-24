@@ -241,6 +241,19 @@
         else
             [[SAMAudioModel sharedAudioModel] setMode:FORWARD_MODE];
     }
+    else if ([title isEqualToString:@"Record"])
+    {
+        if ([[SAMAudioModel sharedAudioModel] isRecording] == NO)
+        {
+            [[SAMAudioModel sharedAudioModel] startRecording];
+            [[SAMAudioModel sharedAudioModel] setIsRecording:YES];
+        }
+        else
+        {
+            [[SAMAudioModel sharedAudioModel] setIsRecording:NO];
+            [[SAMAudioModel sharedAudioModel] stopRecording];
+        }
+    }
     else if ([title isEqualToString:@"Tri"])
     {
         [editViewControl addTriangle:GLKVector2Make(100, 100)];

@@ -54,6 +54,7 @@ enum PLAYBACK_MODE
     Float32 sampleRate;
     
     AudioUnit samUnit;
+    AUGraph   processingGraph;
     
     FFT* fftManager;
     STFT_BUFFER* stftBuffer;
@@ -92,6 +93,12 @@ enum PLAYBACK_MODE
     VOICE* voiceReferences[MAX_VOICES];
     
     BOOL inProcessingLoop;
+    
+    
+    // Recording stuff
+    CFURLRef fileUrl;
+    NSString* documentsDirectory;
+    ExtAudioFileRef recordingAudioFileRef;
 }
 
 @property int windowSize;
@@ -108,6 +115,7 @@ enum PLAYBACK_MODE
 
 @property (nonatomic, weak) RegionPolygon* poly;
 @property (readonly) STFT_BUFFER* stftBuffer;
+@property BOOL isRecording;
 
 + (SAMAudioModel *)sharedAudioModel;
 - (void)openAudioFile:(CFURLRef)fileToOpen;
@@ -120,5 +128,9 @@ enum PLAYBACK_MODE
 // Audio Playback (aka DAC) On/Off
 - (void)startAudioPlayback;
 - (void)stopAudioPlayback;
+
+// recording
+- (void)startRecording;
+- (void)stopRecording;
 
 @end
