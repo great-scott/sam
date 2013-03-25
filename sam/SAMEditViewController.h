@@ -38,6 +38,7 @@
 - (IBAction)handleForwardSwipe:(UISwipeGestureRecognizer *)sender;
 - (IBAction)handleBackwardSwipe:(UISwipeGestureRecognizer *)sender;
 - (IBAction)handleUpwardSwipe:(UISwipeGestureRecognizer *)sender;
+- (IBAction)handleDownwardSwipe:(UISwipeGestureRecognizer *)sender;
 
 - (RegionPolygon *)addSquare:(GLKVector2)location;
 - (RegionPolygon *)addTriangle:(GLKVector2)location;

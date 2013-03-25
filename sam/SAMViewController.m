@@ -236,10 +236,7 @@
     }
     else if ([title isEqualToString:@"Play"])
     {
-        if ([[SAMAudioModel sharedAudioModel] mode] == FORWARD)
-            [[SAMAudioModel sharedAudioModel] setMode:AVERAGE_MODE];
-        else
-            [[SAMAudioModel sharedAudioModel] setMode:FORWARD_MODE];
+
     }
     else if ([title isEqualToString:@"Record"])
     {
@@ -247,11 +244,13 @@
         {
             [[SAMAudioModel sharedAudioModel] startRecording];
             [[SAMAudioModel sharedAudioModel] setIsRecording:YES];
+            sender.backgroundColor = [UIColor redColor];
         }
         else
         {
             [[SAMAudioModel sharedAudioModel] setIsRecording:NO];
             [[SAMAudioModel sharedAudioModel] stopRecording];
+            sender.backgroundColor = [UIColor lightGrayColor];
         }
     }
     else if ([title isEqualToString:@"Tri"])

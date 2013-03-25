@@ -242,5 +242,10 @@
     [touchTracker handleUpwardSwipe:sender withShapes:shapes];
 }
 
+- (IBAction)handleDownwardSwipe:(UISwipeGestureRecognizer *)sender
+{
+    [touchTracker handleDownwardSwipe:sender withShapes:shapes];
+}
+
 
 @end

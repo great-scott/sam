@@ -33,5 +33,6 @@
 - (void)handleSwipe:(UISwipeGestureRecognizer *)sender withShapes:(NSMutableArray *)shapes;
 - (void)handleTap:(UITapGestureRecognizer *)sender withShapes:(NSMutableArray *)shapes;
 - (void)removeTap:(UITouch *)touch;
+- (void)handleDownwardSwipe:(UISwipeGestureRecognizer *)sender withShapes:(NSMutableArray *)shapes;
 
 @end

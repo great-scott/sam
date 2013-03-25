@@ -64,8 +64,12 @@
 				<int key="IBUIDirection">2</int>
 				<int key="IBUINumberOfTouchesRequired">2</int>
 			</object>
-			<object class="IBUISwipeGestureRecognizer" id="728525176">
+			<object class="IBUISwipeGestureRecognizer" id="606721887">
 				<int key="IBUIDirection">4</int>
+				<int key="IBUINumberOfTouchesRequired">2</int>
+			</object>
+			<object class="IBUISwipeGestureRecognizer" id="252148770">
+				<int key="IBUIDirection">8</int>
 				<int key="IBUINumberOfTouchesRequired">2</int>
 			</object>
 		</array>
@@ -113,11 +117,21 @@
 					<object class="IBCocoaTouchOutletCollectionConnection" key="connection">
 						<string key="label">gestureRecognizers</string>
 						<reference key="source" ref="864292779"/>
-						<reference key="destination" ref="728525176"/>
+						<reference key="destination" ref="606721887"/>
 						<string key="cachedDesigntimeCollectionClassName">NSArray</string>
 						<bool key="addsContentToExistingCollection">YES</bool>
 					</object>
 					<int key="connectionID">39</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchOutletCollectionConnection" key="connection">
+						<string key="label">gestureRecognizers</string>
+						<reference key="source" ref="864292779"/>
+						<reference key="destination" ref="252148770"/>
+						<string key="cachedDesigntimeCollectionClassName">NSArray</string>
+						<bool key="addsContentToExistingCollection">YES</bool>
+					</object>
+					<int key="connectionID">43</int>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchEventConnection" key="connection">
@@ -146,10 +160,18 @@
 				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchEventConnection" key="connection">
 						<string key="label">handleUpwardSwipe:</string>
-						<reference key="source" ref="728525176"/>
+						<reference key="source" ref="606721887"/>
 						<reference key="destination" ref="372490531"/>
 					</object>
 					<int key="connectionID">40</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchEventConnection" key="connection">
+						<string key="label">handleDownwardSwipe:</string>
+						<reference key="source" ref="252148770"/>
+						<reference key="destination" ref="372490531"/>
+					</object>
+					<int key="connectionID">44</int>
 				</object>
 			</array>
 			<object class="IBMutableOrderedSet" key="objectRecords">
@@ -199,7 +221,12 @@
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">38</int>
-						<reference key="object" ref="728525176"/>
+						<reference key="object" ref="606721887"/>
+						<reference key="parent" ref="0"/>
+					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">42</int>
+						<reference key="object" ref="252148770"/>
 						<reference key="parent" ref="0"/>
 					</object>
 				</array>
@@ -215,12 +242,13 @@
 				<string key="33.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="38.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="4.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
+				<string key="42.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 			</dictionary>
 			<dictionary class="NSMutableDictionary" key="unlocalizedProperties"/>
 			<nil key="activeLocalization"/>
 			<dictionary class="NSMutableDictionary" key="localizations"/>
 			<nil key="sourceID"/>
-			<int key="maxID">41</int>
+			<int key="maxID">44</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<array class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -229,6 +257,7 @@
 					<string key="superclassName">GLKViewController</string>
 					<dictionary class="NSMutableDictionary" key="actions">
 						<string key="handleBackwardSwipe:">UISwipeGestureRecognizer</string>
+						<string key="handleDownwardSwipe:">UISwipeGestureRecognizer</string>
 						<string key="handleForwardSwipe:">UISwipeGestureRecognizer</string>
 						<string key="handleSwipe:">UISwipeGestureRecognizer</string>
 						<string key="handleUpwardSwipe:">UISwipeGestureRecognizer</string>
@@ -236,6 +265,10 @@
 					<dictionary class="NSMutableDictionary" key="actionInfosByName">
 						<object class="IBActionInfo" key="handleBackwardSwipe:">
 							<string key="name">handleBackwardSwipe:</string>
+							<string key="candidateClassName">UISwipeGestureRecognizer</string>
+						</object>
+						<object class="IBActionInfo" key="handleDownwardSwipe:">
+							<string key="name">handleDownwardSwipe:</string>
 							<string key="candidateClassName">UISwipeGestureRecognizer</string>
 						</object>
 						<object class="IBActionInfo" key="handleForwardSwipe:">

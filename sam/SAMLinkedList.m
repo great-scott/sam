@@ -62,6 +62,27 @@ void moveListForwardReverse(SAMLinkedList* list)
     }
 }
 
+void moveListRandom(SAMLinkedList* list)
+{
+    int begin = list.begin->data->x;
+    int end = list.end->data->x;
+    int range = end - begin;
+    
+    int index = rand() % range + begin;
+    
+    struct t_node* c = list.begin;
+    while (c != nil && c->data->x != index)
+        c = c->nextNode;
+    
+    if (c->data->x > list.end->data->x)
+        c = list.end;
+    if (c->data->x < list.begin->data->x)
+        c = list.begin;
+    
+    list.current = c;
+    
+}
+
 
 @implementation SAMLinkedList
 @synthesize head;

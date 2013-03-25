@@ -54,7 +54,8 @@ enum PLAYHEAD_MODE
 @property BOOL selected;
 @property enum PLAYHEAD_MODE playMode;
 @property (nonatomic, strong) SAMLinkedList* pointList;
-@property float rate;
+@property int rate;
+@property int ratePosition;
 
 - (id)initWithRect:(CGRect)bounds;
 - (void)addVertex:(GLKVector2)newPosition;

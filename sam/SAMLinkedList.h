@@ -66,4 +66,5 @@ struct t_node
 void moveListForward(SAMLinkedList* list);
 void moveListBackward(SAMLinkedList* list);
 void moveListForwardReverse(SAMLinkedList* list);
+void moveListRandom(SAMLinkedList* list);
 

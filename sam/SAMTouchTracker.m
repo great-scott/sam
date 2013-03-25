@@ -191,6 +191,19 @@
     }
 }
 
+- (void)handleDownwardSwipe:(UISwipeGestureRecognizer *)sender withShapes:(NSMutableArray *)shapes
+{
+    if (sender.state == UIGestureRecognizerStateEnded)
+    {
+        for (RegionPolygon* poly in shapes)
+        {
+            if (poly.selected == YES)
+            {
+                poly.playMode = RANDOM;
+            }
+        }
+    }
+}
 
 
 @end

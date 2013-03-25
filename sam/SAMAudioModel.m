@@ -11,7 +11,7 @@
 
 #define PI 3.14159265359
 #define TWO_PI (2 * PI)
-#define FILTER_SLOPE_LENGTH 20
+#define FILTER_SLOPE_LENGTH 10
 
 @implementation SAMAudioModel
 
@@ -169,6 +169,10 @@ void filterMode(SAMAudioModel* model, int voiceIndex)
                     moveListForwardReverse(list);
                     break;
                     
+                case RANDOM:
+                    moveListRandom(list);
+                    break;
+                    
                 default:
                     break;
             }
@@ -323,7 +327,8 @@ static OSStatus renderCallback(void *inRefCon,
                 this->rateCounter++;
             }
             
-            if (this->rateCounter % (this->rate * this->overlap) == 0)
+//            if (this->rateCounter % (this->rate * this->overlap) == 0)
+            if (this->rateCounter % this->rate == 0)
             {
                 this->counter++;
                 this->rateCounter = 0;
@@ -388,7 +393,7 @@ static OSStatus renderCallback(void *inRefCon,
         audioBuffer = nil;        
         normalizationFactor = 0.0;
         counter = 0;
-        rate = 1.5;
+        rate = 1;
         rateCounter = 0;
         
         // Appwide AU settings
@@ -496,6 +501,76 @@ static OSStatus renderCallback(void *inRefCon,
 
 
 #pragma mark - Audio Unit Init -
+
+- (void)setupAudioProcessingGraph
+{
+    NSLog (@"Configuring and then initializing audio processing graph");
+    OSStatus result = noErr;
+    
+    result = NewAUGraph(&processingGraph);
+    NSAssert1(result == noErr, @"AUGraph Init Error: %ld", result);
+    
+    // I/O unit
+    AudioComponentDescription iOUnitDescription;
+    iOUnitDescription.componentType          = kAudioUnitType_Output;
+    iOUnitDescription.componentSubType       = kAudioUnitSubType_RemoteIO;
+    iOUnitDescription.componentManufacturer  = kAudioUnitManufacturer_Apple;
+    iOUnitDescription.componentFlags         = 0;
+    iOUnitDescription.componentFlagsMask     = 0;
+    
+    // Multichannel mixer unit
+    AudioComponentDescription MixerUnitDescription;
+    MixerUnitDescription.componentType          = kAudioUnitType_Generator;
+    MixerUnitDescription.componentSubType       = kAudioUnitSubType_GenericOutput;
+    MixerUnitDescription.componentManufacturer  = kAudioUnitManufacturer_Apple;
+    MixerUnitDescription.componentFlags         = 0;
+    MixerUnitDescription.componentFlagsMask     = 0;
+    
+    // Add nodes to the audio processing graph.
+    NSLog (@"Adding nodes to audio processing graph");
+    
+    AUNode   iONode;       // node for I/O unit
+    AUNode   genNode;      // node for Generator
+    
+    // Add the nodes to the audio processing graph
+    result =    AUGraphAddNode (
+                                processingGraph,
+                                &iOUnitDescription,
+                                &iONode);
+    
+    NSAssert1(result == noErr, @"AUGraphNewNode failed for I/O unit: %ld", result);
+    
+    
+    result =    AUGraphAddNode (
+                                processingGraph,
+                                &MixerUnitDescription,
+                                &genNode
+                                );
+    
+    NSAssert1(result = noErr, @"AUGraphNewNode failed for Mixer: %ld", result);
+    
+    
+    //............................................................................
+    // Open the audio processing graph
+    
+    // Following this call, the audio units are instantiated but not initialized
+    //    (no resource allocation occurs and the audio units are not in a state to
+    //    process audio).
+    result = AUGraphOpen (processingGraph);
+    
+    
+    //............................................................................
+    // Obtain the mixer unit instance from its corresponding node.
+    result =    AUGraphNodeInfo (
+                                 processingGraph,
+                                 genNode,
+                                 NULL,
+                                 &samUnit
+                                 );
+    
+    
+    
+}
 
 - (void)setupAudioSession
 {
