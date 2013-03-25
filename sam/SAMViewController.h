@@ -39,6 +39,7 @@
 @property (nonatomic, strong) UIView* gestureView;
 
 @property (nonatomic, strong) IBOutlet UIActivityIndicatorView *calculatingView;
+@property (nonatomic, strong) UISegmentedControl* segmentControl;
 
 @property BOOL optionsViewOpen;
 

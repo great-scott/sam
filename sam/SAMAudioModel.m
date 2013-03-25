@@ -87,10 +87,10 @@ void filter(POLAR_WINDOW* window, float top, float bottom, int length)
 }
 
 
-void interpolateBetweenFrames(SAMAudioModel* model, POLAR_WINDOW* current, POLAR_WINDOW* next, POLAR_WINDOW* playback)
+void interpolateBetweenFrames(SAMAudioModel* model, POLAR_WINDOW* current, POLAR_WINDOW* next, POLAR_WINDOW* playback, int voice)
 {
     // betweenFrameAmt corresponds with rateCounter
-    float betweenFrameAmt = (float)model->rateCounter / (float)(model->rate * model->overlap);
+    float betweenFrameAmt = (float)model->shapeReferences[voice].ratePosition / (float)(model->shapeReferences[voice].rate * model->overlap);
     double newMag, newPhase;
     
     for (int bin = 0; bin < model->halfWindowSize; bin++)
@@ -142,7 +142,7 @@ void filterMode(SAMAudioModel* model, int voiceIndex)
         FFT_FRAME* nextFrame = stft->buffer[nextFrameIndex];
         FFT_FRAME* playbackFrame = model->fftFrameBuffer[0];
     
-        if (model->rateCounter == 0)
+        if (model->shapeReferences[voiceIndex].ratePosition == 0)
         {
             // TODO: think about this step more
             shiftToMod(frame);
@@ -178,7 +178,7 @@ void filterMode(SAMAudioModel* model, int voiceIndex)
             }
         }
 
-        interpolateBetweenFrames(model, model->polarWindows[0], model->polarWindows[1], model->polarWindows[2]);
+        interpolateBetweenFrames(model, model->polarWindows[0], model->polarWindows[1], model->polarWindows[2], voiceIndex);
     }
     
 }
@@ -318,23 +318,17 @@ static OSStatus renderCallback(void *inRefCon,
                         this->voiceReferences[voice]->output[diff + i] = this->voiceReferences[voice]->transform[diff + i];
             
                     this->pastWindow = this->polarWindows[0];                   // consider putting this in VOICE
-                }
-            }
-            
-            // progress time
-            if (this->mode == FORWARD)
-            {
-                this->rateCounter++;
-            }
-            
-//            if (this->rateCounter % (this->rate * this->overlap) == 0)
-            if (this->rateCounter % this->rate == 0)
-            {
-                this->counter++;
-                this->rateCounter = 0;
                 
-                if (this->counter == 50)
-                    this->counter = 0;
+            
+                    // progress time
+                    this->shapeReferences[voice].ratePosition++;
+            
+//                  if (this->rateCounter % (this->rate * this->overlap) == 0)
+                    if (this->shapeReferences[voice].ratePosition % this->shapeReferences[voice].rate == 0)
+                    {
+                        this->shapeReferences[voice].ratePosition = 0;
+                    }
+                }
             }
         }
         

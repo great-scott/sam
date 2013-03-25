@@ -30,6 +30,7 @@
 @synthesize calculatingView;
 
 @synthesize optionsViewOpen;
+@synthesize segmentControl;
 
 - (void)viewDidLoad
 {
@@ -109,7 +110,7 @@
     
     rect = CGRectMake(20, 153, 310, 44);
     NSArray* segments = [[NSArray alloc] initWithObjects:@"1.0", @"0.5", @"0.25", @"0.125", nil];
-    UISegmentedControl* segmentControl = [[UISegmentedControl alloc] initWithItems:segments];
+    segmentControl = [[UISegmentedControl alloc] initWithItems:segments];
     [segmentControl setFrame:rect];
     [segmentControl setSegmentedControlStyle:UISegmentedControlStyleBar];
     [segmentControl setTintColor:[UIColor whiteColor]];
@@ -126,6 +127,12 @@
     
     [segmentControl setTitleTextAttributes:styleDictNormal forState:UIControlStateNormal];
     [segmentControl setTitleTextAttributes:styleDictSelect forState:UIControlStateSelected];
+    
+    // add action
+    [segmentControl addTarget:editViewControl action:@selector(rateChanged:) forControlEvents:UIControlEventValueChanged];
+    [segmentControl setSelectedSegmentIndex:-1];
+    
+    // add it as a subview
     [optionsView addSubview:segmentControl];
     
     rect = CGRectMake(18, 292, 314, 23);
@@ -191,6 +198,7 @@
             [UIView animateWithDuration: 0.4
                              animations:^{[optionsView setAlpha:0.0];}
                              completion:^(BOOL finished){[optionsView setHidden:YES];}];
+            [segmentControl setSelectedSegmentIndex:-1];                                    // resets the rate button each time you close (could be an issue)
             break;
         }
     }

@@ -44,5 +44,6 @@
 - (RegionPolygon *)addTriangle:(GLKVector2)location;
 - (void)addSpectrogramView;
 
+- (void)rateChanged:(UISegmentedControl *)sender;
 
 @end

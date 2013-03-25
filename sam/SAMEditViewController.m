@@ -191,6 +191,44 @@
 }
 
 
+#pragma mark - Options Callbacks -
+
+- (void)rateChanged:(UISegmentedControl *)sender
+{
+    int newRate;
+    switch (sender.selectedSegmentIndex)
+    {
+        case (0):
+            newRate = 1;
+            break;
+        
+        case (1):
+            newRate = 2;
+            break;
+            
+        case (2):
+            newRate = 4;
+            break;
+            
+        case (3):
+            newRate = 8;
+            break;
+            
+        default:
+            newRate = 1;
+            break;
+    }
+    
+    for (RegionPolygon* poly in shapes)
+    {
+        if (poly.selected == YES)
+        {
+            poly.rate = newRate;
+        }
+    }
+}
+
+
 #pragma mark - Touch Callbacks -
 
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event

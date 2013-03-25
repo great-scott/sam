@@ -23,6 +23,7 @@
 @synthesize pointList;
 @synthesize selected;
 @synthesize rate;
+@synthesize ratePosition;
 
 
 - (id)initWithRect:(CGRect)boundsRect
@@ -51,6 +52,9 @@
         kCircleDefaultColor = GLKVector4Make(0.35, 0.35, 0.55, 1.0);
         kLineDefaultColor = GLKVector4Make(0.35, 0.35, 0.55, 1.0);
         kPlayheadDefaultColor = GLKVector4Make(0.45, 0.45, 0.55, 1.0);
+        
+        rate = 1;
+        ratePosition = 0;
     }
     
     return self;
