@@ -40,6 +40,7 @@ void shiftToMod(FFT_FRAME* frame)
     {
         frame->polarWindowMod->buffer[i].mag = frame->polarWindow->buffer[i].mag;
         frame->polarWindowMod->buffer[i].phase = frame->polarWindow->buffer[i].phase;
+        
         frame->polarWindowMod->oldBuffer[i].mag = frame->polarWindow->oldBuffer[i].mag;
         frame->polarWindowMod->oldBuffer[i].phase = frame->polarWindow->oldBuffer[i].phase;
     }
@@ -93,12 +94,21 @@ void interpolateBetweenFrames(SAMAudioModel* model, POLAR_WINDOW* current, POLAR
     float betweenFrameAmt = (float)model->shapeReferences[voice].ratePosition / (float)(model->shapeReferences[voice].rate * model->overlap);
     double newMag, newPhase;
     
+    float currentMag, nextMag;
+    float currentPhi, nextPhi;
+    
     for (int bin = 0; bin < model->halfWindowSize; bin++)
     {
+        currentMag = current->buffer[bin].mag;
+        nextMag = next->buffer[bin].mag;
+        
         newMag = interpolate(0.0, 1.0, betweenFrameAmt, current->buffer[bin].mag, next->buffer[bin].mag);
         playback->buffer[bin].mag = newMag;
         
         //playback->buffer[bin].mag = current->buffer[bin].mag;
+        
+        currentPhi = current->buffer[bin].phase;
+        nextPhi = next->buffer[bin].phase;
         
         newPhase = interpolate(0.0, 1.0, betweenFrameAmt, current->buffer[bin].phase, next->buffer[bin].phase);
         playback->buffer[bin].phase = newPhase;
@@ -132,7 +142,7 @@ void filterMode(SAMAudioModel* model, int voiceIndex)
         {
             nextFrameIndex = list.current->nextNode->data->x;
             topNext = list.current->nextNode->data->top;
-            bottomNext = list.current->nextNode->data->top;
+            bottomNext = list.current->nextNode->data->bottom;
         }
     
         STFT_BUFFER* stft = model->stftBuffer;
@@ -513,12 +523,12 @@ static OSStatus renderCallback(void *inRefCon,
     iOUnitDescription.componentFlagsMask     = 0;
     
     // Multichannel mixer unit
-    AudioComponentDescription MixerUnitDescription;
-    MixerUnitDescription.componentType          = kAudioUnitType_Generator;
-    MixerUnitDescription.componentSubType       = kAudioUnitSubType_GenericOutput;
-    MixerUnitDescription.componentManufacturer  = kAudioUnitManufacturer_Apple;
-    MixerUnitDescription.componentFlags         = 0;
-    MixerUnitDescription.componentFlagsMask     = 0;
+    AudioComponentDescription GeneratorUnitDescription;
+    GeneratorUnitDescription.componentType          = kAudioUnitType_Generator;
+    GeneratorUnitDescription.componentSubType       = kAudioUnitSubType_GenericOutput;
+    GeneratorUnitDescription.componentManufacturer  = kAudioUnitManufacturer_Apple;
+    GeneratorUnitDescription.componentFlags         = 0;
+    GeneratorUnitDescription.componentFlagsMask     = 0;
     
     // Add nodes to the audio processing graph.
     NSLog (@"Adding nodes to audio processing graph");
@@ -537,7 +547,7 @@ static OSStatus renderCallback(void *inRefCon,
     
     result =    AUGraphAddNode (
                                 processingGraph,
-                                &MixerUnitDescription,
+                                &GeneratorUnitDescription,
                                 &genNode
                                 );
     
@@ -562,6 +572,10 @@ static OSStatus renderCallback(void *inRefCon,
                                  &samUnit
                                  );
     
+    result = AUGraphConnectNodeInput(processingGraph, genNode, 0, iONode, 0);
+    
+    // Initialize the graph
+    result = AUGraphInitialize(processingGraph);
     
     
 }
