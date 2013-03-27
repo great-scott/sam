@@ -433,7 +433,10 @@ static OSStatus renderCallback(void *inRefCon,
         [self setupAudioSession];
         
         // Setup/initialize an audio unit
-        [self setupAudioUnit];
+        //[self setupAudioUnit];
+        
+        // Setup/initialize AUGraph
+        [self setupAudioProcessingGraph];
         
         circleBuffer[0] = (float *)malloc(windowSize * sizeof(float));
         circleBuffer[1] = (float *)malloc(windowSize * sizeof(float));
@@ -538,8 +541,8 @@ static OSStatus renderCallback(void *inRefCon,
     
     // Multichannel mixer unit
     AudioComponentDescription GeneratorUnitDescription;
-    GeneratorUnitDescription.componentType          = kAudioUnitType_Generator;
-    GeneratorUnitDescription.componentSubType       = kAudioUnitSubType_GenericOutput;
+    GeneratorUnitDescription.componentType          = kAudioUnitType_Mixer;
+    GeneratorUnitDescription.componentSubType       = kAudioUnitSubType_MultiChannelMixer;
     GeneratorUnitDescription.componentManufacturer  = kAudioUnitManufacturer_Apple;
     GeneratorUnitDescription.componentFlags         = 0;
     GeneratorUnitDescription.componentFlagsMask     = 0;
@@ -551,22 +554,12 @@ static OSStatus renderCallback(void *inRefCon,
     AUNode   genNode;      // node for Generator
     
     // Add the nodes to the audio processing graph
-    result =    AUGraphAddNode (
-                                processingGraph,
-                                &iOUnitDescription,
-                                &iONode);
-    
+    result =    AUGraphAddNode (processingGraph, &iOUnitDescription, &iONode);
     NSAssert1(result == noErr, @"AUGraphNewNode failed for I/O unit: %ld", result);
     
     
-    result =    AUGraphAddNode (
-                                processingGraph,
-                                &GeneratorUnitDescription,
-                                &genNode
-                                );
-    
-    NSAssert1(result = noErr, @"AUGraphNewNode failed for Mixer: %ld", result);
-    
+    result =    AUGraphAddNode (processingGraph, &GeneratorUnitDescription, &genNode);
+    NSAssert1(result == noErr, @"AUGraphNewNode failed for Mixer: %ld", result);
     
     //............................................................................
     // Open the audio processing graph
@@ -575,22 +568,79 @@ static OSStatus renderCallback(void *inRefCon,
     //    (no resource allocation occurs and the audio units are not in a state to
     //    process audio).
     result = AUGraphOpen (processingGraph);
+    NSAssert1(result == noErr, @"AUGraph open failed: %ld", result);
+
+    // Get references to each node
+    result = AUGraphNodeInfo (processingGraph, genNode, NULL, &samUnit);
+    NSAssert1(result == noErr, @"AUGraph get node info failed: %ld", result);
+    
+//    result = AUGraphNodeInfo(processingGraph, iONode, NULL, &iOUnit);
+//    NSAssert1(result == noErr, @"AUgraph get node info failed: %ld", result);
     
     
-    //............................................................................
-    // Obtain the mixer unit instance from its corresponding node.
-    result =    AUGraphNodeInfo (
-                                 processingGraph,
-                                 genNode,
-                                 NULL,
-                                 &samUnit
-                                 );
+    // Setting up samUnit as a multichannel mixer with one input so we can register that callback
+    UInt32 busCount = 1;
+    result = AudioUnitSetProperty(samUnit, kAudioUnitProperty_ElementCount, kAudioUnitScope_Input, 0, &busCount, sizeof(busCount));
+    NSAssert1(result == noErr, @"Error setting bus count to 1: %ld", result);
+    
+    UInt32 maximumFramesPerSlice = 4096;
+    result = AudioUnitSetProperty(samUnit, kAudioUnitProperty_MaximumFramesPerSlice, kAudioUnitScope_Global, 0, &maximumFramesPerSlice, sizeof(maximumFramesPerSlice));
+    NSAssert1(result == noErr, @"SAM AU Max Frames Per Slice Error: %ld", result);
+    
+    // attach OUR callback to this
+    AURenderCallbackStruct callbackStruct;
+    callbackStruct.inputProc = renderCallback;
+    callbackStruct.inputProcRefCon = (__bridge void *)self;
+    //result = AudioUnitSetProperty(samUnit, kAudioUnitProperty_SetRenderCallback, kAudioUnitScope_Input, 0, &callbackStruct, sizeof(callbackStruct));
+    
+    result = AUGraphSetNodeInputCallback(processingGraph, genNode, 0, &callbackStruct);
+    NSAssert1(result == noErr, @"Error setting callback: %ld", result);
+    
+    
+    // Set stream format stuff
+    // set format to 32 bit, single channel, floating point, linear PCM
+    const int fourBytesPerFloat = 4;
+    const int eightBitsPerByte = 8;
+    
+    AudioStreamBasicDescription streamFormat = {0};
+    streamFormat.mSampleRate =       44100;
+    streamFormat.mFormatID =         kAudioFormatLinearPCM;
+    streamFormat.mFormatFlags =      kAudioFormatFlagsNativeFloatPacked | kAudioFormatFlagIsNonInterleaved;
+    streamFormat.mBytesPerPacket =   fourBytesPerFloat;
+    streamFormat.mFramesPerPacket =  1;
+    streamFormat.mBytesPerFrame =    fourBytesPerFloat;
+    streamFormat.mChannelsPerFrame = 1;
+    streamFormat.mBitsPerChannel =   fourBytesPerFloat * eightBitsPerByte;
+    
+//    result = AudioUnitSetProperty(iOUnit, kAudioUnitProperty_StreamFormat, kAudioUnitScope_Input, 0, &streamFormat, sizeof(streamFormat));
+//    NSAssert1(result == noErr, @"Error setting IO stream format: %ld", result);
+    
+    result = AudioUnitSetProperty(samUnit, kAudioUnitProperty_StreamFormat, kAudioUnitScope_Input, 0, &streamFormat, sizeof(streamFormat));
+    NSAssert1(result == noErr, @"Error setting Generator stream format: %ld", result);
+    
+
+    // Try setting sample rate for mixer
+    Float64 graphSampleRate = sampleRate;
+    result = AudioUnitSetProperty(samUnit, kAudioUnitProperty_SampleRate, kAudioUnitScope_Output, 0, &graphSampleRate, sizeof(graphSampleRate));
+    NSAssert1(result == noErr, @"Error setting SAM sample rate: %ld", result);
+    
     
     result = AUGraphConnectNodeInput(processingGraph, genNode, 0, iONode, 0);
+    NSAssert1(result == noErr, @"Error connecting AUGraph nodes: %ld", result);
     
+    
+    // Diagnostic code
+    // Call CAShow if you want to look at the state of the audio processing
+    //    graph.
+    NSLog (@"Audio processing graph state immediately before initializing it:");
+    CAShow (processingGraph);
+    
+    NSLog (@"Initializing the audio processing graph");
+    // Initialize the audio processing graph, configure audio data stream formats for
+    //    each input and output, and validate the connections between audio units.
     // Initialize the graph
     result = AUGraphInitialize(processingGraph);
-    
+    NSAssert1(result == noErr, @"Error initializing AUGraph: %ld", result);
     
 }
 
@@ -985,14 +1035,18 @@ static OSStatus renderCallback(void *inRefCon,
     AudioSessionSetActive(true);
     
     // Start playback
-    OSErr err = AudioOutputUnitStart(samUnit);
-    NSAssert1(err == noErr, @"Error starting unit: %hd", err);
+//    OSErr err = AudioOutputUnitStart(samUnit);
+//    NSAssert1(err == noErr, @"Error starting unit: %hd", err);
+    
+    AUGraphStart(processingGraph);
 }
 
 - (void)stopAudioPlayback
 {
     AudioSessionSetActive(false);
-    AudioOutputUnitStop(samUnit);
+    //AudioOutputUnitStop(samUnit);
+    
+    AUGraphStop(processingGraph);
 }
 
 - (void)setEditArea:(CGRect)newEditArea

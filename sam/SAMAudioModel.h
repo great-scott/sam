@@ -53,7 +53,9 @@ enum PLAYBACK_MODE
     Float32 blockSize;
     Float32 sampleRate;
     
+    // Audio units and graphs
     AudioUnit samUnit;
+    AudioUnit iOUnit;
     AUGraph   processingGraph;
     
     FFT* fftManager;
