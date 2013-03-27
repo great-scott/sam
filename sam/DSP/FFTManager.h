@@ -43,8 +43,10 @@ typedef struct t_fftFrame
 
 typedef struct t_fft
 {
-    UInt32          fftLength;      // window size
+    UInt32          fftLength;      // window size that we'll be taking FFT
+    UInt32          windowLength;   // the actual window's length, only slightly confusing
     float*          window;
+    float*          invWindow;      // the window for the inverse 
     FFTSetup        fftSetup;
     COMPLEX_SPLIT   outOfPlaceComplex;
 } FFT;
@@ -57,7 +59,7 @@ typedef struct t_stftBuffer
     FFT_FRAME** buffer;         // This is an array of FFT_FRAMEs
 } STFT_BUFFER;
 
-FFT* newFFT(UInt32 windowSize);
+FFT* newFFT(UInt32 windowSize, bool zeroPad);    // zero pad if we're doing STFT
 FFT_FRAME* newFFTFrame(UInt32 windowSize);
 STFT_BUFFER* newSTFTBuffer(UInt32 windowSize, int overlapAmount, int *sizeOfBuffer, int length);
 
@@ -72,6 +74,7 @@ void pvFixPhase(const POLAR_WINDOW* previous, POLAR_WINDOW* current, float facto
 
 void computeFFT (FFT* instantiatedFFT, FFT_FRAME* fftFrameInstance, float* audioBuffer);
 void computeSTFT(FFT* instantiatedFFT, STFT_BUFFER* fftFrameInstances, float* audioBuffer);
+void computeSTFT_zeroPad(FFT* instantiatedFFT, STFT_BUFFER* stftBuffer, float* audioBuffer, int audioBufferLength);
 
 void inverseFFT (FFT* instantiatedFFT, FFT_FRAME* fftFrameInstance, float* outputBuffer);
 

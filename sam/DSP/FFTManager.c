@@ -8,9 +8,11 @@
 
 #include <stdio.h>
 #include "FFTManager.h"
+#include "Util.h"
 
 #define PI 3.14159265359
 #define TWO_PI (2 * PI)
+#define WINDOW_RATIO 1.4        // magic number for creating smaller window to zeropad
 
 #define cmp_abs(x) ( sqrt( (x).re * (x).re + (x).im * (x).im ) )
 #define __modulus(x) cmp_abs(x)
@@ -27,7 +29,8 @@ void sigmaPhi(FFT_FRAME* fftFrame, float* previousPhase);
 #pragma mark __NEW_FFT__
 /**********************************************************************************/
 
-FFT* newFFT(UInt32 windowSize)
+
+FFT* newFFT(UInt32 windowSize, bool zeroPad)
 {
     FFT* fft = (FFT*)malloc(sizeof(FFT));
     if (fft == NULL)
@@ -38,6 +41,20 @@ FFT* newFFT(UInt32 windowSize)
     else
         fft->fftLength = windowSize;
     
+    int windowLength;
+    if (zeroPad == true)
+    {
+        windowLength = fft->fftLength / 2 * WINDOW_RATIO;
+        if (!(windowLength % 2))        // if it's an even number, then increase it by 1
+            windowLength++;
+        
+        fft->windowLength = windowLength;
+    }
+    else
+    {
+        fft->windowLength = fft->fftLength;
+    }
+    
     // create fft setup
     vDSP_Length log2n = log2f(fft->fftLength);
     fft->fftSetup = vDSP_create_fftsetup(log2n, FFT_RADIX2);
@@ -45,12 +62,11 @@ FFT* newFFT(UInt32 windowSize)
         return NULL;
     
     // allocate memory for a window 
-    fft->window = (float *)malloc(fft->fftLength * sizeof(float));
-    vDSP_hann_window(fft->window, fft->fftLength, vDSP_HANN_NORM);
+    fft->window = (float *)malloc(fft->windowLength * sizeof(float));
+    vDSP_hann_window(fft->window, fft->windowLength, vDSP_HANN_NORM);
     
-    // hann
-    //for (int i = 0; i < fft->fftLength; i++)
-    //    fft->window[i] = 0.5 * (1 - cos((TWO_PI * i) / (fft->fftLength - 1)));
+    fft->invWindow = (float *)malloc(fft->fftLength * sizeof(float));
+    vDSP_hann_window(fft->invWindow, fft->fftLength, vDSP_HANN_NORM);
     
     fft->outOfPlaceComplex.realp = (float *)malloc((fft->fftLength / 2.0) * sizeof(float));
     fft->outOfPlaceComplex.imagp = (float *)malloc((fft->fftLength / 2.0) * sizeof(float));
@@ -64,6 +80,7 @@ void freeFFT(FFT* fftToFree)
     free(fftToFree->outOfPlaceComplex.imagp);
     vDSP_destroy_fftsetup(fftToFree->fftSetup);
     free(fftToFree->window);
+    free(fftToFree->invWindow);
     free(fftToFree);
 }
 
@@ -202,7 +219,7 @@ void freeSTFTBuffer(STFT_BUFFER* bufferToFree)
 void computeFFT (FFT* instantiatedFFT, FFT_FRAME* fftFrameInstance, float* audioBuffer)
 {    
     // This applies the windowing
-    vDSP_vmul(audioBuffer, 1, instantiatedFFT->window, 1, audioBuffer, 1, instantiatedFFT->fftLength);
+    //vDSP_vmul(audioBuffer, 1, instantiatedFFT->window, 1, audioBuffer, 1, instantiatedFFT->fftLength);
     
     // Do some data packing stuff
     vDSP_ctoz((COMPLEX*)audioBuffer, 2, &fftFrameInstance->complexBuffer, 1, fftFrameInstance->nOver2);
@@ -239,7 +256,7 @@ void inverseFFT (FFT* instantiatedFFT, FFT_FRAME* fftFrameInstance, float* outpu
     vDSP_ztoc(&instantiatedFFT->outOfPlaceComplex, 1, (COMPLEX *)outputBuffer, 2, fftFrameInstance->nOver2);
     
     // This applies the windowing
-    vDSP_vmul(outputBuffer, 1, instantiatedFFT->window, 1, outputBuffer, 1, instantiatedFFT->fftLength);
+    //vDSP_vmul(outputBuffer, 1, instantiatedFFT->window, 1, outputBuffer, 1, instantiatedFFT->fftLength);
 
 }
 
@@ -252,7 +269,7 @@ void inverseFFT (FFT* instantiatedFFT, FFT_FRAME* fftFrameInstance, float* outpu
 void computeSTFT(FFT* instantiatedFFT, STFT_BUFFER* stftBuffer, float* audioBuffer)
 {
     int mod;
-    float *tempBuffer = (float *)malloc(instantiatedFFT->fftLength * sizeof(float));    
+    float *tempBuffer = (float *)malloc(instantiatedFFT->fftLength * sizeof(float));        
     int hopSamples = instantiatedFFT->fftLength / stftBuffer->overlapAmount;
     
     float mag, phi, delta;
@@ -260,7 +277,7 @@ void computeSTFT(FFT* instantiatedFFT, STFT_BUFFER* stftBuffer, float* audioBuff
     float fac = (float)(44100.0 / (hopSamples * TWO_PI));
     
     for (int pos = 0; pos < stftBuffer->size - 5; pos++)
-    {
+    {        
         FFT_FRAME* frame = stftBuffer->buffer[pos];
         POLAR_WINDOW* p = frame->polarWindow;
         
@@ -305,6 +322,80 @@ void computeSTFT(FFT* instantiatedFFT, STFT_BUFFER* stftBuffer, float* audioBuff
         memcpy(p->oldBuffer, p->buffer, p->length * sizeof(POLAR));
     }
 
+    
+    free(tempBuffer);
+}
+
+
+void computeSTFT_zeroPad(FFT* instantiatedFFT, STFT_BUFFER* stftBuffer, float* audioBuffer, int audioBufferLength)
+{
+    float *tempBuffer = (float *)malloc(instantiatedFFT->fftLength * sizeof(float));
+    int hopSamples = instantiatedFFT->fftLength / stftBuffer->overlapAmount;
+    
+    float mag, phi, delta;
+    float scale = (float)(TWO_PI * hopSamples / instantiatedFFT->fftLength);
+    float fac = (float)(44100.0 / (hopSamples * TWO_PI));
+    
+    int offset = instantiatedFFT->windowLength / 2;
+    
+    for (int pos = 0; pos < stftBuffer->size - 5; pos++)
+    {
+        // zero out contents of temp buffer
+        vDSP_vclr(tempBuffer, 1, instantiatedFFT->fftLength);
+        
+        FFT_FRAME* frame = stftBuffer->buffer[pos];
+        POLAR_WINDOW* p = frame->polarWindow;
+        
+        FFT_FRAME* prevFrame = NULL;
+        POLAR_WINDOW* prevPolar = NULL;
+        if (pos > 0)
+        {
+            prevFrame = stftBuffer->buffer[pos - 1];
+            prevPolar = prevFrame->polarWindow;
+        }
+        
+        for (int i = 0; i < instantiatedFFT->windowLength; i++)
+        {
+            if (pos * hopSamples < audioBufferLength)                   // check to see if we're past audio buffer length, then insert 0.0s
+                tempBuffer[i] = audioBuffer[(pos * hopSamples) + i];
+            else
+                tempBuffer[i] = 0.0;
+        }
+        
+        // do windowing here
+        vDSP_vmul(tempBuffer, 1, instantiatedFFT->window, 1, tempBuffer, 1, instantiatedFFT->windowLength);
+        
+        // rotate the frame to make it zero phase
+        rotate(tempBuffer, -offset, instantiatedFFT->fftLength);
+        
+        // take fft
+        computeFFT(instantiatedFFT, frame, tempBuffer);
+        
+        // calculate magnitude and phase and put in another array for now
+        for (int i = 0; i < frame->windowSize / 2; i++)
+        {
+            mag = getMagnitude(frame->complexBuffer.realp[i], frame->complexBuffer.imagp[i]);
+            phi = getPhase(frame->complexBuffer.realp[i], frame->complexBuffer.imagp[i]);
+            
+            if (prevPolar != NULL)
+                delta = phi - prevPolar->buffer[i].phase;
+            else
+                delta = phi;
+            
+            while(delta > PI) delta -= (float)TWO_PI;
+            while(delta < -PI) delta += (float)TWO_PI;
+            
+            p->buffer[i].phase = (delta + i * scale) * fac;
+            p->buffer[i].mag = mag;
+            
+            if (p->buffer[i].mag > stftBuffer->max)
+                stftBuffer->max = p->buffer[i].mag;
+        }
+        
+        // make a copy
+        memcpy(p->oldBuffer, p->buffer, p->length * sizeof(POLAR));
+    }
+    
     
     free(tempBuffer);
 }

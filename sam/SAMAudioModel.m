@@ -319,6 +319,8 @@ static OSStatus renderCallback(void *inRefCon,
             
                     //------------------- inverse and overlap + add                
                     inverseFFT(this->fftManager, playbackFrame, this->voiceReferences[voice]->transform);
+                    
+                    vDSP_vmul(this->voiceReferences[voice]->transform, 1, this->fftManager->invWindow, 1, this->voiceReferences[voice]->transform, 1, this->fftManager->fftLength);
                 
                     int diff = this->windowSize - this->hopSize;
                     for (int i = 0; i < diff; i++)
@@ -410,7 +412,7 @@ static OSStatus renderCallback(void *inRefCon,
         modAmount = 0;//numberOfDSPTicks / overlap;
         
         // Allocate memory and initialize fft manager
-        fftManager = newFFT(windowSize);
+        fftManager = newFFT(windowSize, true);
         NSAssert(fftManager != NULL, @"Error creating fft manager.");
         
         stftBuffer = nil;
@@ -907,7 +909,8 @@ static OSStatus renderCallback(void *inRefCon,
 
 - (BOOL)calculateSTFT
 {
-    computeSTFT(fftManager, stftBuffer, audioBuffer);
+    //computeSTFT(fftManager, stftBuffer, audioBuffer);
+    computeSTFT_zeroPad(fftManager, stftBuffer, audioBuffer, numFramesInAudioFile);
     stftBufferSize = stftBuffer->size;
     
     NSNumber *size = [NSNumber numberWithFloat:stftBufferSize];
