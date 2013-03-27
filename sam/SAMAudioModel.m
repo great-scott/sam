@@ -11,7 +11,7 @@
 
 #define PI 3.14159265359
 #define TWO_PI (2 * PI)
-#define FILTER_SLOPE_LENGTH 10
+#define FILTER_SLOPE_LENGTH 6
 
 @implementation SAMAudioModel
 
@@ -52,6 +52,16 @@ double interpolate(double x1, double x0, double x, double y1, double y0)
     return y;
 }
 
+float lowPassFilterScale(int index, int divisor)
+{
+    return cos(PI * index / (divisor * 2));
+}
+
+float highPassFilterScale(int index, int divisor)
+{
+    return sin(PI * index / (divisor * 2));
+}
+
 void filter(POLAR_WINDOW* window, float top, float bottom, int length)
 {
     int lowBound = bottom - length; // interpolate from bottom to lower bound (from 0 - 1)
@@ -62,7 +72,9 @@ void filter(POLAR_WINDOW* window, float top, float bottom, int length)
         if (bin > ceil(top) && bin <= highBound)
         {
             // use interpolator to figure this out
-            double interp = interpolate(highBound, top, bin, 1.0, 0.0);
+            //double interp = interpolate(highBound, top, bin, 1.0, 0.0);
+            
+            double interp = lowPassFilterScale(bin - top, FILTER_SLOPE_LENGTH);
             double newMag = interp * window->buffer[bin].mag;
             window->buffer[bin].mag = newMag;
             
@@ -77,7 +89,7 @@ void filter(POLAR_WINDOW* window, float top, float bottom, int length)
         else if (bin < floor(bottom) && bin >= lowBound)
         {
             // use interpolator
-            double interp = interpolate(lowBound, bottom, bin, 0.0, 1.0);
+            double interp = highPassFilterScale(bin - (bottom - FILTER_SLOPE_LENGTH), FILTER_SLOPE_LENGTH); //interpolate(lowBound, bottom, bin, 0.0, 1.0);
             double newMag = interp * window->buffer[bin].mag;
             window->buffer[bin].mag = newMag;
             
