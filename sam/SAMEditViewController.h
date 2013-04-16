@@ -40,8 +40,11 @@
 - (IBAction)handleUpwardSwipe:(UISwipeGestureRecognizer *)sender;
 - (IBAction)handleDownwardSwipe:(UISwipeGestureRecognizer *)sender;
 
-- (RegionPolygon *)addSquare:(GLKVector2)location;
-- (RegionPolygon *)addTriangle:(GLKVector2)location;
+- (void)addSquare:(GLKVector2)location;
+- (void)addTriangle:(GLKVector2)location;
+- (void)addPentagon:(GLKVector2)location;
+- (void)addHexagon:(GLKVector2)location;
+
 - (void)addSpectrogramView;
 
 - (void)rateChanged:(UISegmentedControl *)sender;

@@ -102,30 +102,30 @@
 
 #pragma mark - Notification Center Methods -
 
-- (void)addNewSquare:(NSNotification *)notification
-{
-    NSNumber* x = [[notification userInfo] valueForKey:@"x"];
-    NSNumber* y = [[notification userInfo] valueForKey:@"y"];
-    NSString* title = [[notification userInfo] valueForKey:@"title"];
-    
-    if ([title isEqualToString:@"Square"])
-        newMovingShape = [self addSquare:GLKVector2Make([x floatValue], [y floatValue])];
-    else if ([title isEqualToString:@"Tri"])
-        newMovingShape = [self addTriangle:GLKVector2Make([x floatValue], [y floatValue])];
-}
-
-- (void)moveSquare:(NSNotification *)notification
-{
-    NSNumber *x = [[notification userInfo] valueForKey:@"x"];
-    NSNumber *y = [[notification userInfo] valueForKey:@"y"];
-    
-    [newMovingShape setPosition:GLKVector2Make([x floatValue], [y floatValue]) withSubShape:newMovingShape];
-}
-
-- (void)dropSquare:(NSNotification *)notification
-{
-    newMovingShape = nil;
-}
+//- (void)addNewSquare:(NSNotification *)notification
+//{
+//    NSNumber* x = [[notification userInfo] valueForKey:@"x"];
+//    NSNumber* y = [[notification userInfo] valueForKey:@"y"];
+//    NSString* title = [[notification userInfo] valueForKey:@"title"];
+//    
+//    if ([title isEqualToString:@"Square"])
+//        newMovingShape = [self addSquare:GLKVector2Make([x floatValue], [y floatValue])];
+//    else if ([title isEqualToString:@"Tri"])
+//        newMovingShape = [self addTriangle:GLKVector2Make([x floatValue], [y floatValue])];
+//}
+//
+//- (void)moveSquare:(NSNotification *)notification
+//{
+//    NSNumber *x = [[notification userInfo] valueForKey:@"x"];
+//    NSNumber *y = [[notification userInfo] valueForKey:@"y"];
+//    
+//    [newMovingShape setPosition:GLKVector2Make([x floatValue], [y floatValue]) withSubShape:newMovingShape];
+//}
+//
+//- (void)dropSquare:(NSNotification *)notification
+//{
+//    newMovingShape = nil;
+//}
 
 - (void)setStftSize:(NSNotification *)notification
 {
@@ -153,37 +153,40 @@
 
 #pragma mark - View Methods -
 
-- (RegionPolygon *)addSquare:(GLKVector2)location
-{
-    if ([SAMAudioModel sharedAudioModel].numberOfVoices < MAX_VOICES)
-    {
-        RegionPolygon* poly = [[RegionPolygon alloc] initWithRect:self.view.bounds];
-        poly.numVertices = 4;
-        [poly setPosition:location withSubShape:poly];
-        [shapes addObject:poly];
-    
-        [[SAMAudioModel sharedAudioModel] addShape:poly];
-        poly.stftLength = [SAMAudioModel sharedAudioModel].stftBufferSize;
-    
-        return poly;
-    }
-    
-    return nil;
-}
 
-- (RegionPolygon *)addTriangle:(GLKVector2)location
+- (void)addTriangle:(GLKVector2)location
 {
     // The default is 3 vertices for a region polygon, so we don't need to specify the number of them
+    [self addNewShape:location numVertices:3];
+}
+
+- (void)addSquare:(GLKVector2)location
+{
+    [self addNewShape:location numVertices:4];
+}
+
+- (void)addPentagon:(GLKVector2)location
+{
+    [self addNewShape:location numVertices:5];
+}
+
+- (void)addHexagon:(GLKVector2)location
+{
+    [self addNewShape:location numVertices:6];
+}
+
+- (RegionPolygon *)addNewShape:(GLKVector2)location numVertices:(int)numVertices
+{
     if ([SAMAudioModel sharedAudioModel].numberOfVoices < MAX_VOICES)
     {
         RegionPolygon* poly = [[RegionPolygon alloc] initWithRect:self.view.bounds];
-        poly.numVertices = 3;
+        poly.numVertices = numVertices;
         [poly setPosition:location withSubShape:poly];
         [shapes addObject:poly];
         
         [[SAMAudioModel sharedAudioModel] addShape:poly];
         poly.stftLength = [SAMAudioModel sharedAudioModel].stftBufferSize;
-    
+        
         return poly;
     }
     

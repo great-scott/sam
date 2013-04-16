@@ -242,9 +242,14 @@
         // Add Square
         [editViewControl addSquare:GLKVector2Make(100, 100)];
     }
-    else if ([title isEqualToString:@"Play"])
+    else if ([title isEqualToString:@"Pentagon"])
     {
-
+        [editViewControl addPentagon:GLKVector2Make(100, 100)];
+    }
+    else if ([title isEqualToString:@"Hexagon"])
+    {
+        [editViewControl addHexagon:GLKVector2Make(100, 100)];
+        
     }
     else if ([title isEqualToString:@"Record"])
     {

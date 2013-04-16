@@ -25,6 +25,7 @@ enum PLAYHEAD_MODE
     RANDOM = 3
 };
 
+
 @interface RegionPolygon : Shape
 {
     NSMutableArray* lines;          // all the lines
@@ -33,7 +34,7 @@ enum PLAYHEAD_MODE
     
     Line*           playHead;       // line to show the playhead
     
-    GLKVector2 initPositions[4];
+    GLKVector2 initPositions[8];    // max default vertices
     
     SAMLinkedList*   pointList;     //
     
@@ -42,6 +43,7 @@ enum PLAYHEAD_MODE
     GLKVector4 kCircleDefaultColor;
     GLKVector4 kLineDefaultColor;
     GLKVector4 kPlayheadDefaultColor;
+
 }
 
 @property int numVertices;

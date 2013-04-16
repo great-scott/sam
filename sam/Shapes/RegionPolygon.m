@@ -30,11 +30,11 @@
 {
     self = [super init];
     if (self)
-    {
-        initPositions[0] = GLKVector2Make(50, 50);
-        initPositions[1] = GLKVector2Make(150, 50);
-        initPositions[2] = GLKVector2Make(150, 150);
-        initPositions[3] = GLKVector2Make(50, 150);
+    {        
+//        initPositions[0] = GLKVector2Make(50, 50);
+//        initPositions[1] = GLKVector2Make(150, 50);
+//        initPositions[2] = GLKVector2Make(150, 150);
+//        initPositions[3] = GLKVector2Make(50, 150);
         
         lines = [[NSMutableArray alloc] init];
         circles = [[NSMutableArray alloc] init];
@@ -62,6 +62,36 @@
 
 - (void)setupShapes:(int)numberVertices;
 {
+    // There's a better way to do this, but I'm doing this anyways
+    float TRIANGLE_COORD[3][2] = { {50, 50}, {150, 50}, {150, 150} };
+    float SQUARE_COORD[4][2] = { {50, 50}, {150, 50}, {150, 150}, {50, 150} };
+    float PENTAGON_COORD[5][2] = { {75, 50}, {125, 100}, {100, 150}, {50, 150}, {25, 100} };
+    float HEXAGON_COORD[6][2] = { {50, 50}, {100, 50}, {125, 100}, {100, 150}, {50, 150}, {25, 100} };
+    
+    switch (numberVertices)
+    {
+        case 3:
+            for (int i = 0; i < 3; i++)
+                initPositions[i] = GLKVector2Make(TRIANGLE_COORD[i][0], TRIANGLE_COORD[i][1]);
+            break;
+        
+        case 4:
+            for (int i = 0; i < 4; i++)
+                initPositions[i] = GLKVector2Make(SQUARE_COORD[i][0], SQUARE_COORD[i][1]);
+            break;
+            
+        case 5:
+            for (int i = 0; i < 5; i++)
+                initPositions[i] = GLKVector2Make(PENTAGON_COORD[i][0], PENTAGON_COORD[i][1]);
+            break;
+            
+        case 6:
+            for (int i = 0; i < 6; i++)
+                initPositions[i] = GLKVector2Make(HEXAGON_COORD[i][0], HEXAGON_COORD[i][1]);
+            break;
+    }
+    
+    
     if ([lines count] != numberVertices)
     {
         [lines removeAllObjects];
@@ -556,8 +586,8 @@
 
 - (void)setNumVertices:(int)numberVertices
 {
-    [self setupShapes:numberVertices];
     numVertices = numberVertices;
+    [self setupShapes:numberVertices];
 }
 
 
